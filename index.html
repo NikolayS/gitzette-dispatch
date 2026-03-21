@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Samokhvalov Dispatch — Week of March 15–21, 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IM+Fell+English:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f4f0e8;
+    font-family: 'Libre Baskerville', Georgia, serif;
+    color: #1a1a1a;
+  }
+
+  .newspaper {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #faf7f0;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    padding: 0 0 40px;
+  }
+
+  /* HEADER */
+  .header {
+    border-bottom: 4px double #1a1a1a;
+    padding: 16px 32px 10px;
+    text-align: center;
+  }
+
+  .header-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #444;
+    margin-bottom: 8px;
+  }
+
+  .masthead {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 72px;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: #1a1a1a;
+    margin: 4px 0;
+  }
+
+  .tagline {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 8px;
+  }
+
+  .edition-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-top: 1px solid #1a1a1a;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 4px 0;
+    color: #333;
+  }
+
+  /* SECTION LABELS */
+  .section-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #fff;
+    background: #1a1a1a;
+    padding: 2px 6px;
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+
+  /* MAIN CONTENT AREA */
+  .content {
+    padding: 20px 32px 0;
+  }
+
+  /* COLUMNS */
+  .cols-3 { display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr; gap: 0; }
+  .cols-2 { display: grid; grid-template-columns: 2fr 1px 1fr; gap: 0; }
+  .cols-2-eq { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0; }
+
+  .col { padding: 0 20px; }
+  .col:first-child { padding-left: 0; }
+  .col:last-child { padding-right: 0; }
+  .divider { background: #bbb; width: 1px; }
+
+  .col-rule {
+    border-right: 1px solid #bbb;
+    padding-right: 20px;
+    margin-right: 0;
+  }
+
+  /* ARTICLES */
+  .article { margin-bottom: 18px; }
+
+  .article h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 6px;
+  }
+
+  .article h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 5px;
+  }
+
+  .article h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .deck {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #bbb;
+    padding-bottom: 6px;
+  }
+
+  .byline {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 6px;
+  }
+
+  p {
+    font-size: 12px;
+    line-height: 1.7;
+    margin-bottom: 8px;
+    text-align: justify;
+  }
+
+  p:first-of-type::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    float: left;
+    line-height: 0.8;
+    margin: 4px 6px 0 0;
+    color: #1a1a1a;
+  }
+
+  .no-dropcap::first-letter { all: unset; }
+
+  /* STATS BOX */
+  .stats-box {
+    border: 2px solid #1a1a1a;
+    padding: 12px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .stats-box h4 {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    padding: 2px 0;
+    border-bottom: 1px dotted #ccc;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #1a1a1a;
+  }
+
+  /* RULE LINES */
+  .rule { border: none; border-top: 1px solid #bbb; margin: 14px 0; }
+  .rule-heavy { border: none; border-top: 3px double #1a1a1a; margin: 14px 0; }
+
+  /* PULL QUOTE */
+  .pull-quote {
+    border-top: 3px solid #1a1a1a;
+    border-bottom: 3px solid #1a1a1a;
+    padding: 10px 0;
+    margin: 12px 0;
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.4;
+    color: #222;
+  }
+
+  /* PR LIST */
+  .pr-list { list-style: none; padding: 0; }
+  .pr-list li {
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 3px 0;
+    border-bottom: 1px dotted #ccc;
+  }
+  .pr-list li:last-child { border-bottom: none; }
+  .pr-list a { color: #1a1a1a; text-decoration: none; }
+  .pr-list a:hover { text-decoration: underline; }
+  .pr-merged { color: #5a3ea1; font-weight: 700; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .pr-open { color: #1a7a3c; font-weight: 700; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* NEW REPO BOX */
+  .repo-box {
+    background: #1a1a1a;
+    color: #faf7f0;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .repo-box h4 { font-family: 'Playfair Display', serif; font-size: 15px; margin-bottom: 4px; }
+  .repo-box p { color: #ddd; font-size: 11px; margin: 0; }
+  .repo-box p::first-letter { all: unset; }
+  .repo-box a { color: #ffd700; }
+
+  /* BOTTOM BORDER */
+  .footer {
+    border-top: 4px double #1a1a1a;
+    padding: 10px 32px;
+    font-size: 9px;
+    text-align: center;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #666;
+  }
+</style>
+</head>
+<body>
+<div class="newspaper">
+
+  <!-- MASTHEAD -->
+  <div class="header">
+    <div class="header-meta">
+      <span>Vol. I, No. 1</span>
+      <span>Friday, March 21, 2026</span>
+      <span>NikolayS · GitHub · Weekly Edition</span>
+    </div>
+    <div class="masthead">The Samokhvalov Dispatch</div>
+    <div class="tagline">"All the commits fit to print"</div>
+    <div class="edition-bar">
+      <span>sqlever: 20 PRs merged this week</span>
+      <span>★ rpg: 87 commits</span>
+      <span>★ 2 new repos launched</span>
+      <span>209 total commits across 6 repos</span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+
+    <!-- ROW 1: HERO + SIDEBAR -->
+    <div style="height:20px"></div>
+    <div class="cols-2">
+      <!-- HERO STORY -->
+      <div class="col col-rule">
+        <span class="section-label">sqlever · Migration Tools</span>
+        <div class="article">
+          <h1>Sqlever Reaches Critical Mass: 20 Pull Requests Merged in a Single Week</h1>
+          <div class="deck">The Sqitch-compatible Postgres migration tool surges toward its first release as AI-assisted development delivers a torrent of features, tests, and fixes in seven days.</div>
+          <div class="byline">By The Dispatch · March 21, 2026</div>
+          <p>In what may be the most productive week in the young project's history, <a href="https://github.com/NikolayS/sqlever">sqlever</a> absorbed twenty pull requests from initial feature work through a comprehensive test suite and all the way to near-release polish. The pace — averaging nearly three merges per day — reflects a new mode of development in which human review and AI execution operate in tight collaboration.</p>
+          <p>The week's work covered the full breadth of the tool's ambitions. Zero-downtime expand/contract migration pairs (PR <a href="https://github.com/NikolayS/sqlever/pull/123">#123</a>), batch DML execution with throttling and replication-lag monitoring (PRs <a href="https://github.com/NikolayS/sqlever/pull/121">#121</a>–<a href="https://github.com/NikolayS/sqlever/pull/122">#122</a>), and a structured PR review comment generator (<a href="https://github.com/NikolayS/sqlever/pull/116">#116</a>) all landed before the week was out.</p>
+          <div class="pull-quote">"The revert command now correctly ignores the <code>sqlever:no-transaction</code> directive — a critical correctness fix for production deployments."</div>
+          <p>The final days pivoted hard toward testing discipline. Seven dedicated test PRs — covering static analysis, Sqitch compatibility, deploy/revert robustness, expand/contract lifecycle, batch DML, AI integration, and security edge cases — were designed, tracked as issues, and merged within hours. Real-world validation issues remain open: five tickets track testing against a live PostgreSQL instance and a compiled binary, ensuring no regressions slip through before the first public release.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <div class="divider"></div>
+      <div class="col">
+
+        <div class="stats-box">
+          <h4>Week in numbers</h4>
+          <div class="stat-row"><span>Total commits</span><span class="stat-num">209</span></div>
+          <div class="stat-row"><span>PRs merged</span><span class="stat-num">20</span></div>
+          <div class="stat-row"><span>PRs open</span><span class="stat-num">2</span></div>
+          <div class="stat-row"><span>Issues closed</span><span class="stat-num">17</span></div>
+          <div class="stat-row"><span>New repos</span><span class="stat-num">2</span></div>
+          <div class="stat-row"><span>Active repos</span><span class="stat-num">6</span></div>
+        </div>
+
+        <span class="section-label">New This Week</span>
+
+        <div class="repo-box">
+          <h4><a href="https://github.com/NikolayS/leandex">leandex</a></h4>
+          <p>Keep your Postgres indexes lean — rebuild, drop, and suggest. Extracted from pg_index_pilot heritage. Handles bloat, unused indexes, and missing index recommendations in one coherent tool.</p>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="repo-box">
+          <h4><a href="https://github.com/NikolayS/NikolayS">NikolayS/NikolayS</a></h4>
+          <p>GitHub profile README — 22 commits to get it right. Postgres since 2003, GSoC 2006 alumnus, GitLab contributor since 2018, PostgresFM co-host, gaps.wait.events GSoC 2026 mentor.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <hr class="rule-heavy">
+
+    <!-- ROW 2: THREE COLUMNS -->
+    <div class="cols-3">
+
+      <!-- RPG -->
+      <div class="col">
+        <span class="section-label">rpg · Postgres Terminal</span>
+        <div class="article">
+          <h2>rpg Pushes Past 87 Commits as Test Coverage Drive Intensifies</h2>
+          <div class="byline">By The Dispatch</div>
+          <p>The Rust-based Postgres terminal replacement recorded 87 commits this week — the highest of any repository — as work continued on two fronts simultaneously. A new interactive history picker for the <code>\s</code> command (<a href="https://github.com/NikolayS/rpg/pull/701">PR #701</a>) brings psql users a long-requested quality-of-life improvement.</p>
+          <p>Meanwhile, a unit test coverage push aims to move the needle from 68% toward 75%, tracked in <a href="https://github.com/NikolayS/rpg/pull/702">PR #702</a>, still open at week's end.</p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- COIL -->
+      <div class="col">
+        <span class="section-label">COIL · App Development</span>
+        <div class="article">
+          <h2>COIL Records Steady 18-Commit Week</h2>
+          <div class="byline">By The Dispatch</div>
+          <p>The COIL application project (<a href="https://github.com/NikolayS/COIL">NikolayS/COIL</a>) continued its development cadence with 18 commits across the week. The project, focused on personal productivity engineering, now has its own dedicated AI agent — MrWolf — running under an isolated Linux user with full GitHub CLI access, SSH keys, and Cloudflare credentials configured this week.</p>
+          <div class="pull-quote" style="font-size:13px">"MrWolf. I solve problems."</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- PG_ASH + LEANDEX -->
+      <div class="col">
+        <span class="section-label">pg_ash · Wait Events</span>
+        <div class="article">
+          <h2>pg_ash Sees Minor Activity; Gaps.wait.events Enters GSoC 2026</h2>
+          <div class="byline">By The Dispatch</div>
+          <p>Three commits landed in <a href="https://github.com/NikolayS/pg_ash">pg_ash</a> this week — modest by recent standards, but the project scored a significant milestone: <a href="https://gaps.wait.events">gaps.wait.events</a>, the companion project tracking uninstrumented Postgres wait events, has been accepted into Google Summer of Code 2026 under Samokhvalov's mentorship.</p>
+          <p>The acceptance completes a 20-year arc: GSoC 2006 participant (SQL/XML support) to GSoC 2026 mentor.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <hr class="rule-heavy">
+
+    <!-- PR LOG -->
+    <div class="cols-2-eq">
+      <div class="col">
+        <span class="section-label">sqlever · Full PR Log</span>
+        <ul class="pr-list">
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/145">fix: revert ignores no-transaction directive (#145)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/139">TEST-8: deep E2E tests — lifecycle, deps, tags, TUI (#139)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/138">TEST-7: security + edge-case tests (#138)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/137">TEST-5: batch DML end-to-end tests (#137)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/136">TEST-3: static analysis tests — 71 tests (#136)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/135">TEST-6: AI + DBLab integration tests (#135)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/134">TEST-1: Sqitch compatibility deep tests (#134)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/133">TEST-4: expand/contract E2E tests (#133)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/132">test: deploy/revert robustness tests (#132)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/123">E4: deploy --phase expand|contract (#123)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/122">F4: batch CLI commands (#122)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/121">F2: batch worker — execution loop with throttling (#121)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/120">E3: sync trigger generation (#120)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/119">F3: batch monitoring — replication lag + VACUUM (#119)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/118">fix: skip integration tests when PG unavailable (#118)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/117">E1: expand/contract migration pair generator (#117)</a></li>
+          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/116">feat: sqlever review — PR comment generator (#116)</a></li>
+          <li><span class="pr-open">Open</span> <a href="https://github.com/NikolayS/sqlever/pull/146">fix: compat tests — Sqitch Docker (#146)</a></li>
+        </ul>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="col">
+        <span class="section-label">rpg · PR Log</span>
+        <ul class="pr-list">
+          <li><span class="pr-open">Open</span> <a href="https://github.com/NikolayS/rpg/pull/702">test: boost unit coverage 68% → 75% (#702)</a></li>
+          <li><span class="pr-open">Open</span> <a href="https://github.com/NikolayS/rpg/pull/701">feat: interactive history picker for \s (#701)</a></li>
+        </ul>
+
+        <hr class="rule">
+
+        <span class="section-label">Commits by repository</span>
+        <ul class="pr-list">
+          <li><span style="font-weight:700">rpg</span> <span class="stat-num" style="float:right">87</span></li>
+          <li><span style="font-weight:700">sqlever</span> <span class="stat-num" style="float:right">78</span></li>
+          <li><span style="font-weight:700">NikolayS (profile)</span> <span class="stat-num" style="float:right">22</span></li>
+          <li><span style="font-weight:700">COIL</span> <span class="stat-num" style="float:right">18</span></li>
+          <li><span style="font-weight:700">pg_ash</span> <span class="stat-num" style="float:right">3</span></li>
+          <li><span style="font-weight:700">leandex</span> <span class="stat-num" style="float:right">1</span></li>
+        </ul>
+
+        <hr class="rule">
+
+        <span class="section-label">Open real-world tests (sqlever)</span>
+        <ul class="pr-list">
+          <li><a href="https://github.com/NikolayS/sqlever/issues/144">REAL-TEST-5: Build compiled binary, verify E2E</a></li>
+          <li><a href="https://github.com/NikolayS/sqlever/issues/143">REAL-TEST-4: Mid-deploy handoff with real Sqitch</a></li>
+          <li><a href="https://github.com/NikolayS/sqlever/issues/142">REAL-TEST-3: sqlever analyze on real SQL files</a></li>
+          <li><a href="https://github.com/NikolayS/sqlever/issues/141">REAL-TEST-2: Deploy + revert against live PG</a></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    The Samokhvalov Dispatch · Vol. I No. 1 · March 21, 2026 · Generated by TARS · github.com/NikolayS
+  </div>
+
+</div>
+</body>
+</html>
