@@ -75,6 +75,7 @@ const GL_TOKEN = process.env.GITLAB_TOKEN;
 // github api ──────────────────────────────────────────────────────────────────
 
 async function ghGet(path: string): Promise<any> {
+  if (!GH_TOKEN) throw new Error("GITHUB_TOKEN not set");
   const url = `https://api.github.com${path}`;
   const res = await fetch(url, {
     headers: {
@@ -1049,12 +1050,12 @@ async function buildHtml(
 import { existsSync } from "fs";
 
 async function main() {
-  const { from, to, noFetch, noLlm, noIllustrations, owner: ownerOverride, output: outputOverride } = parseArgs();
+  const { from, to, noFetch, noLlm, noIllustrations, owner: ownerOverride, output: outputOverride, provider } = parseArgs();
 
   const owner = ownerOverride || config.owner;
   const outputFile = outputOverride || config.output;
 
-  const cacheKey = `${owner}_${from.toISOString().slice(0, 10)}_${to.toISOString().slice(0, 10)}`;
+  const cacheKey = `${provider}_${owner}_${from.toISOString().slice(0, 10)}_${to.toISOString().slice(0, 10)}`;
   const cacheDir = join(ROOT, ".cache");
   const cacheFile = join(cacheDir, `${cacheKey}.json`);
 
@@ -1063,7 +1064,28 @@ async function main() {
   if (noFetch && existsSync(cacheFile)) {
     console.log(`\nusing cached data from ${cacheFile}`);
     reposData = JSON.parse(readFileSync(cacheFile, "utf8"));
+  } else if (provider === "gitlab") {
+    // ── GitLab path ───────────────────────────────────────────────────────
+    if (!GL_TOKEN) throw new Error("GITLAB_TOKEN not set (required for --provider gitlab)");
+    console.log(`\nfetching GitLab repos for ${owner}...`);
+    console.log(`window: ${from.toISOString().slice(0, 10)} → ${to.toISOString().slice(0, 10)}\n`);
+    reposData = await fetchGitLabData(owner, from, to, GL_TOKEN);
+    console.log(`found ${reposData.length} active repo(s) on GitLab`);
+
+    // cap at top 10
+    if (reposData.length > 10) {
+      reposData = reposData
+        .sort((a, b) => (b.commitCount + b.releases.length * 3 + b.mergedPRs.length) -
+                        (a.commitCount + a.releases.length * 3 + a.mergedPRs.length))
+        .slice(0, 10);
+      console.log(`trimmed to top 10 most active repos`);
+    }
+
+    await Bun.write(cacheFile, JSON.stringify(reposData, null, 2));
+    console.log(`cached to ${cacheFile}`);
   } else {
+    // ── GitHub path (default) ─────────────────────────────────────────────
+    if (!GH_TOKEN) throw new Error("GITHUB_TOKEN not set");
     console.log(`\nfetching repos for ${owner}...`);
     const allRepos = await listRepos(owner);
 
