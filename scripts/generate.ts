@@ -857,7 +857,7 @@ async function buildHtml(
 <div class="paper">
   <div class="header">
     <div class="header-kicker">
-      <span class="kicker-text">Weekly open-source digest — <a href="https://github.com/NikolayS">@NikolayS</a> (Nik Samokhvalov)</span>
+      <span class="kicker-text"><a href="https://github.com/NikolayS">@NikolayS</a> — open-source digest</span>
       <span class="kicker-date">${fromLabel} – ${toLabel}</span>
     </div>
     <div class="header-meta">
