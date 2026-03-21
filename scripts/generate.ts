@@ -806,14 +806,15 @@ async function buildHtml(
   .paper { max-width: 960px; margin: 24px auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 2px 12px rgba(0,0,0,.15); }
   /* broadsheet: two pages side by side on very wide screens */
   .page-2 { display: none; }
-  /* on narrow: show all articles on page 1 */
-  .articles-p2 { display: none; }
+  /* articles-p2: always visible on page 1; moves to page 2 in broadsheet */
+  .articles-p2 { display: block; }
   @media (min-width: 1400px) {
     body { background: #d8d4cc; }
     .broadsheet-wrap { display: flex; align-items: flex-start; gap: 0; max-width: 1900px; margin: 32px auto; }
     .broadsheet-wrap .paper { max-width: none; flex: 1; margin: 0; box-shadow: 0 4px 24px rgba(0,0,0,.2); }
     .broadsheet-wrap .paper.page-2 { display: block; border-left: 3px double var(--rule); margin-left: -1px; }
-    .broadsheet-wrap .articles-p2 { display: block; }
+    /* on broadsheet, hide p2 articles from page 1 (they move to page 2) */
+    .broadsheet-wrap .paper:first-child .articles-p2 { display: none; }
     /* on broadsheet, hide the sidebar from page 1 (stats + p2 articles move to page 2) */
     .broadsheet-wrap .paper:first-child .grid-2-1 { grid-template-columns: 1fr; }
     .broadsheet-wrap .paper:first-child .grid-2-1 .col:last-child { display: none; }
