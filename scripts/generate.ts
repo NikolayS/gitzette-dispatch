@@ -74,7 +74,7 @@ const GL_TOKEN = process.env.GITLAB_TOKEN;
 
 // github api ──────────────────────────────────────────────────────────────────
 
-async function ghGet(path: string): Promise<any> {
+async function ghGet(path: string, extraHeaders: Record<string, string> = {}): Promise<any> {
   if (!GH_TOKEN) throw new Error("GITHUB_TOKEN not set");
   const url = `https://api.github.com${path}`;
   const res = await fetch(url, {
@@ -82,6 +82,7 @@ async function ghGet(path: string): Promise<any> {
       Authorization: `token ${GH_TOKEN}`,
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
+      ...extraHeaders,
     },
   });
   if (!res.ok) throw new Error(`GitHub API ${res.status}: ${url}`);
@@ -92,6 +93,27 @@ async function listRepos(owner: string): Promise<string[]> {
   const data = await ghGet(`/users/${owner}/repos?per_page=100&sort=pushed`);
   // skip forks — they add noise and inflate scan time
   return data.filter((r: any) => !r.fork).map((r: any) => r.name);
+}
+
+// Returns "owner/repo" strings for repos the user contributed to but doesn't own
+// Uses GitHub search API: commits authored by user in the date window
+async function listContributedRepos(owner: string, from: Date, to: Date): Promise<string[]> {
+  const since = from.toISOString().slice(0, 10);
+  const until = to.toISOString().slice(0, 10);
+  const query = `author:${owner}+committer-date:${since}..${until}`;
+  const data = await ghGet(
+    `/search/commits?q=${query}&per_page=100&sort=committer-date&order=desc`,
+    { Accept: "application/vnd.github.cloak-preview" }
+  ).catch(() => ({ items: [] }));
+  const items = data.items || [];
+  const repoFullNames = new Set<string>();
+  for (const item of items) {
+    const fullName: string = item.repository?.full_name;
+    if (fullName && !fullName.startsWith(`${owner}/`)) {
+      repoFullNames.add(fullName); // only foreign repos
+    }
+  }
+  return Array.from(repoFullNames).slice(0, 10); // cap at 10 foreign repos
 }
 
 interface Release {
@@ -231,7 +253,7 @@ async function getReadmeImages(owner: string, repo: string): Promise<string[]> {
   }
 }
 
-async function getRepoData(owner: string, repo: string, from: Date, to: Date): Promise<RepoData | null> {
+async function getRepoData(owner: string, repo: string, from: Date, to: Date, authorFilter?: string): Promise<RepoData | null> {
   try {
     const info = await ghGet(`/repos/${owner}/${repo}`);
 
@@ -257,9 +279,10 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
         if (!p.merged_at) return false;
         const d = new Date(p.merged_at);
         if (!(d >= from && d <= to)) return false;
-        // on forks/mirrors, only count PRs authored by the owner
+        // only count PRs authored by the target contributor
         const author = p.user?.login || "";
-        return author.toLowerCase() === owner.toLowerCase();
+        const expectedAuthor = (authorFilter || owner).toLowerCase();
+        return author.toLowerCase() === expectedAuthor;
       })
       .map((p: any) => ({
         number: p.number,
@@ -307,8 +330,9 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
     let commitCount = 0;
     const contributorMap: Record<string, number> = {};
     try {
+      const commitAuthor = authorFilter || owner;
       const commits = await ghGet(
-        `/repos/${owner}/${repo}/commits?since=${fromStr}&until=${toStr}&per_page=100&author=${owner}`
+        `/repos/${owner}/${repo}/commits?since=${fromStr}&until=${toStr}&per_page=100&author=${commitAuthor}`
       );
       commitCount = commits.length;
       for (const c of commits) {
@@ -1099,6 +1123,12 @@ async function main() {
       return true;
     });
 
+    // also find repos the user contributed to but doesn't own (e.g. pgdogdev/pgdog for levkk)
+    const foreignRepoFullNames = await listContributedRepos(owner, from, to).catch(() => []);
+    if (foreignRepoFullNames.length > 0) {
+      console.log(`foreign repos with contributions: ${foreignRepoFullNames.join(", ")}`);
+    }
+
     console.log(`repos to scan: ${repos.join(", ")}`);
     console.log(`window: ${from.toISOString().slice(0, 10)} → ${to.toISOString().slice(0, 10)}\n`);
 
@@ -1111,6 +1141,22 @@ async function main() {
         console.log(`✓ (${data.commitCount} commits, ${data.releases.length} releases, ${data.mergedPRs.length} merged PRs)`);
       } else {
         console.log("(quiet week, skipped)");
+      }
+    }
+
+    // scan foreign repos (contributions to other orgs/users)
+    for (const fullName of foreignRepoFullNames) {
+      const [repoOwner, repoName] = fullName.split("/");
+      process.stdout.write(`  ${fullName} (foreign)... `);
+      const data = await getRepoData(repoOwner, repoName, from, to, owner);
+      if (data) {
+        // tag as foreign so LLM knows
+        (data as any).foreign = true;
+        (data as any).fullName = fullName;
+        reposData.push(data);
+        console.log(`✓ (${data.commitCount} commits, ${data.releases.length} releases, ${data.mergedPRs.length} merged PRs)`);
+      } else {
+        console.log("(no owner commits, skipped)");
       }
     }
 
