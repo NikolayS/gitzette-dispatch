@@ -593,7 +593,7 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
     const starEmpty = "☆".repeat(empty);
     return `<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--rule);">
       <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;min-width:80px;flex-shrink:0;"><a href="${r.url}" style="color:var(--ink);text-decoration:none;">${r.name}</a></span>
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:1px;line-height:1;">${starFill}<span style="color:var(--rule);">${starEmpty}</span></span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:20px;letter-spacing:2px;line-height:1;">${starFill}<span style="color:var(--rule);">${starEmpty}</span></span>
       <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;white-space:nowrap;">${r.stars.toLocaleString()}</span>
     </div>`;
   }).join("");
@@ -793,14 +793,20 @@ async function buildHtml(
 
   /* header */
   .header { padding: 20px 24px 14px; border-bottom: 3px solid var(--ink); }
-  .header-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--rule); padding-bottom: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px; }
+  .header-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--rule); padding-bottom: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; overflow: hidden; }
+  .header-kicker .kicker-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .header-kicker .kicker-date { white-space: nowrap; flex-shrink: 0; color: var(--muted); font-weight: 400; }
   .header-kicker a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); }
   .header-kicker a:hover { color: var(--link); border-color: var(--link); }
-  .header-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .header-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; overflow: hidden; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .header-meta .meta-left { white-space: nowrap; }
+  .header-meta .meta-right { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
   .masthead { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(32px,7vw,64px); letter-spacing: -.03em; line-height: 1; }
   .masthead span { color: var(--muted); font-weight: 400; }
-  .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; }
-  .edition-bar { margin-top: 12px; padding: 6px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .05em; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .edition-bar { margin-top: 12px; padding: 6px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .05em; display: flex; flex-wrap: nowrap; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .edition-bar::-webkit-scrollbar { display: none; }
+  .edition-bar span { white-space: nowrap; padding: 0 16px 0 0; }
   .edition-bar span::before { content: "▸ "; color: var(--muted); }
 
   /* body */
@@ -845,12 +851,12 @@ async function buildHtml(
 <div class="paper">
   <div class="header">
     <div class="header-kicker">
-      <span>Weekly open-source digest — <a href="https://github.com/NikolayS">@NikolayS</a> (Nik Samokhvalov)</span>
-      <span style="color:var(--muted);font-weight:400;">${fromLabel} – ${toLabel}</span>
+      <span class="kicker-text">Weekly open-source digest — <a href="https://github.com/NikolayS">@NikolayS</a> (Nik Samokhvalov)</span>
+      <span class="kicker-date">${fromLabel} – ${toLabel}</span>
     </div>
     <div class="header-meta">
-      <span>Vol. ${vol}, No. ${issue}</span>
-      <span>github.com/NikolayS</span>
+      <span class="meta-left">Vol. ${vol}, No. ${issue}</span>
+      <span class="meta-right">github.com/NikolayS</span>
     </div>
     <div class="masthead">the <span>dispatch</span></div>
     <div class="tagline">${copy.tagline}</div>
