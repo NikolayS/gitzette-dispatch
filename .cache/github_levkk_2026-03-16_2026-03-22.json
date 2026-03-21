@@ -1,1 +1,261 @@
-[]
+[
+  {
+    "name": "docs",
+    "description": "PgDog documentation.",
+    "url": "https://github.com/pgdogdev/docs",
+    "stars": 4,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 49,
+        "title": "Document schema_path behavior in session",
+        "state": "open",
+        "date": "2026-01-22T02:51:25Z",
+        "url": "https://github.com/pgdogdev/docs/issues/49",
+        "author": "jaggederest"
+      },
+      {
+        "number": 35,
+        "title": "Document idle_session_timeout",
+        "state": "open",
+        "date": "2025-10-14T15:20:51Z",
+        "url": "https://github.com/pgdogdev/docs/issues/35",
+        "author": "levkk"
+      },
+      {
+        "number": 29,
+        "title": "Generate LLM-friendly complete text at `/llms.txt`",
+        "state": "open",
+        "date": "2025-09-25T18:35:03Z",
+        "url": "https://github.com/pgdogdev/docs/issues/29",
+        "author": "jaggederest"
+      },
+      {
+        "number": 22,
+        "title": "Query Protocol page should link to PG docs",
+        "state": "open",
+        "date": "2025-09-19T00:02:44Z",
+        "url": "https://github.com/pgdogdev/docs/issues/22",
+        "author": "jaggederest"
+      },
+      {
+        "number": 21,
+        "title": "Cross Shard page: Docs on DataRow etc could link to PG documentation directly",
+        "state": "open",
+        "date": "2025-09-18T01:02:16Z",
+        "url": "https://github.com/pgdogdev/docs/issues/21",
+        "author": "jaggederest"
+      },
+      {
+        "number": 20,
+        "title": "Sharding Basics - Sharding - could use diagram",
+        "state": "open",
+        "date": "2025-09-18T00:49:56Z",
+        "url": "https://github.com/pgdogdev/docs/issues/20",
+        "author": "jaggederest"
+      },
+      {
+        "number": 15,
+        "title": "Document comment-based routing works with simple queries only",
+        "state": "open",
+        "date": "2025-08-31T20:22:43Z",
+        "url": "https://github.com/pgdogdev/docs/issues/15",
+        "author": "levkk"
+      },
+      {
+        "number": 14,
+        "title": "Document how BEGIN READ ONLY works",
+        "state": "open",
+        "date": "2025-08-31T18:36:41Z",
+        "url": "https://github.com/pgdogdev/docs/issues/14",
+        "author": "levkk"
+      },
+      {
+        "number": 13,
+        "title": "Document cross-shard transactions",
+        "state": "open",
+        "date": "2025-08-31T18:36:01Z",
+        "url": "https://github.com/pgdogdev/docs/issues/13",
+        "author": "levkk"
+      }
+    ],
+    "commitCount": 2,
+    "topContributors": [
+      "levkk"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "pgdogdev/docs"
+  },
+  {
+    "name": "pgdog",
+    "description": "PostgreSQL connection pooler, load balancer and database sharder.",
+    "url": "https://github.com/pgdogdev/pgdog",
+    "stars": 4202,
+    "releases": [],
+    "mergedPRs": [
+      {
+        "number": 841,
+        "title": "fix: sending two errors to client when Pg shuts the connection down",
+        "state": "merged",
+        "date": "2026-03-19T20:33:52Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/841",
+        "author": "levkk",
+        "body": "- fix: don't send two errors to the client when server closes connection\r\n- fix: don't trigger ban behavior either (we would ban database if it closed the connection first)"
+      },
+      {
+        "number": 833,
+        "title": "fix: fix replication state sync",
+        "state": "merged",
+        "date": "2026-03-16T22:31:52Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/833",
+        "author": "levkk",
+        "body": "#817 "
+      },
+      {
+        "number": 832,
+        "title": "Tweak Claude",
+        "state": "merged",
+        "date": "2026-03-16T03:47:18Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/832",
+        "author": "levkk",
+        "body": "Help us write better Rust code."
+      }
+    ],
+    "openPRs": [
+      {
+        "number": 842,
+        "title": "feat: allow passthrough user to change password",
+        "state": "open",
+        "date": "2026-03-20T00:36:36Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/842",
+        "author": "levkk",
+        "body": "- fix #830 \r\n- fix #373 "
+      },
+      {
+        "number": 836,
+        "title": "fix(metrics): wait_time for pool calculation",
+        "state": "open",
+        "date": "2026-03-18T20:56:08Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/836",
+        "author": "meskill",
+        "body": "Unify wait_time and reads/counts.writes calculations on both paths (with pool waiting and without it).\r\n\r\nI've run benchmarks from cli.sh to compare the changes against main branch.\r\n<img width=\"1495\" height=\"571\" alt=\"image\" src=\"https://github.com/user-attachments/assets/a1e8541b-1ac4-4e86-ba9e-1b8b7325b599\" />\r\n\r\nA slight degradation could be noted, but I'd argue that the reason for it is that more operation are actually executed in order to provide true metrics since the old code was not updating read/writes on some paths and in another place improper `elapsed` calculations where not using `Instant::now()`"
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 838,
+        "title": "Bun/Drizzle dashboard hits extended protocol decode/result-format errors in transaction mode",
+        "state": "open",
+        "date": "2026-03-19T11:48:47Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/838",
+        "author": "joelzanden"
+      },
+      {
+        "number": 834,
+        "title": "TLS Certificate Chain support",
+        "state": "open",
+        "date": "2026-03-18T16:27:45Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/834",
+        "author": "notgne2"
+      },
+      {
+        "number": 831,
+        "title": "[feat] Support for PG 18+ OAuth authentication",
+        "state": "open",
+        "date": "2026-03-14T12:54:29Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/831",
+        "author": "ancoron"
+      },
+      {
+        "number": 830,
+        "title": "With PassthroughAuth set to `enabled_plain`, changing a user's password prevents new connections from being established",
+        "state": "open",
+        "date": "2026-03-13T14:12:55Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/830",
+        "author": "rissson"
+      },
+      {
+        "number": 828,
+        "title": "Adding new shards to an existing cluster (rebalancing)",
+        "state": "open",
+        "date": "2026-03-13T09:03:28Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/828",
+        "author": "vitabaks"
+      },
+      {
+        "number": 824,
+        "title": "Support Unix domain socket",
+        "state": "open",
+        "date": "2026-03-12T17:00:12Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/824",
+        "author": "hongquan"
+      },
+      {
+        "number": 823,
+        "title": "[Plugins] Add plugin for primary-only tables",
+        "state": "open",
+        "date": "2026-03-12T14:50:07Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/823",
+        "author": "cdreier"
+      },
+      {
+        "number": 819,
+        "title": "[Query engine] Handle cross-shard check in schema sharding with no sharded tables",
+        "state": "open",
+        "date": "2026-03-11T18:40:36Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/819",
+        "author": "levkk"
+      },
+      {
+        "number": 807,
+        "title": "[Resharding] Replicate DDL",
+        "state": "open",
+        "date": "2026-03-03T23:58:17Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/807",
+        "author": "levkk"
+      },
+      {
+        "number": 792,
+        "title": "Error Connecting to server: Invalid argument (os error 22)",
+        "state": "open",
+        "date": "2026-02-26T14:13:04Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/792",
+        "author": "Mafioznik662"
+      },
+      {
+        "number": 785,
+        "title": "Connection-refused errors don't trigger replica banning",
+        "state": "open",
+        "date": "2026-02-21T01:32:00Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/785",
+        "author": "kevinelliott"
+      },
+      {
+        "number": 758,
+        "title": "[Resharding] Resume COPY",
+        "state": "open",
+        "date": "2026-02-09T17:19:12Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/758",
+        "author": "levkk"
+      },
+      {
+        "number": 750,
+        "title": "[Query engine] Move foreign key referenced rows when sharding key is updated",
+        "state": "open",
+        "date": "2026-02-04T22:10:34Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/750",
+        "author": "levkk"
+      }
+    ],
+    "commitCount": 3,
+    "topContributors": [
+      "levkk"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "pgdogdev/pgdog"
+  }
+]

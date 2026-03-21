@@ -1,0 +1,56 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Two releases ship weighted scales and plugin plumbing while the docs queue grows restless.",
+  "editionNote": "Two releases, one new contributor hat trick, and a pooler that learned to play favorites.",
+  "articles": [
+    {
+      "repo": "pgdog",
+      "headline": "pgdog v0.1.32 lets you put a thumb on the load balancer's scale",
+      "deck": "Weighted load balancing lands alongside configurable logging and a session-mode sharding fix.",
+      "body": "pgdog v0.1.32 shipped March 12 with weighted load balancing, letting operators bias traffic toward beefier replicas instead of treating every backend as equal. The release also fixes schema sharding in session mode when cross_shard_disabled is set (<a href=\"https://github.com/pgdogdev/pgdog/pull/820\">#820 fix: schema sharding in session mode with cross_shard_disabled</a>). New contributor @levish0 added configurable log format and level in their debut PR. Five merged PRs from @levkk this week kept the conveyor belt moving.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a brass balance scale with glowing database cylinders of different sizes on each side"
+    },
+    {
+      "repo": "helm",
+      "headline": "helm v0.46 breaks your keepalives, then hands you plugins as an apology",
+      "deck": "A breaking TCP keepalive fix, plugin support, and auto-restart annotations arrive in a single chart bump.",
+      "body": "helm v0.46 dropped March 13 with a breaking change to TCP keepalive configuration courtesy of first-time contributor @NJAldwin, who also fixed incorrect scientific notation rendering for large integers and added opt-in config checksum annotations for automatic pod restarts. @levkk contributed <a href=\"https://github.com/pgdogdev/helm/pull/78\">#78 Add plugin support</a>, wiring pgdog's new plugin system into the Helm chart. Operators upgrading should check their keepalive settings before rolling out.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a ship's helm wheel with one spoke snapped off and a fresh new gear plugged into its center"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "pgdog gets a primary-only plugin for when replicas just won't do",
+      "deck": "A new plugin forces all traffic to the primary, no questions asked.",
+      "body": "@levkk merged <a href=\"https://github.com/pgdogdev/pgdog/pull/826\">#826 feat: add primary only plugin</a>, giving operators a clean way to route every query straight to the primary. Useful during maintenance windows or when replication lag makes replicas untrustworthy. The feature pairs neatly with the plugin support just added to the helm chart.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a single glowing tower standing tall while smaller towers in the background are dimmed and roped off"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "Resharding gets better breadcrumbs",
+      "deck": "New tracking instrumentation lands for pgdog's shard rebalancing pipeline.",
+      "body": "@levkk merged <a href=\"https://github.com/pgdogdev/pgdog/pull/818\">#818 chore: add more tracking to resharding</a>, adding observability hooks to the resharding process. Separately, <a href=\"https://github.com/pgdogdev/pgdog/pull/821\">#821 fix: fix ee error tracking for replication</a> patched error tracking in the enterprise replication path. Together, the two PRs suggest the shard rebalancing story is getting more production-grade attention.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a trail of glowing footprints leading between large warehouse shelves being rearranged by mechanical arms"
+    },
+    {
+      "repo": "docs",
+      "headline": "The docs backlog wants a word",
+      "deck": "Five open issues pile up, including an LLM-friendly dump and missing session behavior docs.",
+      "body": "No PRs merged in docs this week, but three commits landed and five issues remain open. The most intriguing ask is for a complete text export at /llms.txt so language models can ingest PgDog's documentation in one gulp. Other gaps include documenting schema_path behavior in session mode and idle_session_timeout — both tied to features already shipping in pgdog.",
+      "tag": "PENDING",
+      "illustrationPrompt": "a tall stack of unopened envelopes on a wooden desk with a single desk lamp illuminating them"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "Community wishlist: OAuth, TLS chains, and shard rebalancing",
+      "deck": "Open issues sketch out pgdog's next frontier — if someone builds it.",
+      "body": "The pgdog issue tracker shows appetite for PG 18+ OAuth authentication, TLS certificate chain support, and live shard rebalancing without downtime. A Bun/Drizzle dashboard bug involving extended protocol decode errors in transaction mode also awaits a fix. None shipped this week, but the backlog telegraphs where pgdog is headed.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "a bulletin board covered in pinned index cards with a crowd of hands reaching up to post more"
+    }
+  ],
+  "closingNote": "Printed on recycled EXPLAIN ANALYZE output. Back next Monday."
+}

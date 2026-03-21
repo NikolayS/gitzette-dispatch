@@ -1,0 +1,48 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "No releases, just a pooler learning to stop double-apologizing.",
+  "editionNote": "A quiet week: three merged fixes, two open PRs, and a documentation backlog that keeps growing.",
+  "articles": [
+    {
+      "repo": "pgdog",
+      "headline": "pgdog stops sending clients two error messages when one will do",
+      "deck": "A bug that fired duplicate errors on PostgreSQL connection drops has been squashed.",
+      "body": "<a href=\"https://github.com/pgdogdev/pgdog/pull/841\">#841 fix: sending two errors to client when Pg shuts the connection down</a> addresses a case where pgdog would relay two error packets to the client whenever a backend PostgreSQL instance dropped its connection. The fix, merged this week by @levkk, ensures only a single, accurate error reaches the client. One less thing for application-side retry logic to untangle.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a dog courier delivering one envelope instead of two to a startled recipient"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "Replication state sync gets its wires uncrossed",
+      "deck": "A fix to replica tracking lands alongside the error deduplication work.",
+      "body": "@levkk merged <a href=\"https://github.com/pgdogdev/pgdog/pull/833\">#833 fix: fix replication state sync</a>, correcting how pgdog tracks the replication state of backend servers. Getting this wrong can mean stale reads or misrouted queries in a read-replica topology. The fix was tight — three commits, no fanfare.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "two clocks on a wall slowly aligning their hands to the same time"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "Passthrough users may soon change their own passwords without locking themselves out",
+      "deck": "An open PR tackles a sharp edge in passthrough authentication.",
+      "body": "<a href=\"https://github.com/pgdogdev/pgdog/pull/842\">#842 feat: allow passthrough user to change password</a>, opened by @levkk, addresses a reported issue where changing a user's password with passthrough auth in plain mode would prevent new connections entirely. The fix lets pgdog accept the new credentials gracefully. Still open, not yet merged.",
+      "tag": "PENDING",
+      "illustrationPrompt": "a key being reshaped on an anvil while a locked gate waits patiently"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "Community contributor tunes pool wait-time metrics",
+      "deck": "An outside fix recalculates how long queries actually spend waiting for a connection.",
+      "body": "<a href=\"https://github.com/pgdogdev/pgdog/pull/836\">#836 fix(metrics): wait_time for pool calculation</a>, opened by contributor meskill, proposes a correction to how pgdog computes pool wait time. Accurate wait-time numbers matter for capacity planning — bad math here means bad dashboards. The PR is still under review.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "a stopwatch being carefully adjusted by small mechanical hands inside its casing"
+    },
+    {
+      "repo": "docs",
+      "headline": "Five new documentation issues pile up with no PRs in sight",
+      "deck": "The docs backlog grows: session behavior, timeouts, LLM-friendly output, and cross-links to upstream PostgreSQL.",
+      "body": "The docs repo saw two commits this week but no merged or open PRs. Meanwhile, five issues accumulated: documenting schema_path behavior in sessions, idle_session_timeout, generating an LLM-friendly text endpoint at /llms.txt, and adding links from the Query Protocol and Cross Shard pages to upstream PostgreSQL documentation. The to-do list is writing itself faster than the docs are.",
+      "tag": "PENDING",
+      "illustrationPrompt": "a tall stack of paper on a desk with a single pen resting untouched beside it"
+    }
+  ],
+  "closingNote": "Printed on recycled error packets. Back next Monday."
+}

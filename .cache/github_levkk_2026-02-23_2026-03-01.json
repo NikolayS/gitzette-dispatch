@@ -1,0 +1,348 @@
+[
+  {
+    "name": "docs",
+    "description": "PgDog documentation.",
+    "url": "https://github.com/pgdogdev/docs",
+    "stars": 4,
+    "releases": [],
+    "mergedPRs": [
+      {
+        "number": 56,
+        "title": "Document cutover",
+        "state": "merged",
+        "date": "2026-02-28T16:07:09Z",
+        "url": "https://github.com/pgdogdev/docs/pull/56",
+        "author": "levkk",
+        "body": null
+      },
+      {
+        "number": 55,
+        "title": "feat: document new reshard command and schema sync",
+        "state": "merged",
+        "date": "2026-02-25T07:41:18Z",
+        "url": "https://github.com/pgdogdev/docs/pull/55",
+        "author": "levkk",
+        "body": "Follow up on https://github.com/pgdogdev/pgdog/pull/784, one of many."
+      }
+    ],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 49,
+        "title": "Document schema_path behavior in session",
+        "state": "open",
+        "date": "2026-01-22T02:51:25Z",
+        "url": "https://github.com/pgdogdev/docs/issues/49",
+        "author": "jaggederest"
+      },
+      {
+        "number": 35,
+        "title": "Document idle_session_timeout",
+        "state": "open",
+        "date": "2025-10-14T15:20:51Z",
+        "url": "https://github.com/pgdogdev/docs/issues/35",
+        "author": "levkk"
+      },
+      {
+        "number": 29,
+        "title": "Generate LLM-friendly complete text at `/llms.txt`",
+        "state": "open",
+        "date": "2025-09-25T18:35:03Z",
+        "url": "https://github.com/pgdogdev/docs/issues/29",
+        "author": "jaggederest"
+      },
+      {
+        "number": 22,
+        "title": "Query Protocol page should link to PG docs",
+        "state": "open",
+        "date": "2025-09-19T00:02:44Z",
+        "url": "https://github.com/pgdogdev/docs/issues/22",
+        "author": "jaggederest"
+      },
+      {
+        "number": 21,
+        "title": "Cross Shard page: Docs on DataRow etc could link to PG documentation directly",
+        "state": "open",
+        "date": "2025-09-18T01:02:16Z",
+        "url": "https://github.com/pgdogdev/docs/issues/21",
+        "author": "jaggederest"
+      },
+      {
+        "number": 20,
+        "title": "Sharding Basics - Sharding - could use diagram",
+        "state": "open",
+        "date": "2025-09-18T00:49:56Z",
+        "url": "https://github.com/pgdogdev/docs/issues/20",
+        "author": "jaggederest"
+      },
+      {
+        "number": 15,
+        "title": "Document comment-based routing works with simple queries only",
+        "state": "open",
+        "date": "2025-08-31T20:22:43Z",
+        "url": "https://github.com/pgdogdev/docs/issues/15",
+        "author": "levkk"
+      },
+      {
+        "number": 14,
+        "title": "Document how BEGIN READ ONLY works",
+        "state": "open",
+        "date": "2025-08-31T18:36:41Z",
+        "url": "https://github.com/pgdogdev/docs/issues/14",
+        "author": "levkk"
+      },
+      {
+        "number": 13,
+        "title": "Document cross-shard transactions",
+        "state": "open",
+        "date": "2025-08-31T18:36:01Z",
+        "url": "https://github.com/pgdogdev/docs/issues/13",
+        "author": "levkk"
+      }
+    ],
+    "commitCount": 2,
+    "topContributors": [
+      "levkk"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "pgdogdev/docs"
+  },
+  {
+    "name": "helm",
+    "description": "Helm chart for deploying PgDog.",
+    "url": "https://github.com/pgdogdev/helm",
+    "stars": 11,
+    "releases": [
+      {
+        "tag": "v0.45",
+        "name": "v0.45",
+        "date": "2026-02-25T16:48:25Z",
+        "body": "## What's Changed\r\n* Use v1 ExternalSecret apiVersion by @mikkelam in https://github.com/pgdogdev/helm/pull/74\r\n\r\n## New Contributors\r\n* @mikkelam made their first contribution in https://github.com/pgdogdev/helm/pull/74\r\n\r\n**Full Changelog**: https://github.com/pgdogdev/helm/compare/v0.44...v0.45",
+        "url": "https://github.com/pgdogdev/helm/releases/tag/v0.45"
+      }
+    ],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 59,
+        "title": "Support `priorityClassName`",
+        "state": "open",
+        "date": "2026-01-18T20:10:26Z",
+        "url": "https://github.com/pgdogdev/helm/issues/59",
+        "author": "rbozan"
+      },
+      {
+        "number": 23,
+        "title": "TLS certificates",
+        "state": "open",
+        "date": "2025-10-22T12:16:04Z",
+        "url": "https://github.com/pgdogdev/helm/issues/23",
+        "author": "lc-guy"
+      },
+      {
+        "number": 14,
+        "title": "Ability to reference adminpw / databases as a secret",
+        "state": "open",
+        "date": "2025-10-09T12:06:23Z",
+        "url": "https://github.com/pgdogdev/helm/issues/14",
+        "author": "lc-guy"
+      }
+    ],
+    "commitCount": 1,
+    "topContributors": [
+      "levkk"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "pgdogdev/helm"
+  },
+  {
+    "name": "pgdog",
+    "description": "PostgreSQL connection pooler, load balancer and database sharder.",
+    "url": "https://github.com/pgdogdev/pgdog",
+    "stars": 4202,
+    "releases": [],
+    "mergedPRs": [
+      {
+        "number": 788,
+        "title": "replica lag banning, multiple bug fixes from HN",
+        "state": "merged",
+        "date": "2026-02-25T02:04:14Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/788",
+        "author": "levkk",
+        "body": "- Fix #787 \r\n- Partial fix for #785 \r\n- Fix #789\r\n- Fix segfault in pg_query `deparse_raw` caused by empty strings\r\n- clippy "
+      },
+      {
+        "number": 784,
+        "title": "Online resharding",
+        "state": "merged",
+        "date": "2026-02-23T21:42:04Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/784",
+        "author": "levkk",
+        "body": "Orchestrate all the pieces for online resharding with a few admin commands, including moving application traffic from old to new sharded cluster. Includes support for rollbacks with reverse logical replication.\r\n\r\n### Individual changes\r\n\r\n- Added `PostCutover` step (internal) to schema sync to make the old shards suitable for reverse logical replication (e.g., remove `WITH GENERATED ALWAYS identity` constraint)\r\n- Added a bunch of admin database commands:\r\n  - `SCHEMA_SYNC [pre|post] <source> <destination> <publication>`\r\n  - `COPY_DATA  <source> <destination> <publication> [<replication slot>]`\r\n  - `REPLICATE <source> <destination> <publication> [<replication slot>]`: only setup replication, nothing else. Data isn't synchronized, this is mostly for testing but can be used to create logical replicas that don't need synchronization or which don't currently accept writes\r\n  - `SHOW REPLICATION_SLOTS`: show replication slots managed by us\r\n  - `SHOW SCHEMA_SYNC`: track long running `CREATE INDEX`-style queries\r\n  - `SHOW TABLE_COPIES`: track long-running initial table data sync, with progress details, e.g., rows, bytes written, etc.\r\n  - `SHOW TASKS`: admin mostly, shows which one of any of the above are running in the background\r\n  - `STOP TASK <id>`: cancel any of the background tasks\r\n  - `CUTOVER`: perform online traffic cutover between old and new shards\r\n  -  `RESHARD`: do the resharding in one swoop. Equivalent of running `SCHEMA_SYNC PRE`, `COPY_DATA`, `SCHEMA_SYNC POST`, and `CUTOVER` manually.\r\n- Added reverse logical replication for the cutover step. This can be used for rollbacks. A rollback can be done by running `CUTOVER` again. There is no data loss, since reverse replication is setup while traffic is paused."
+      }
+    ],
+    "openPRs": [
+      {
+        "number": 794,
+        "title": "feat: add wildcard database template support",
+        "state": "open",
+        "date": "2026-02-27T13:26:48Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/794",
+        "author": "hikionori",
+        "body": "## Summary\r\n\r\nSupport wildcard database and user templates (`name = \"*\"`) to dynamically route\r\nunknown `(user, database)` pairs to a real PostgreSQL server without explicit\r\nper-database configuration and without a proxy restart.\r\n\r\n---\r\n\r\n## Problem\r\n\r\nPgDog has no way to connect users to databases that aren't explicitly listed in\r\n`pgdog.toml`. Any user/database pair not in the config gets an immediate \"no\r\nsuch database\" error, forcing operators to restart the proxy every time a new\r\ndatabase is provisioned.\r\n\r\n---\r\n\r\n## Solution\r\n\r\nAdd wildcard support for both `databases` and `users` entries. A database or\r\nuser whose `name` field is `\"*\"` acts as a catch-all template. When a client\r\nconnects to an unknown `(user, database)` pair, `add_wildcard_pool` looks for\r\nthe best-matching wildcard template, creates a pool on demand, and registers it\r\nin the global `DATABASES` store — all without a restart or config reload.\r\n\r\n---\r\n\r\n## Configuration\r\n\r\n### Minimal wildcard setup\r\n\r\n```toml\r\n# pgdog.toml — match any database for any user\r\n[[databases]]\r\nname = \"*\"\r\nhost = \"127.0.0.1\"\r\nport = 5432\r\npassthrough_auth = \"enabled_plain\"   # client credentials forwarded to PG\r\n```\r\n\r\n```toml\r\n# users.toml\r\n[[users]]\r\nname = \"*\"\r\ndatabase = \"*\"\r\npassword = \"secret\"\r\n```\r\n\r\n### With limits and automatic eviction\r\n\r\n```toml\r\n[general]\r\n# Cap dynamic pool creation (0 = unlimited, default)\r\nmax_wildcard_pools = 100\r\n# Remove idle dynamic pools after 5 minutes (0 = disabled, default)\r\nwildcard_pool_idle_timeout = 300\r\n```\r\n\r\n---\r\n\r\n## Implementation\r\n\r\n### Wildcard matching\r\n\r\nFour match priorities (highest wins):\r\n\r\n| Priority | Pattern | Notes |\r\n|---|---|---|\r\n| 1 | Exact user, wildcard database (`user/*`) | Known user, any database |\r\n| 2 | Wildcard user, exact database (`*/db`) | Any user, specific database |\r\n| 3 | Wildcard user, wildcard database (`*/*`) | Full catch-all |\r\n| 4 | No match | Connection refused |\r\n\r\n### `exists_or_wildcard()` API\r\n\r\nNew method on `Databases` returns `true` if a pool already exists **or** if a\r\nwildcard template would match the `(user, database)` pair. Used during the\r\nclient-login handshake to decide whether to proceed without triggering pool\r\ncreation yet.\r\n\r\n### Dynamic pool creation (`add_wildcard_pool`)\r\n\r\n* Holds `LOCK` for the whole operation to prevent duplicate pools from racing\r\n  threads.\r\n* Re-checks whether the pool already exists (double-checked locking).\r\n* Stores a full `ConfigAndUsers` snapshot at construction time so\r\n  wildcard-pool creation is immune to concurrent SIGHUP reloads.\r\n* Injects the real database name into the wildcard template before calling\r\n  `new_pool`.\r\n* **Passthrough auth**: client credentials are propagated to the backend\r\n  connection config so the pool can authenticate to PostgreSQL and the\r\n  proxy-level credential check succeeds — fixing a bug where passthrough auth\r\n  would fail silently when a wildcard pool was created dynamically.\r\n\r\n### Pool limits (`max_wildcard_pools`)\r\n\r\n`wildcard_pool_count` is tracked inside `Databases` and reset to zero on every\r\nconfig reload, so the limit applies per-epoch. Once the limit is reached,\r\nfurther connections return `Ok(None)` (no error, treated as \"no such database\")\r\nuntil a slot is freed by eviction or SIGHUP.\r\n\r\n### Pool eviction (`wildcard_pool_idle_timeout`)\r\n\r\nDynamically-created pools are tracked in `Databases::dynamic_pools: HashSet<User>`.\r\nA background task started once in `init()` (via `WILDCARD_EVICTION: Lazy<()>`)\r\nperiodically calls `evict_idle_wildcard_pools()`:\r\n\r\n* Iterates `dynamic_pools`.\r\n* Calls `Cluster::total_connections()` — sum of `idle + checked_out` across\r\n  all shards.\r\n* Removes pools with zero connections: `cluster.shutdown()`, removes from\r\n  `dynamic_pools`, decrements `wildcard_pool_count` so new pools can fill the\r\n  freed slot immediately, without a config reload.\r\n* All mutations use the standard clone-modify-store pattern on `DATABASES`.\r\n\r\nWhen `wildcard_pool_idle_timeout = 0` (default), automatic eviction is\r\ndisabled and pools only leave `DATABASES` on SIGHUP or restart.\r\n\r\n### SIGHUP / config-reload behaviour\r\n\r\n`reload_from_existing` rebuilds `Databases` from the updated config file.\r\nWildcard pools are absent from the new config, so `replace_databases` drops\r\nthem, their connections drain naturally, and `wildcard_pool_count` resets to\r\nzero. The next client connection recreates the pool from the (potentially\r\nupdated) wildcard template.\r\n\r\n---\r\n\r\n## Tests\r\n\r\n### Unit tests (14, all passing — `cargo nextest run --test-threads=1 wildcard`)\r\n\r\n| Test | What it covers |\r\n|---|---|\r\n| `test_wildcard_database_simple_query` | End-to-end simple query through a wildcard pool |\r\n| `test_wildcard_exists_or_wildcard` | `exists_or_wildcard` returns true for wildcard-matched pairs |\r\n| `test_wildcard_add_pool_dynamic` | `add_wildcard_pool` creates and registers a pool on demand |\r\n| `test_wildcard_nonexistent_pg_database` | Pool creation succeeds for a non-existent Postgres DB |\r\n| `test_max_wildcard_pools_limit_enforced` | Third pool rejected (`Ok(None)`) when limit=2 |\r\n| `test_max_wildcard_pools_zero_means_unlimited` | 5 pools created without error when limit=0 |\r\n| `test_max_wildcard_pools_counter_resets_on_reload` | Counter resets after config reload |\r\n| `test_evict_idle_wildcard_pools_removes_idle_pool` | Idle pool (0 conns) removed by eviction |\r\n| `test_evict_idle_wildcard_pools_decrements_count` | Counter drops to 0; new pool fills the freed slot |\r\n| `test_evict_idle_wildcard_pools_noop_on_empty` | Static pools untouched when `dynamic_pools` is empty |\r\n| `test_wildcard_db_templates_populated` | `wildcard_db_templates` built correctly from `*` databases |\r\n| `test_wildcard_users_populated` | `wildcard_users` built correctly from `*` users |\r\n| `test_find_wildcard_match_priority` | Correct priority ordering among match types |\r\n| `test_no_wildcard_when_absent` | `has_wildcard()` is false when no `*` entries exist |\r\n\r\n### Integration tests (`integration/wildcard/`)\r\n\r\nCover end-to-end scenarios against a live Postgres instance:\r\n\r\n* Trust auth + wildcard database routing\r\n* Passthrough auth with wildcard pools\r\n* Concurrent wildcard pool creation (race-condition safety)\r\n* Error handling for non-existent databases\r\n\r\n---\r\n\r\n## Files changed\r\n\r\n| File | Change |\r\n|---|---|\r\n| `pgdog-config/src/general.rs` | `max_wildcard_pools`, `wildcard_pool_idle_timeout` fields |\r\n| `pgdog/src/backend/databases.rs` | `Databases` struct, `add_wildcard_pool`, `evict_idle_wildcard_pools`, `WILDCARD_EVICTION` static, `from_config`, `reload_from_existing` docs, `exists_or_wildcard` |\r\n| `pgdog/src/backend/pool/cluster.rs` | `Cluster::total_connections()` |\r\n| `pgdog/src/config/mod.rs` | `load_test_wildcard`, `load_test_wildcard_with_limit` test helpers |\r\n| `pgdog/src/frontend/client/query_engine/test/wildcard.rs` | 14 unit tests |\r\n| `integration/wildcard/` | Integration test suite |"
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 838,
+        "title": "Bun/Drizzle dashboard hits extended protocol decode/result-format errors in transaction mode",
+        "state": "open",
+        "date": "2026-03-19T11:48:47Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/838",
+        "author": "joelzanden"
+      },
+      {
+        "number": 834,
+        "title": "TLS Certificate Chain support",
+        "state": "open",
+        "date": "2026-03-18T16:27:45Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/834",
+        "author": "notgne2"
+      },
+      {
+        "number": 831,
+        "title": "[feat] Support for PG 18+ OAuth authentication",
+        "state": "open",
+        "date": "2026-03-14T12:54:29Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/831",
+        "author": "ancoron"
+      },
+      {
+        "number": 830,
+        "title": "With PassthroughAuth set to `enabled_plain`, changing a user's password prevents new connections from being established",
+        "state": "open",
+        "date": "2026-03-13T14:12:55Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/830",
+        "author": "rissson"
+      },
+      {
+        "number": 828,
+        "title": "Adding new shards to an existing cluster (rebalancing)",
+        "state": "open",
+        "date": "2026-03-13T09:03:28Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/828",
+        "author": "vitabaks"
+      },
+      {
+        "number": 824,
+        "title": "Support Unix domain socket",
+        "state": "open",
+        "date": "2026-03-12T17:00:12Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/824",
+        "author": "hongquan"
+      },
+      {
+        "number": 823,
+        "title": "[Plugins] Add plugin for primary-only tables",
+        "state": "open",
+        "date": "2026-03-12T14:50:07Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/823",
+        "author": "cdreier"
+      },
+      {
+        "number": 819,
+        "title": "[Query engine] Handle cross-shard check in schema sharding with no sharded tables",
+        "state": "open",
+        "date": "2026-03-11T18:40:36Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/819",
+        "author": "levkk"
+      },
+      {
+        "number": 807,
+        "title": "[Resharding] Replicate DDL",
+        "state": "open",
+        "date": "2026-03-03T23:58:17Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/807",
+        "author": "levkk"
+      },
+      {
+        "number": 792,
+        "title": "Error Connecting to server: Invalid argument (os error 22)",
+        "state": "open",
+        "date": "2026-02-26T14:13:04Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/792",
+        "author": "Mafioznik662"
+      },
+      {
+        "number": 785,
+        "title": "Connection-refused errors don't trigger replica banning",
+        "state": "open",
+        "date": "2026-02-21T01:32:00Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/785",
+        "author": "kevinelliott"
+      },
+      {
+        "number": 758,
+        "title": "[Resharding] Resume COPY",
+        "state": "open",
+        "date": "2026-02-09T17:19:12Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/758",
+        "author": "levkk"
+      },
+      {
+        "number": 750,
+        "title": "[Query engine] Move foreign key referenced rows when sharding key is updated",
+        "state": "open",
+        "date": "2026-02-04T22:10:34Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/750",
+        "author": "levkk"
+      }
+    ],
+    "commitCount": 2,
+    "topContributors": [
+      "levkk"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "pgdogdev/pgdog"
+  },
+  {
+    "name": "postgresisenough",
+    "description": "Postgres Is Enough",
+    "url": "https://github.com/agoodway/postgresisenough",
+    "stars": 11,
+    "releases": [],
+    "mergedPRs": [
+      {
+        "number": 2,
+        "title": "feat: add PgDog",
+        "state": "merged",
+        "date": "2026-02-23T19:57:41Z",
+        "url": "https://github.com/agoodway/postgresisenough/pull/2",
+        "author": "levkk",
+        "body": "https://news.ycombinator.com/item?id=47123631"
+      }
+    ],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 4,
+        "title": "Auth tag not working correctly",
+        "state": "open",
+        "date": "2026-03-02T16:37:31Z",
+        "url": "https://github.com/agoodway/postgresisenough/issues/4",
+        "author": "mullens"
+      }
+    ],
+    "commitCount": 1,
+    "topContributors": [
+      "levkk"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "agoodway/postgresisenough"
+  }
+]

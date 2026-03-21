@@ -1,0 +1,56 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Zero-downtime resharding, a release that patches five different ways to break your connections, and docs that finally caught up.",
+  "editionNote": "One release, sixteen merged PRs across two repos, and a pooler that learned to reshard without blinking.",
+  "articles": [
+    {
+      "repo": "pgdog",
+      "headline": "pgdog v0.1.31 ships zero-downtime resharding and a sixteen-item changelog",
+      "deck": "The connection pooler's biggest release in weeks lands online resharding, RDS IAM auth, replica lag banning, and a wall of bug fixes.",
+      "body": "pgdog <a href=\"https://github.com/pgdogdev/pgdog/pull/814\">v0.1.31</a> dropped March 5 with a headline feature: online resharding with zero downtime, orchestrated via admin commands. Beyond that, @levkk and contributors added RDS IAM authentication support for server connections (by @Tolsto), a configurable replica ban when replication lag gets too high, and config linting with jsonschema including language server support (by @meskill). The fix list is long and painful: a binary COPY crash from incorrect partial-packet buffering, a segfault in pg_query caused by empty C strings, transactions incorrectly swallowed when advisory locks were used, and partial requests leaking to backends after abrupt client disconnects. Three new contributors made their debuts: @quentindemetz fixed Aurora TLS verify_ca connections, @mnbbrown unblocked LISTEN/NOTIFY when pub_sub_channel_size was zero, and @Tolsto wired up IAM auth.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a large dog calmly herding glowing database cylinders through an open gate without breaking stride"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "pgdog gets weighted load balancing the week after release",
+      "deck": "Not content with v0.1.31, @levkk merged weighted replica routing four days later.",
+      "body": "<a href=\"https://github.com/pgdogdev/pgdog/pull/816\">#816 feat: weighted load balancing</a> landed this week, letting operators assign weights to replicas so traffic distribution stops being a coin flip. The feature sits on top of pgdog's existing load balancer and should pair neatly with the new replica-lag banning from v0.1.31. Expect it in the next tagged release.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a balance scale with unevenly sized glowing orbs on each side, tilting deliberately"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "Partial requests, advisory locks, and the ghost in ClientRead",
+      "deck": "Three gnarly connection-state bugs got squashed in a single week.",
+      "body": "<a href=\"https://github.com/pgdogdev/pgdog/pull/805\">#805</a> fixed a nasty issue where abrupt client disconnects left partial requests streaming to backends, stranding server connections in ClientRead. <a href=\"https://github.com/pgdogdev/pgdog/pull/801\">#801</a> corrected transaction state handling when advisory locks were in play — transactions were being buffered in session mode and swallowed outright in transaction mode. And <a href=\"https://github.com/pgdogdev/pgdog/pull/811\">#811</a> expanded the parameter ignore list so that SET commands like is_superuser no longer blow up the session. Three fixes, three fewer ways for connections to silently rot.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "tangled cables being carefully untangled by mechanical hands above a server rack"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "Resharding cutover gets its logging and replication-delay guardrails tightened",
+      "deck": "Enterprise resharding hooks and cutover fixes followed the release by hours.",
+      "body": "<a href=\"https://github.com/pgdogdev/pgdog/pull/806\">#806</a> fixed logging during cutover and enforced that replication delay must be zero before the switch completes — a guardrail that was missing in the initial implementation. Separately, <a href=\"https://github.com/pgdogdev/pgdog/pull/813\">#813</a> added enterprise edition hooks for resharding, signaling that pgdog's sharding story is splitting into open-source and commercial tiers.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a surgeon carefully moving a glowing shard from one shelf to another inside a glass cabinet"
+    },
+    {
+      "repo": "docs",
+      "headline": "pgdog docs finally describe resharding and the enterprise tier",
+      "deck": "Two documentation PRs close the gap between what pgdog can do and what its docs admit.",
+      "body": "@levkk merged <a href=\"https://github.com/pgdogdev/docs/pull/57\">#57 finish documenting new resharding</a> and <a href=\"https://github.com/pgdogdev/docs/pull/58\">#58 Document some of the enterprise features</a> this week. The resharding docs cover the zero-downtime workflow shipped in v0.1.31; the enterprise docs lay out the commercial feature set for the first time. Five open issues remain on the docs backlog, including generating an LLM-friendly text dump at /llms.txt and documenting schema_path behavior in session mode.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "an open book with architectural blueprints of interconnected database nodes spilling off the pages"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "Community PR would teach psql's backslash-dt about shard metadata",
+      "deck": "An outside contributor wants pgdog to show which shard owns which table, right from the psql prompt.",
+      "body": "<a href=\"https://github.com/pgdogdev/pgdog/pull/812\">#812 feat: Extend \\dt psql command output with shard metadata</a> by @Adi-Goll is open and under review. If merged, running \\dt through pgdog would annotate table listings with shard information — a quality-of-life win for anyone debugging cross-shard queries. The PR references <a href=\"https://github.com/pgdogdev/pgdog/issues/709\">issue #709</a>.",
+      "tag": "PENDING",
+      "illustrationPrompt": "a magnifying glass hovering over a grid of tiny labeled drawers inside a wooden filing cabinet"
+    }
+  ],
+  "closingNote": "Printed on recycled connection pools. Back next Monday, assuming no segfaults."
+}

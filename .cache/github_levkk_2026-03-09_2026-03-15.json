@@ -1,0 +1,328 @@
+[
+  {
+    "name": "helm",
+    "description": "Helm chart for deploying PgDog.",
+    "url": "https://github.com/pgdogdev/helm",
+    "stars": 11,
+    "releases": [
+      {
+        "tag": "v0.46",
+        "name": "v0.46",
+        "date": "2026-03-13T18:37:17Z",
+        "body": "## What's Changed\r\n* Fix incorrect scientific notation rendering for large ints by @NJAldwin\r\n* Add opt-in config checksum annotation for auto pod restarts by @NJAldwin\r\n* Fix TCP keepalive configuration by @NJAldwin **breaking change**\r\n* Add plugin support\r\n\r\n## New Contributors\r\n* @NJAldwin made their first contribution in https://github.com/pgdogdev/helm/pull/75\r\n\r\n**Full Changelog**: https://github.com/pgdogdev/helm/compare/v0.45...v0.46",
+        "url": "https://github.com/pgdogdev/helm/releases/tag/v0.46"
+      }
+    ],
+    "mergedPRs": [
+      {
+        "number": 78,
+        "title": "Add plugin support",
+        "state": "merged",
+        "date": "2026-03-13T18:30:07Z",
+        "url": "https://github.com/pgdogdev/helm/pull/78",
+        "author": "levkk",
+        "body": null
+      }
+    ],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 59,
+        "title": "Support `priorityClassName`",
+        "state": "open",
+        "date": "2026-01-18T20:10:26Z",
+        "url": "https://github.com/pgdogdev/helm/issues/59",
+        "author": "rbozan"
+      },
+      {
+        "number": 23,
+        "title": "TLS certificates",
+        "state": "open",
+        "date": "2025-10-22T12:16:04Z",
+        "url": "https://github.com/pgdogdev/helm/issues/23",
+        "author": "lc-guy"
+      },
+      {
+        "number": 14,
+        "title": "Ability to reference adminpw / databases as a secret",
+        "state": "open",
+        "date": "2025-10-09T12:06:23Z",
+        "url": "https://github.com/pgdogdev/helm/issues/14",
+        "author": "lc-guy"
+      }
+    ],
+    "commitCount": 1,
+    "topContributors": [
+      "levkk"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "pgdogdev/helm"
+  },
+  {
+    "name": "pgdog",
+    "description": "PostgreSQL connection pooler, load balancer and database sharder.",
+    "url": "https://github.com/pgdogdev/pgdog",
+    "stars": 4202,
+    "releases": [
+      {
+        "tag": "v0.1.32",
+        "name": "v0.1.32",
+        "date": "2026-03-12T21:21:19Z",
+        "body": "## What's Changed\r\n\r\n* feat: weighted load balancing\r\n* fix: schema sharding in session mode with `cross_shard_disabled`\r\n* feat: add configurable log format and level by @levish0\r\n\r\n## New Contributors\r\n* @levish0 made their first contribution in https://github.com/pgdogdev/pgdog/pull/822\r\n\r\n**Full Changelog**: https://github.com/pgdogdev/pgdog/compare/v0.1.31...v0.1.32",
+        "url": "https://github.com/pgdogdev/pgdog/releases/tag/v0.1.32"
+      }
+    ],
+    "mergedPRs": [
+      {
+        "number": 826,
+        "title": "feat: add primary only plugin",
+        "state": "merged",
+        "date": "2026-03-13T18:11:16Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/826",
+        "author": "levkk",
+        "body": "\r\n```\r\npgdog=# EXPLAIN SELECT * FROM sessions;\r\n                               QUERY PLAN                               \r\n------------------------------------------------------------------------\r\n Seq Scan on sessions  (cost=0.00..32.60 rows=2260 width=8)\r\n \r\n PgDog Routing:\r\n   Summary: shard=0 role=primary\r\n   Shard 0: SELECT omnishard round robin\r\n   Note: plugin pgdog_primary_only_tables adjusted routing role=primary\r\n(6 rows)\r\n```\r\n\r\n#823 "
+      },
+      {
+        "number": 825,
+        "title": "v0.1.32",
+        "state": "merged",
+        "date": "2026-03-12T21:20:20Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/825",
+        "author": "levkk",
+        "body": null
+      },
+      {
+        "number": 821,
+        "title": "fix: fix ee error tracking for replication",
+        "state": "merged",
+        "date": "2026-03-11T20:52:42Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/821",
+        "author": "levkk",
+        "body": "- fix: fix copy data error tracking (happens at `CopyDone`)\r\n- chore: add replication slot tracking"
+      },
+      {
+        "number": 820,
+        "title": "fix: schema sharding in session mode with cross_shard_disabled",
+        "state": "merged",
+        "date": "2026-03-11T19:18:13Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/820",
+        "author": "levkk",
+        "body": "- Transactions were not correctly identified as direct-to-shard in schema sharding and session mode\r\n- Session mode clients could get stuck disconnecting"
+      },
+      {
+        "number": 818,
+        "title": "chore: add more tracking to resharding",
+        "state": "merged",
+        "date": "2026-03-10T20:09:30Z",
+        "url": "https://github.com/pgdogdev/pgdog/pull/818",
+        "author": "levkk",
+        "body": "- chore: added more hooks to track resharding progress in EE\r\n- feat: show _all_ schema sync statements in `SHOW SCHEMA_SYNC` and update their progress as they are actually executed"
+      }
+    ],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 838,
+        "title": "Bun/Drizzle dashboard hits extended protocol decode/result-format errors in transaction mode",
+        "state": "open",
+        "date": "2026-03-19T11:48:47Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/838",
+        "author": "joelzanden"
+      },
+      {
+        "number": 834,
+        "title": "TLS Certificate Chain support",
+        "state": "open",
+        "date": "2026-03-18T16:27:45Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/834",
+        "author": "notgne2"
+      },
+      {
+        "number": 831,
+        "title": "[feat] Support for PG 18+ OAuth authentication",
+        "state": "open",
+        "date": "2026-03-14T12:54:29Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/831",
+        "author": "ancoron"
+      },
+      {
+        "number": 830,
+        "title": "With PassthroughAuth set to `enabled_plain`, changing a user's password prevents new connections from being established",
+        "state": "open",
+        "date": "2026-03-13T14:12:55Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/830",
+        "author": "rissson"
+      },
+      {
+        "number": 828,
+        "title": "Adding new shards to an existing cluster (rebalancing)",
+        "state": "open",
+        "date": "2026-03-13T09:03:28Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/828",
+        "author": "vitabaks"
+      },
+      {
+        "number": 824,
+        "title": "Support Unix domain socket",
+        "state": "open",
+        "date": "2026-03-12T17:00:12Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/824",
+        "author": "hongquan"
+      },
+      {
+        "number": 823,
+        "title": "[Plugins] Add plugin for primary-only tables",
+        "state": "open",
+        "date": "2026-03-12T14:50:07Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/823",
+        "author": "cdreier"
+      },
+      {
+        "number": 819,
+        "title": "[Query engine] Handle cross-shard check in schema sharding with no sharded tables",
+        "state": "open",
+        "date": "2026-03-11T18:40:36Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/819",
+        "author": "levkk"
+      },
+      {
+        "number": 807,
+        "title": "[Resharding] Replicate DDL",
+        "state": "open",
+        "date": "2026-03-03T23:58:17Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/807",
+        "author": "levkk"
+      },
+      {
+        "number": 792,
+        "title": "Error Connecting to server: Invalid argument (os error 22)",
+        "state": "open",
+        "date": "2026-02-26T14:13:04Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/792",
+        "author": "Mafioznik662"
+      },
+      {
+        "number": 785,
+        "title": "Connection-refused errors don't trigger replica banning",
+        "state": "open",
+        "date": "2026-02-21T01:32:00Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/785",
+        "author": "kevinelliott"
+      },
+      {
+        "number": 758,
+        "title": "[Resharding] Resume COPY",
+        "state": "open",
+        "date": "2026-02-09T17:19:12Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/758",
+        "author": "levkk"
+      },
+      {
+        "number": 750,
+        "title": "[Query engine] Move foreign key referenced rows when sharding key is updated",
+        "state": "open",
+        "date": "2026-02-04T22:10:34Z",
+        "url": "https://github.com/pgdogdev/pgdog/issues/750",
+        "author": "levkk"
+      }
+    ],
+    "commitCount": 5,
+    "topContributors": [
+      "levkk"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "pgdogdev/pgdog"
+  },
+  {
+    "name": "docs",
+    "description": "PgDog documentation.",
+    "url": "https://github.com/pgdogdev/docs",
+    "stars": 4,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 49,
+        "title": "Document schema_path behavior in session",
+        "state": "open",
+        "date": "2026-01-22T02:51:25Z",
+        "url": "https://github.com/pgdogdev/docs/issues/49",
+        "author": "jaggederest"
+      },
+      {
+        "number": 35,
+        "title": "Document idle_session_timeout",
+        "state": "open",
+        "date": "2025-10-14T15:20:51Z",
+        "url": "https://github.com/pgdogdev/docs/issues/35",
+        "author": "levkk"
+      },
+      {
+        "number": 29,
+        "title": "Generate LLM-friendly complete text at `/llms.txt`",
+        "state": "open",
+        "date": "2025-09-25T18:35:03Z",
+        "url": "https://github.com/pgdogdev/docs/issues/29",
+        "author": "jaggederest"
+      },
+      {
+        "number": 22,
+        "title": "Query Protocol page should link to PG docs",
+        "state": "open",
+        "date": "2025-09-19T00:02:44Z",
+        "url": "https://github.com/pgdogdev/docs/issues/22",
+        "author": "jaggederest"
+      },
+      {
+        "number": 21,
+        "title": "Cross Shard page: Docs on DataRow etc could link to PG documentation directly",
+        "state": "open",
+        "date": "2025-09-18T01:02:16Z",
+        "url": "https://github.com/pgdogdev/docs/issues/21",
+        "author": "jaggederest"
+      },
+      {
+        "number": 20,
+        "title": "Sharding Basics - Sharding - could use diagram",
+        "state": "open",
+        "date": "2025-09-18T00:49:56Z",
+        "url": "https://github.com/pgdogdev/docs/issues/20",
+        "author": "jaggederest"
+      },
+      {
+        "number": 15,
+        "title": "Document comment-based routing works with simple queries only",
+        "state": "open",
+        "date": "2025-08-31T20:22:43Z",
+        "url": "https://github.com/pgdogdev/docs/issues/15",
+        "author": "levkk"
+      },
+      {
+        "number": 14,
+        "title": "Document how BEGIN READ ONLY works",
+        "state": "open",
+        "date": "2025-08-31T18:36:41Z",
+        "url": "https://github.com/pgdogdev/docs/issues/14",
+        "author": "levkk"
+      },
+      {
+        "number": 13,
+        "title": "Document cross-shard transactions",
+        "state": "open",
+        "date": "2025-08-31T18:36:01Z",
+        "url": "https://github.com/pgdogdev/docs/issues/13",
+        "author": "levkk"
+      }
+    ],
+    "commitCount": 3,
+    "topContributors": [
+      "levkk"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "pgdogdev/docs"
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Online resharding lands, replicas get put on probation, and Postgres remains enough.",
+  "editionNote": "One Helm release, two heavyweight PRs, and a philosophical declaration about database sufficiency.",
+  "articles": [
+    {
+      "repo": "helm",
+      "headline": "helm v0.45 ships with a fix nobody asked @levkk for",
+      "deck": "A community contributor upgrades the ExternalSecret API version, and the Helm chart gets a fresh tag.",
+      "body": "helm v0.45 landed on February 25 with a single but meaningful change: switching to the v1 ExternalSecret apiVersion. The patch came from first-time contributor @mikkelam. Not every release needs fireworks. Sometimes the plumbing just needs a new fitting.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a small brass valve being carefully turned on a massive network of gleaming pipes"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "pgdog learns to reshard a live database without pulling the plug",
+      "deck": "Online resharding arrives in pgdog, letting operators rebalance data across shards without downtime.",
+      "body": "The headliner this week is <a href=\"https://github.com/pgdogdev/pgdog/pull/784\">#784 Online resharding</a>, merged by @levkk. This gives pgdog the ability to move data between shards while the system stays up and serving queries. Accompanying documentation also shipped: <a href=\"https://github.com/pgdogdev/docs/pull/55\">#55 feat: document new reshard command and schema sync</a> and <a href=\"https://github.com/pgdogdev/docs/pull/56\">#56 Document cutover</a> landed in docs the same week. The feature arrived with its own manual. Rare courtesy.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a conveyor belt smoothly transferring glowing data cubes between two towering warehouse shelves"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "Slow replicas now get benched automatically",
+      "deck": "Replica lag banning plus a batch of bug fixes traced back to Hacker News feedback.",
+      "body": "@levkk merged <a href=\"https://github.com/pgdogdev/pgdog/pull/788\">#788 replica lag banning, multiple bug fixes from HN</a>, which introduces automatic banning of replicas that fall behind on replication. The PR also bundles several bug fixes surfaced by the Hacker News crowd. Nothing like a front-page post to shake loose the edge cases.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a referee blowing a whistle at a row of database cylinders, one slumping on a bench"
+    },
+    {
+      "repo": "docs",
+      "headline": "docs catches up to the resharding train",
+      "deck": "Two PRs document cutover procedures and the new reshard command before users have to guess.",
+      "body": "@levkk merged <a href=\"https://github.com/pgdogdev/docs/pull/55\">#55 feat: document new reshard command and schema sync</a> and <a href=\"https://github.com/pgdogdev/docs/pull/56\">#56 Document cutover</a> in the docs repo. The reshard command, schema sync behavior, and cutover procedures all got written up. Five open issues remain on the backlog, including one to generate an LLM-friendly text dump at /llms.txt. The machines want docs too, apparently.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a technical writer furiously stamping pages as they fly off a printing press onto a moving train"
+    },
+    {
+      "repo": "pgdog",
+      "headline": "Wildcard database templates waiting at the door",
+      "deck": "A community PR proposes letting pgdog match databases by pattern instead of explicit config.",
+      "body": "Contributor @hikionori has <a href=\"https://github.com/pgdogdev/pgdog/pull/794\">#794 feat: add wildcard database template support</a> open against pgdog. If merged, operators could define database connection templates using wildcards rather than listing every database individually. The PR is still under review.",
+      "tag": "PENDING",
+      "illustrationPrompt": "a hotel concierge holding a skeleton key in front of an endless hallway of numbered doors"
+    },
+    {
+      "repo": "postgresisenough",
+      "headline": "pgdog joins the \"Postgres is enough\" registry",
+      "deck": "@levkk adds pgdog to the curated list of tools that bet everything on Postgres.",
+      "body": "@levkk merged <a href=\"https://github.com/agoodway/postgresisenough/pull/2\">#2 feat: add PgDog</a> into postgresisenough, the community-maintained catalog of projects built on the conviction that Postgres handles more than you think. One open issue notes the auth tag is misbehaving. Philosophical certainty, minor technical uncertainty.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "a single elephant standing confidently atop a mountain of discarded technology logos"
+    }
+  ],
+  "closingNote": "Printed on recycled query plans. Back next Monday, assuming the replicas keep up."
+}
