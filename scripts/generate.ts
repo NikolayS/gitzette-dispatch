@@ -536,7 +536,7 @@ Return a JSON object with this exact structure:
       "deck": "one-sentence italic subheading expanding on the headline",
       "body": "2-4 sentence article body. Reference specific features/PRs from the data. Mention pending work if notable.",
       "tag": "RELEASE | FEATURE | SECURITY | PENDING | COMMUNITY",
-      "illustrationPrompt": "short subject description for a purely visual editorial illustration (10-15 words). No text, signs, labels, or readable characters in the scene. Only for stories without obvious screenshots. E.g. 'robot peering into a glowing cylinder' or 'lock and key with database cylinders stacked behind'. Skip for repos that have demo screenshots."
+      "illustrationPrompt": "short subject description for a purely visual editorial illustration (10-15 words). No text, signs, labels, or readable characters in the scene. ALWAYS provide this — it is required for every article regardless of whether the repo has screenshots. E.g. 'robot peering into a glowing cylinder' or 'lock and key with database cylinders stacked behind'."
     }
   ],
   "closingNote": "one-line sign-off at the bottom of the paper (dry, funny)"
@@ -807,11 +807,12 @@ async function buildHtml(
     for (const a of copy.articles) {
       const repo = repoMap[a.repo];
       if (!repo) continue;
-      if (!repo.demoImages[0] && a.illustrationPrompt) {
+      if (!repo.demoImages[0]) {
+        const subject = a.illustrationPrompt ?? `abstract editorial scene related to ${a.repo} software project`;
         process.stdout.write(`  illustration for ${a.repo}... `);
-        const dataUri = await generateIllustration(a.illustrationPrompt);
-        illustrationCache[a.repo] = dataUri;
-        console.log(dataUri ? "✓" : "skipped");
+        const url = await generateIllustration(subject);
+        illustrationCache[a.repo] = url;
+        console.log(url ? "✓" : "skipped");
       }
     }
   }
