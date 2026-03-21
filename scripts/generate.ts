@@ -124,14 +124,8 @@ import sharp from "sharp";
 
 /** Fetch an image URL and convert to newspaper style:
  *  grayscale + contrast boost + slight grain. Returns data URI or null. */
-async function newspaperify(url: string): Promise<string | null> {
+async function newspaperifyBuffer(buf: Buffer): Promise<string | null> {
   try {
-    const res = await fetch(url, {
-      headers: { Authorization: `token ${GH_TOKEN}` },
-    });
-    if (!res.ok) return null;
-    const buf = Buffer.from(await res.arrayBuffer());
-
     const processed = await sharp(buf)
       .grayscale()
       .normalise() // auto levels
@@ -139,8 +133,21 @@ async function newspaperify(url: string): Promise<string | null> {
       .sharpen({ sigma: 0.8 }) // crisp edges like newsprint
       .jpeg({ quality: 82, progressive: true })
       .toBuffer();
-
     return `data:image/jpeg;base64,${processed.toString("base64")}`;
+  } catch (e) {
+    console.warn(`  failed to process image buffer: ${e}`);
+    return null;
+  }
+}
+
+async function newspaperify(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `token ${GH_TOKEN}` },
+    });
+    if (!res.ok) return null;
+    const buf = Buffer.from(await res.arrayBuffer());
+    return newspaperifyBuffer(buf);
   } catch (e) {
     console.warn(`  failed to process image ${url}: ${e}`);
     return null;
@@ -336,7 +343,8 @@ async function generateIllustration(subject: string): Promise<string | null> {
       const data: any = await res.json();
       if (data.predictions?.[0]?.bytesBase64Encoded) {
         const b64 = data.predictions[0].bytesBase64Encoded;
-        return `data:image/png;base64,${b64}`;
+        const buf = Buffer.from(b64, "base64");
+        return newspaperifyBuffer(buf);
       }
       console.warn(`  Imagen 4 unavailable: ${data.error?.message?.slice(0, 80) ?? "unknown"}`);
     } catch (e) {
@@ -364,7 +372,8 @@ async function generateIllustration(subject: string): Promise<string | null> {
       });
       const data: any = await res.json();
       if (data.data?.[0]?.b64_json) {
-        return `data:image/jpeg;base64,${data.data[0].b64_json}`;
+        const buf = Buffer.from(data.data[0].b64_json, "base64");
+        return newspaperifyBuffer(buf);
       }
       console.warn(`  gpt-image-1 error: ${JSON.stringify(data.error ?? data).slice(0, 120)}`);
     } catch (e) {
