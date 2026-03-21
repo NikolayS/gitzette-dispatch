@@ -111,6 +111,7 @@ interface RepoData {
   name: string;
   description: string | null;
   url: string;
+  stars: number;
   releases: Release[];
   mergedPRs: PR[];
   openPRs: PR[];
@@ -300,6 +301,7 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
       name: repo,
       description: info.description,
       url: info.html_url,
+      stars: info.stargazers_count ?? 0,
       releases,
       mergedPRs,
       openPRs,
@@ -619,12 +621,35 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
     </div>
   </div>`;
 
+  // ── 4. star leaderboard ───────────────────────────────────────────────────
+  const starRows = [...reposData]
+    .filter((r) => r.stars > 0)
+    .sort((a, b) => b.stars - a.stars)
+    .map(
+      (r) =>
+        `<tr>
+          <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 6px 3px 0;border-bottom:1px solid var(--rule);white-space:nowrap;"><a href="${r.url}" style="color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule);">${r.name}</a></td>
+          <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 0 3px 6px;border-bottom:1px solid var(--rule);text-align:right;">&#9733; ${r.stars.toLocaleString()}</td>
+        </tr>`
+    )
+    .join("");
+
+  const starLeaderboard = starRows
+    ? `<div class="infographic" style="margin-top:16px;">
+        <div class="infographic-label">stars</div>
+        <table style="width:100%;border-collapse:collapse;margin-top:8px;">
+          ${starRows}
+        </table>
+      </div>`
+    : "";
+
   return `
 <div style="padding:20px 0 0;">
-  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:12px;">data</div>
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:12px;">stats corner</div>
   ${statsRow}
   ${commitChart}
   ${releaseTimeline}
+  ${starLeaderboard}
 </div>`;
 }
 
