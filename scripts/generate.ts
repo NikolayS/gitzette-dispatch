@@ -765,8 +765,8 @@ function renderArticle(
   const img = repoData.demoImages[imageIndex];
   // All images: natural aspect ratio, full column width, no cropping
   const imageHtml = img
-    ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;">
-        <img src="${img}" alt="" style="width:100%;display:block;">
+    ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;">
+        <img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;display:block;">
       </div>`
     : "";
 
@@ -868,7 +868,8 @@ async function buildHtml(
   a { color: var(--ink); text-decoration: none; }
   a:hover { text-decoration: underline; }
   .muted { color: var(--muted); }
-  .paper { max-width: 960px; margin: 24px auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 2px 12px rgba(0,0,0,.15); }
+  .paper { max-width: 960px; margin: 24px auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 2px 12px rgba(0,0,0,.15); overflow-x: hidden; }
+  .paper img { max-width: 100%; height: auto; display: block; }
   /* broadsheet: two pages side by side on very wide screens */
   .page-2 { display: block; }
   /* articles-p2: always visible on page 1; moves to page 2 in broadsheet */
