@@ -250,7 +250,10 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
       .filter((p: any) => {
         if (!p.merged_at) return false;
         const d = new Date(p.merged_at);
-        return d >= from && d <= to;
+        if (!(d >= from && d <= to)) return false;
+        // on forks/mirrors, only count PRs authored by the owner
+        const author = p.user?.login || "";
+        return author.toLowerCase() === owner.toLowerCase();
       })
       .map((p: any) => ({
         number: p.number,
@@ -299,7 +302,7 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
     const contributorMap: Record<string, number> = {};
     try {
       const commits = await ghGet(
-        `/repos/${owner}/${repo}/commits?since=${fromStr}&until=${toStr}&per_page=100`
+        `/repos/${owner}/${repo}/commits?since=${fromStr}&until=${toStr}&per_page=100&author=${owner}`
       );
       commitCount = commits.length;
       for (const c of commits) {
