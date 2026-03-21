@@ -3,445 +3,221 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Samokhvalov Dispatch — Week of March 15–21, 2026</title>
+<title>the dispatch — Vol. 1, No. 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IM+Fell+English:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: #f4f0e8;
-    font-family: 'Libre Baskerville', Georgia, serif;
-    color: #1a1a1a;
+  :root {
+    --ink: #0f0f0f; --paper: #f7f4ee; --rule: #c8c2b4;
+    --muted: #666; --tag-bg: #0f0f0f; --tag-fg: #f7f4ee;
+    --link: #1a1a8c;
   }
+  body { background: #e8e4dc; font-family: 'IBM Plex Sans', sans-serif; color: var(--ink); font-size: 15px; line-height: 1.6; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .muted { color: var(--muted); }
+  .paper { max-width: 960px; margin: 24px auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 2px 12px rgba(0,0,0,.15); }
 
-  .newspaper {
-    max-width: 1100px;
-    margin: 0 auto;
-    background: #faf7f0;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    padding: 0 0 40px;
-  }
+  /* header */
+  .header { padding: 20px 24px 14px; border-bottom: 3px solid var(--ink); }
+  .header-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .masthead { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(32px,7vw,64px); letter-spacing: -.03em; line-height: 1; }
+  .masthead span { color: var(--muted); font-weight: 400; }
+  .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; }
+  .edition-bar { margin-top: 12px; padding: 6px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .05em; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  .edition-bar span::before { content: "▸ "; color: var(--muted); }
 
-  /* HEADER */
-  .header {
-    border-bottom: 4px double #1a1a1a;
-    padding: 16px 32px 10px;
-    text-align: center;
-  }
-
-  .header-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #444;
-    margin-bottom: 8px;
-  }
-
-  .masthead {
-    font-family: 'UnifrakturMaguntia', cursive;
-    font-size: 72px;
-    line-height: 1;
-    letter-spacing: -1px;
-    color: #1a1a1a;
-    margin: 4px 0;
-  }
-
-  .tagline {
-    font-family: 'IM Fell English', serif;
-    font-style: italic;
-    font-size: 13px;
-    color: #555;
-    margin-bottom: 8px;
-  }
-
-  .edition-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border-top: 1px solid #1a1a1a;
-    border-bottom: 1px solid #1a1a1a;
-    padding: 4px 0;
-    color: #333;
-  }
-
-  /* SECTION LABELS */
-  .section-label {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #fff;
-    background: #1a1a1a;
-    padding: 2px 6px;
-    display: inline-block;
-    margin-bottom: 6px;
-  }
-
-  /* MAIN CONTENT AREA */
-  .content {
-    padding: 20px 32px 0;
-  }
-
-  /* COLUMNS */
-  .cols-3 { display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr; gap: 0; }
-  .cols-2 { display: grid; grid-template-columns: 2fr 1px 1fr; gap: 0; }
-  .cols-2-eq { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0; }
-
-  .col { padding: 0 20px; }
-  .col:first-child { padding-left: 0; }
+  /* body */
+  .body { padding: 0 24px 32px; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 0; }
+  @media (min-width: 640px) { .grid-2-1 { grid-template-columns: 3fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
+  .col { padding: 20px 20px 0 0; }
   .col:last-child { padding-right: 0; }
-  .divider { background: #bbb; width: 1px; }
+  @media (min-width: 640px) { .col { border-right: 1px solid var(--rule); } .col:last-child { border-right: none; padding-left: 20px; } .grid-3 .col { padding: 20px 16px 0; } .grid-3 .col:first-child { padding-left: 0; } .grid-3 .col:last-child { padding-right: 0; } }
 
-  .col-rule {
-    border-right: 1px solid #bbb;
-    padding-right: 20px;
-    margin-right: 0;
-  }
+  /* tags */
+  .tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; background: var(--tag-bg); color: var(--tag-fg); padding: 2px 7px; margin-bottom: 8px; }
 
-  /* ARTICLES */
-  .article { margin-bottom: 18px; }
+  /* articles */
+  .article { margin-bottom: 24px; }
+  h1 { font-family: 'IBM Plex Serif', serif; font-size: clamp(22px,4vw,36px); font-weight: 700; line-height: 1.1; margin-bottom: 8px; }
+  h2 { font-family: 'IBM Plex Serif', serif; font-size: clamp(16px,3vw,22px); font-weight: 700; line-height: 1.15; margin-bottom: 6px; }
+  h3 { font-family: 'IBM Plex Serif', serif; font-size: 15px; font-weight: 700; line-height: 1.2; margin-bottom: 4px; }
+  .headline-link { color: var(--ink); text-decoration: none; }
+  .headline-link:hover { text-decoration: underline; }
+  .deck { font-family: 'IBM Plex Serif', serif; font-style: italic; font-size: 14px; line-height: 1.55; color: #333; margin-bottom: 10px; }
+  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; }
+  .release-links, .pr-links { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .release-link { font-weight: 600; color: var(--ink); }
+  .pending-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; border-left: 2px solid var(--rule); padding-left: 8px; }
 
-  .article h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px;
-    font-weight: 900;
-    line-height: 1.05;
-    margin-bottom: 6px;
-  }
+  /* rule */
+  .rule { border: none; border-top: 1px solid var(--rule); margin: 0 0 0; }
 
-  .article h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.15;
-    margin-bottom: 5px;
-  }
-
-  .article h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 1.2;
-    margin-bottom: 4px;
-  }
-
-  .deck {
-    font-family: 'IM Fell English', serif;
-    font-style: italic;
-    font-size: 13px;
-    line-height: 1.5;
-    color: #333;
-    margin-bottom: 8px;
-    border-bottom: 1px solid #bbb;
-    padding-bottom: 6px;
-  }
-
-  .byline {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #666;
-    margin-bottom: 6px;
-  }
-
-  p {
-    font-size: 12px;
-    line-height: 1.7;
-    margin-bottom: 8px;
-    text-align: justify;
-  }
-
-  p:first-of-type::first-letter {
-    font-family: 'Playfair Display', serif;
-    font-size: 48px;
-    font-weight: 900;
-    float: left;
-    line-height: 0.8;
-    margin: 4px 6px 0 0;
-    color: #1a1a1a;
-  }
-
-  .no-dropcap::first-letter { all: unset; }
-
-  /* STATS BOX */
-  .stats-box {
-    border: 2px solid #1a1a1a;
-    padding: 12px;
-    margin-bottom: 16px;
-    text-align: center;
-  }
-
-  .stats-box h4 {
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 700;
-    border-bottom: 1px solid #1a1a1a;
-    margin-bottom: 10px;
-    padding-bottom: 4px;
-  }
-
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    padding: 2px 0;
-    border-bottom: 1px dotted #ccc;
-  }
-
-  .stat-num {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 14px;
-    color: #1a1a1a;
-  }
-
-  /* RULE LINES */
-  .rule { border: none; border-top: 1px solid #bbb; margin: 14px 0; }
-  .rule-heavy { border: none; border-top: 3px double #1a1a1a; margin: 14px 0; }
-
-  /* PULL QUOTE */
-  .pull-quote {
-    border-top: 3px solid #1a1a1a;
-    border-bottom: 3px solid #1a1a1a;
-    padding: 10px 0;
-    margin: 12px 0;
-    text-align: center;
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 16px;
-    line-height: 1.4;
-    color: #222;
-  }
-
-  /* PR LIST */
-  .pr-list { list-style: none; padding: 0; }
-  .pr-list li {
-    font-size: 11px;
-    line-height: 1.5;
-    padding: 3px 0;
-    border-bottom: 1px dotted #ccc;
-  }
-  .pr-list li:last-child { border-bottom: none; }
-  .pr-list a { color: #1a1a1a; text-decoration: none; }
-  .pr-list a:hover { text-decoration: underline; }
-  .pr-merged { color: #5a3ea1; font-weight: 700; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; }
-  .pr-open { color: #1a7a3c; font-weight: 700; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; }
-
-  /* NEW REPO BOX */
-  .repo-box {
-    background: #1a1a1a;
-    color: #faf7f0;
-    padding: 12px;
-    margin-bottom: 10px;
-  }
-  .repo-box h4 { font-family: 'Playfair Display', serif; font-size: 15px; margin-bottom: 4px; }
-  .repo-box p { color: #ddd; font-size: 11px; margin: 0; }
-  .repo-box p::first-letter { all: unset; }
-  .repo-box a { color: #ffd700; }
-
-  /* BOTTOM BORDER */
-  .footer {
-    border-top: 4px double #1a1a1a;
-    padding: 10px 32px;
-    font-size: 9px;
-    text-align: center;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #666;
-  }
+  /* footer */
+  .footer { padding: 12px 24px; border-top: 2px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
 </style>
 </head>
 <body>
-<div class="newspaper">
-
-  <!-- MASTHEAD -->
+<div class="paper">
   <div class="header">
     <div class="header-meta">
-      <span>Vol. I, No. 1</span>
-      <span>Friday, March 21, 2026</span>
-      <span>NikolayS · GitHub · Weekly Edition</span>
+      <span>github.com/NikolayS</span>
+      <span>March 15 – March 21, 2026</span>
+      <span>Vol. 1, No. 2</span>
     </div>
-    <div class="masthead">The Samokhvalov Dispatch</div>
-    <div class="tagline">"All the commits fit to print"</div>
+    <div class="masthead">the <span>dispatch</span></div>
+    <div class="tagline">The week Rust learned to read EXPLAIN plans, an AI leaked a key, and Sqitch got competition.</div>
     <div class="edition-bar">
-      <span>sqlever: 20 PRs merged this week</span>
-      <span>★ rpg: 87 commits</span>
-      <span>★ 2 new repos launched</span>
-      <span>209 total commits across 6 repos</span>
+      <span>236 commits</span>
+      <span>6 releases</span>
+      <span>63 merged</span>
+      <span>18 open PRs</span>
+      <span>7 repos</span>
     </div>
   </div>
-
-  <!-- MAIN CONTENT -->
-  <div class="content">
-
-    <!-- ROW 1: HERO + SIDEBAR -->
-    <div style="height:20px"></div>
-    <div class="cols-2">
-      <!-- HERO STORY -->
-      <div class="col col-rule">
-        <span class="section-label">sqlever · Migration Tools</span>
-        <div class="article">
-          <h1>Sqlever Reaches Critical Mass: 20 Pull Requests Merged in a Single Week</h1>
-          <div class="deck">The Sqitch-compatible Postgres migration tool surges toward its first release as AI-assisted development delivers a torrent of features, tests, and fixes in seven days.</div>
-          <div class="byline">By The Dispatch · March 21, 2026</div>
-          <p>In what may be the most productive week in the young project's history, <a href="https://github.com/NikolayS/sqlever">sqlever</a> absorbed twenty pull requests from initial feature work through a comprehensive test suite and all the way to near-release polish. The pace — averaging nearly three merges per day — reflects a new mode of development in which human review and AI execution operate in tight collaboration.</p>
-          <p>The week's work covered the full breadth of the tool's ambitions. Zero-downtime expand/contract migration pairs (PR <a href="https://github.com/NikolayS/sqlever/pull/123">#123</a>), batch DML execution with throttling and replication-lag monitoring (PRs <a href="https://github.com/NikolayS/sqlever/pull/121">#121</a>–<a href="https://github.com/NikolayS/sqlever/pull/122">#122</a>), and a structured PR review comment generator (<a href="https://github.com/NikolayS/sqlever/pull/116">#116</a>) all landed before the week was out.</p>
-          <div class="pull-quote">"The revert command now correctly ignores the <code>sqlever:no-transaction</code> directive — a critical correctness fix for production deployments."</div>
-          <p>The final days pivoted hard toward testing discipline. Seven dedicated test PRs — covering static analysis, Sqitch compatibility, deploy/revert robustness, expand/contract lifecycle, batch DML, AI integration, and security edge cases — were designed, tracked as issues, and merged within hours. Real-world validation issues remain open: five tickets track testing against a live PostgreSQL instance and a compiled binary, ensuring no regressions slip through before the first public release.</p>
-        </div>
-      </div>
-
-      <!-- RIGHT SIDEBAR -->
-      <div class="divider"></div>
+  <div class="body">
+    <div class="grid grid-2-1">
       <div class="col">
-
-        <div class="stats-box">
-          <h4>Week in numbers</h4>
-          <div class="stat-row"><span>Total commits</span><span class="stat-num">209</span></div>
-          <div class="stat-row"><span>PRs merged</span><span class="stat-num">20</span></div>
-          <div class="stat-row"><span>PRs open</span><span class="stat-num">2</span></div>
-          <div class="stat-row"><span>Issues closed</span><span class="stat-num">17</span></div>
-          <div class="stat-row"><span>New repos</span><span class="stat-num">2</span></div>
-          <div class="stat-row"><span>Active repos</span><span class="stat-num">6</span></div>
-        </div>
-
-        <span class="section-label">New This Week</span>
-
-        <div class="repo-box">
-          <h4><a href="https://github.com/NikolayS/leandex">leandex</a></h4>
-          <p>Keep your Postgres indexes lean — rebuild, drop, and suggest. Extracted from pg_index_pilot heritage. Handles bloat, unused indexes, and missing index recommendations in one coherent tool.</p>
-        </div>
-
-        <div style="height:10px"></div>
-
-        <div class="repo-box">
-          <h4><a href="https://github.com/NikolayS/NikolayS">NikolayS/NikolayS</a></h4>
-          <p>GitHub profile README — 22 commits to get it right. Postgres since 2003, GSoC 2006 alumnus, GitLab contributor since 2018, PostgresFM co-host, gaps.wait.events GSoC 2026 mentor.</p>
-        </div>
-
-      </div>
+        <p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">Six releases across two repos, 236 commits, and one very awkward moment with a credential in a PR comment.</p>
+        
+    <div class="article">
+      <div class="tag">RELEASE</div>
+      <h1><a href="https://github.com/NikolayS/rpg" class="headline-link">rpg v0.8.0 Ships EXPLAIN Visualization That Spots Your Bad Plans Before You Do</h1>
+      <p class="deck">The Rust-based Postgres terminal now colorizes query plans, highlights hot paths, and flags seq scans on large tables automatically.</p>
+      <p class="body-text">Four releases in five days. That is not a typo. rpg went from v0.5.0 to v0.8.0 between March 17 and March 20, shipping a new version roughly every 18 hours. The headline feature in v0.8.0 is an enhanced EXPLAIN visualizer that detects row estimate errors exceeding 10x, sorts spilling to disk, hash batches greater than one, and parallel workers that failed to launch. A summary header displays execution time, planning time, rows, and buffer stats at a glance. Users can toggle between psql-compatible raw output and the new enhanced view with \pset explain_format. The release also includes EXPLAIN plan sharing to depesz and dalibo, plus a new \s command for history display and save.</p>
+      <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.0" class="release-link">v0.8.0</a> <span class="muted">Fri, Mar 20</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.7.0" class="release-link">v0.7.0</a> <span class="muted">Thu, Mar 19</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.6.0" class="release-link">v0.6.0</a> <span class="muted">Thu, Mar 19</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.5.0" class="release-link">v0.5.0</a> <span class="muted">Tue, Mar 17</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/696" class="pr-link">#696</a> <a href="https://github.com/NikolayS/rpg/pull/697" class="pr-link">#697</a> <a href="https://github.com/NikolayS/rpg/pull/695" class="pr-link">#695</a> <a href="https://github.com/NikolayS/rpg/pull/684" class="pr-link">#684</a> <a href="https://github.com/NikolayS/rpg/pull/687" class="pr-link">#687</a></div>
+      <div class="pending-note">4 open PRs: <a href="https://github.com/NikolayS/rpg/pull/706">#706 feat(wasi): implement WSS client backend</a>, <a href="https://github.com/NikolayS/rpg/pull/702">#702 test: boost unit test coverage from 68% toward 75%</a>, <a href="https://github.com/NikolayS/rpg/pull/701">#701 feat(repl): interactive history picker for \s</a></div>
     </div>
 
-    <hr class="rule-heavy">
-
-    <!-- ROW 2: THREE COLUMNS -->
-    <div class="cols-3">
-
-      <!-- RPG -->
-      <div class="col">
-        <span class="section-label">rpg · Postgres Terminal</span>
-        <div class="article">
-          <h2>rpg Pushes Past 87 Commits as Test Coverage Drive Intensifies</h2>
-          <div class="byline">By The Dispatch</div>
-          <p>The Rust-based Postgres terminal replacement recorded 87 commits this week — the highest of any repository — as work continued on two fronts simultaneously. A new interactive history picker for the <code>\s</code> command (<a href="https://github.com/NikolayS/rpg/pull/701">PR #701</a>) brings psql users a long-requested quality-of-life improvement.</p>
-          <p>Meanwhile, a unit test coverage push aims to move the needle from 68% toward 75%, tracked in <a href="https://github.com/NikolayS/rpg/pull/702">PR #702</a>, still open at week's end.</p>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- COIL -->
-      <div class="col">
-        <span class="section-label">COIL · App Development</span>
-        <div class="article">
-          <h2>COIL Records Steady 18-Commit Week</h2>
-          <div class="byline">By The Dispatch</div>
-          <p>The COIL application project (<a href="https://github.com/NikolayS/COIL">NikolayS/COIL</a>) continued its development cadence with 18 commits across the week. The project, focused on personal productivity engineering, now has its own dedicated AI agent — MrWolf — running under an isolated Linux user with full GitHub CLI access, SSH keys, and Cloudflare credentials configured this week.</p>
-          <div class="pull-quote" style="font-size:13px">"MrWolf. I solve problems."</div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- PG_ASH + LEANDEX -->
-      <div class="col">
-        <span class="section-label">pg_ash · Wait Events</span>
-        <div class="article">
-          <h2>pg_ash Sees Minor Activity; Gaps.wait.events Enters GSoC 2026</h2>
-          <div class="byline">By The Dispatch</div>
-          <p>Three commits landed in <a href="https://github.com/NikolayS/pg_ash">pg_ash</a> this week — modest by recent standards, but the project scored a significant milestone: <a href="https://gaps.wait.events">gaps.wait.events</a>, the companion project tracking uninstrumented Postgres wait events, has been accepted into Google Summer of Code 2026 under Samokhvalov's mentorship.</p>
-          <p>The acceptance completes a 20-year arc: GSoC 2006 participant (SQL/XML support) to GSoC 2026 mentor.</p>
-        </div>
-      </div>
-
+    <div class="article">
+      <div class="tag">FEATURE</div>
+      <h2><a href="https://github.com/NikolayS/rpg" class="headline-link">rpg Locks Down Its AI: /ask Queries Now Run Read-Only, Period</h2>
+      <p class="deck">Versions 0.6.0 and 0.7.0 wrapped every AI-generated query in a read-only transaction and added auto-rollback to prevent idle-in-tx pileups.</p>
+      <p class="body-text">The back-to-back v0.6.0 and v0.7.0 releases focused squarely on safety. Every query executed by the /ask command is now wrapped in a read-only transaction at the database level, blocking DDL and DML even if query classification fails. Stale transactions from errors or cancellations are automatically rolled back. Ctrl-C now cancels in-flight LLM API calls. The text2sql mode (\t2s) retains write capability but requires explicit user confirmation with an Execute write query? [y/N/e] prompt.</p>
+      <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.0" class="release-link">v0.8.0</a> <span class="muted">Fri, Mar 20</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.7.0" class="release-link">v0.7.0</a> <span class="muted">Thu, Mar 19</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.6.0" class="release-link">v0.6.0</a> <span class="muted">Thu, Mar 19</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.5.0" class="release-link">v0.5.0</a> <span class="muted">Tue, Mar 17</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/696" class="pr-link">#696</a> <a href="https://github.com/NikolayS/rpg/pull/697" class="pr-link">#697</a> <a href="https://github.com/NikolayS/rpg/pull/695" class="pr-link">#695</a> <a href="https://github.com/NikolayS/rpg/pull/684" class="pr-link">#684</a> <a href="https://github.com/NikolayS/rpg/pull/687" class="pr-link">#687</a></div>
+      <div class="pending-note">4 open PRs: <a href="https://github.com/NikolayS/rpg/pull/706">#706 feat(wasi): implement WSS client backend</a>, <a href="https://github.com/NikolayS/rpg/pull/702">#702 test: boost unit test coverage from 68% toward 75%</a>, <a href="https://github.com/NikolayS/rpg/pull/701">#701 feat(repl): interactive history picker for \s</a></div>
     </div>
 
-    <hr class="rule-heavy">
-
-    <!-- PR LOG -->
-    <div class="cols-2-eq">
-      <div class="col">
-        <span class="section-label">sqlever · Full PR Log</span>
-        <ul class="pr-list">
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/145">fix: revert ignores no-transaction directive (#145)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/139">TEST-8: deep E2E tests — lifecycle, deps, tags, TUI (#139)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/138">TEST-7: security + edge-case tests (#138)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/137">TEST-5: batch DML end-to-end tests (#137)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/136">TEST-3: static analysis tests — 71 tests (#136)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/135">TEST-6: AI + DBLab integration tests (#135)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/134">TEST-1: Sqitch compatibility deep tests (#134)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/133">TEST-4: expand/contract E2E tests (#133)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/132">test: deploy/revert robustness tests (#132)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/123">E4: deploy --phase expand|contract (#123)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/122">F4: batch CLI commands (#122)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/121">F2: batch worker — execution loop with throttling (#121)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/120">E3: sync trigger generation (#120)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/119">F3: batch monitoring — replication lag + VACUUM (#119)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/118">fix: skip integration tests when PG unavailable (#118)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/117">E1: expand/contract migration pair generator (#117)</a></li>
-          <li><span class="pr-merged">Merged</span> <a href="https://github.com/NikolayS/sqlever/pull/116">feat: sqlever review — PR comment generator (#116)</a></li>
-          <li><span class="pr-open">Open</span> <a href="https://github.com/NikolayS/sqlever/pull/146">fix: compat tests — Sqitch Docker (#146)</a></li>
-        </ul>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="col">
-        <span class="section-label">rpg · PR Log</span>
-        <ul class="pr-list">
-          <li><span class="pr-open">Open</span> <a href="https://github.com/NikolayS/rpg/pull/702">test: boost unit coverage 68% → 75% (#702)</a></li>
-          <li><span class="pr-open">Open</span> <a href="https://github.com/NikolayS/rpg/pull/701">feat: interactive history picker for \s (#701)</a></li>
-        </ul>
-
-        <hr class="rule">
-
-        <span class="section-label">Commits by repository</span>
-        <ul class="pr-list">
-          <li><span style="font-weight:700">rpg</span> <span class="stat-num" style="float:right">87</span></li>
-          <li><span style="font-weight:700">sqlever</span> <span class="stat-num" style="float:right">78</span></li>
-          <li><span style="font-weight:700">NikolayS (profile)</span> <span class="stat-num" style="float:right">22</span></li>
-          <li><span style="font-weight:700">COIL</span> <span class="stat-num" style="float:right">18</span></li>
-          <li><span style="font-weight:700">pg_ash</span> <span class="stat-num" style="float:right">3</span></li>
-          <li><span style="font-weight:700">leandex</span> <span class="stat-num" style="float:right">1</span></li>
-        </ul>
-
-        <hr class="rule">
-
-        <span class="section-label">Open real-world tests (sqlever)</span>
-        <ul class="pr-list">
-          <li><a href="https://github.com/NikolayS/sqlever/issues/144">REAL-TEST-5: Build compiled binary, verify E2E</a></li>
-          <li><a href="https://github.com/NikolayS/sqlever/issues/143">REAL-TEST-4: Mid-deploy handoff with real Sqitch</a></li>
-          <li><a href="https://github.com/NikolayS/sqlever/issues/142">REAL-TEST-3: sqlever analyze on real SQL files</a></li>
-          <li><a href="https://github.com/NikolayS/sqlever/issues/141">REAL-TEST-2: Deploy + revert against live PG</a></li>
-        </ul>
-      </div>
+    <div class="article">
+      <div class="tag">SECURITY</div>
+      <h2><a href="https://github.com/NikolayS/rpg" class="headline-link">AI Agent Leaks pgMustard API Key in Public PR Comment</h2>
+      <p class="deck">The key was rotated quickly, but the lesson is clear: let your agent post to GitHub unsupervised at your own peril.</p>
+      <p class="body-text">During development of the new \explain share pgmustard feature in v0.8.0, an AI agent helpfully dumped its testing output into a public PR comment — API key and all. The credential was spotted fast and rotated before any known misuse. No data was compromised. The incident is minor in impact but rich in instruction: agents that post to public repositories need credential scanning in their output pipeline. If your robot can push to GitHub, your robot can leak to GitHub.</p>
+      <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.0" class="release-link">v0.8.0</a> <span class="muted">Fri, Mar 20</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.7.0" class="release-link">v0.7.0</a> <span class="muted">Thu, Mar 19</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.6.0" class="release-link">v0.6.0</a> <span class="muted">Thu, Mar 19</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.5.0" class="release-link">v0.5.0</a> <span class="muted">Tue, Mar 17</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/696" class="pr-link">#696</a> <a href="https://github.com/NikolayS/rpg/pull/697" class="pr-link">#697</a> <a href="https://github.com/NikolayS/rpg/pull/695" class="pr-link">#695</a> <a href="https://github.com/NikolayS/rpg/pull/684" class="pr-link">#684</a> <a href="https://github.com/NikolayS/rpg/pull/687" class="pr-link">#687</a></div>
+      <div class="pending-note">4 open PRs: <a href="https://github.com/NikolayS/rpg/pull/706">#706 feat(wasi): implement WSS client backend</a>, <a href="https://github.com/NikolayS/rpg/pull/702">#702 test: boost unit test coverage from 68% toward 75%</a>, <a href="https://github.com/NikolayS/rpg/pull/701">#701 feat(repl): interactive history picker for \s</a></div>
     </div>
 
+    <div class="article">
+      <div class="tag">FEATURE</div>
+      <h3><a href="https://github.com/NikolayS/sqlever" class="headline-link">sqlever Lands 21 Static Analysis Rules and a Full Deploy Command in One Week</h3>
+      <p class="deck">The Sqitch-compatible migration tool merged its analysis engine, deploy pipeline, verify command, and status display in a single sprint.</p>
+      <p class="body-text">Fifty-nine commits and ten merged PRs tell the story. sqlever now has a standalone analyze command with rules SA001 through SA021 covering DDL safety, DML hazards, and locking risks. The analysis engine includes a rule registry, preprocessor, and suppression system. The deploy command landed alongside verify, status, and plan display. A fix for advisory lock leaks during revert --to validation was also merged. Open issues point to real-world integration testing: mid-deploy handoff from Sqitch, analysis on real SQL files, and full lifecycle deploy-plus-revert against live PostgreSQL.</p>
+      
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/sqlever/pull/72" class="pr-link">#72</a> <a href="https://github.com/NikolayS/sqlever/pull/71" class="pr-link">#71</a> <a href="https://github.com/NikolayS/sqlever/pull/70" class="pr-link">#70</a> <a href="https://github.com/NikolayS/sqlever/pull/63" class="pr-link">#63</a> <a href="https://github.com/NikolayS/sqlever/pull/69" class="pr-link">#69</a></div>
+      
+    </div>
+
+    <div class="article">
+      <div class="tag">PENDING</div>
+      <h3><a href="https://github.com/NikolayS/rpg" class="headline-link">rpg Eyes the Browser: WASI Target and WSS Proxy in the Pipeline</h3>
+      <p class="deck">Two open PRs aim to compile rpg to WebAssembly and run it inside a browser tab via a WebSocket proxy.</p>
+      <p class="body-text">Two open PRs — a WASI target for browser embedding and a WSS client backend — suggest rpg may soon run somewhere other than your terminal. The approach uses a WebSocket Secure proxy to bridge browser-side WASM to a PostgreSQL server. Both PRs remain open. An interactive history picker for \s is also in progress, and a separate PR targets boosting unit test coverage from 68% toward 75%.</p>
+      <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.0" class="release-link">v0.8.0</a> <span class="muted">Fri, Mar 20</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.7.0" class="release-link">v0.7.0</a> <span class="muted">Thu, Mar 19</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.6.0" class="release-link">v0.6.0</a> <span class="muted">Thu, Mar 19</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.5.0" class="release-link">v0.5.0</a> <span class="muted">Tue, Mar 17</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/696" class="pr-link">#696</a> <a href="https://github.com/NikolayS/rpg/pull/697" class="pr-link">#697</a> <a href="https://github.com/NikolayS/rpg/pull/695" class="pr-link">#695</a> <a href="https://github.com/NikolayS/rpg/pull/684" class="pr-link">#684</a> <a href="https://github.com/NikolayS/rpg/pull/687" class="pr-link">#687</a></div>
+      <div class="pending-note">4 open PRs: <a href="https://github.com/NikolayS/rpg/pull/706">#706 feat(wasi): implement WSS client backend</a>, <a href="https://github.com/NikolayS/rpg/pull/702">#702 test: boost unit test coverage from 68% toward 75%</a>, <a href="https://github.com/NikolayS/rpg/pull/701">#701 feat(repl): interactive history picker for \s</a></div>
+    </div>
+
+    <div class="article">
+      <div class="tag">PENDING</div>
+      <h3><a href="https://github.com/NikolayS/postgres" class="headline-link">Five Open PRs Against the PostgreSQL Mirror, Including USDT Tracepoints and a psql Plugin Study</h3>
+      <p class="deck">Samokhvalov has proof-of-concept patches for wait event tracing, command tag negotiation, and DSM-based query statistics sitting upstream.</p>
+      <p class="body-text">The official PostgreSQL mirror saw 63 commits this week, with five open PRs from Samokhvalov and one from contributor shinsj4653 on missing IO instrumentation for server logging. The most intriguing is a PoC for USDT static tracepoints enabling wait event tracing with tools like bpftrace. A research report on psql plugin system feasibility and a WIP for protocol-level command tag negotiation via _pq_ round out the upstream ambitions. None have merged — this is the PostgreSQL project, after all.</p>
+      
+      
+      <div class="pending-note">14 open PRs: <a href="https://github.com/NikolayS/postgres/pull/18">#18 PoC: USDT static tracepoints for wait event tracing</a>, <a href="https://github.com/NikolayS/postgres/pull/17">#17 Add research report on psql plugin system feasibility</a>, <a href="https://github.com/NikolayS/postgres/pull/16">#16 WIP: command_tag_format — protocol-level command tag negotiation via _pq_</a></div>
+    </div>
+
+    <div class="article">
+      <div class="tag">COMMUNITY</div>
+      <h3><a href="https://github.com/NikolayS/pg_ash" class="headline-link">pg_ash Gets Housekeeping: Security Policy, Dependabot, and a Badge Fix</h3>
+      <p class="deck">The Active Session History extension received four maintenance PRs but no new features this week.</p>
+      <p class="body-text">Four merged PRs, all janitorial. A SECURITY.md was added, Dependabot was configured for GitHub Actions updates, actions/checkout was bumped from 4 to 6, and some badge and wording issues in the docs were cleaned up. No functional changes. The extension continues to provide wait event sampling with zero bloat via pg_cron and PGQ-style partition rotation.</p>
+      
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/pg_ash/pull/26" class="pr-link">#26</a> <a href="https://github.com/NikolayS/pg_ash/pull/24" class="pr-link">#24</a> <a href="https://github.com/NikolayS/pg_ash/pull/23" class="pr-link">#23</a> <a href="https://github.com/NikolayS/pg_ash/pull/25" class="pr-link">#25</a></div>
+      
+    </div>
+
+    <div class="article">
+      <div class="tag">RELEASE</div>
+      <h3><a href="https://github.com/NikolayS/rpg" class="headline-link">v0.5.0 Brings Syntax Highlighting and Auto-Detects Your AI Provider</h3>
+      <p class="deck">Keywords get colors, errors turn red, and rpg now sniffs ANTHROPIC_API_KEY, OPENAI_API_KEY, or OLLAMA_API_KEY from your environment without configuration.</p>
+      <p class="body-text">The March 17 release added multi-category SQL syntax highlighting with distinct colors for keywords, strings, and operators. Error prefixes are now colorized: red for ERROR, yellow for WARNING, cyan for NOTICE. The AI provider is auto-detected from environment variables, removing a setup step. Autonomous agent references were scrubbed from the codebase and README — rpg is positioning itself as a focused terminal tool with light AI integration, not an agent framework.</p>
+      <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.0" class="release-link">v0.8.0</a> <span class="muted">Fri, Mar 20</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.7.0" class="release-link">v0.7.0</a> <span class="muted">Thu, Mar 19</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.6.0" class="release-link">v0.6.0</a> <span class="muted">Thu, Mar 19</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.5.0" class="release-link">v0.5.0</a> <span class="muted">Tue, Mar 17</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/696" class="pr-link">#696</a> <a href="https://github.com/NikolayS/rpg/pull/697" class="pr-link">#697</a> <a href="https://github.com/NikolayS/rpg/pull/695" class="pr-link">#695</a> <a href="https://github.com/NikolayS/rpg/pull/684" class="pr-link">#684</a> <a href="https://github.com/NikolayS/rpg/pull/687" class="pr-link">#687</a></div>
+      <div class="pending-note">4 open PRs: <a href="https://github.com/NikolayS/rpg/pull/706">#706 feat(wasi): implement WSS client backend</a>, <a href="https://github.com/NikolayS/rpg/pull/702">#702 test: boost unit test coverage from 68% toward 75%</a>, <a href="https://github.com/NikolayS/rpg/pull/701">#701 feat(repl): interactive history picker for \s</a></div>
+    </div>
+      </div>
+      <div class="col">
+        <div style="padding-top:20px;">
+          <div class="tag">repos</div>
+          <ul style="list-style:none;margin-top:8px;">
+            <li style="margin-bottom:12px;">
+              <a href="https://github.com/NikolayS/rpg" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);">rpg</a>
+              <div style="font-size:12px;color:var(--muted);line-height:1.4;">rpg — modern Postgres terminal written in Rust. psql-compatible, with built-in DBA diagnostics and AI assistant</div>
+              <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
+                87 commits &nbsp;·&nbsp; 4 releases
+              </div>
+            </li><li style="margin-bottom:12px;">
+              <a href="https://github.com/NikolayS/sqlever" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);">sqlever</a>
+              <div style="font-size:12px;color:var(--muted);line-height:1.4;">Sqitch-compatible PostgreSQL migration tool with static analysis and zero-downtime migrations</div>
+              <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
+                59 commits &nbsp;·&nbsp; 0 releases
+              </div>
+            </li><li style="margin-bottom:12px;">
+              <a href="https://github.com/NikolayS/NikolayS" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);">NikolayS</a>
+              <div style="font-size:12px;color:var(--muted);line-height:1.4;">GitHub profile</div>
+              <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
+                20 commits &nbsp;·&nbsp; 0 releases
+              </div>
+            </li><li style="margin-bottom:12px;">
+              <a href="https://github.com/NikolayS/postgres" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);">postgres</a>
+              <div style="font-size:12px;color:var(--muted);line-height:1.4;">Mirror of the official PostgreSQL GIT repository. Note that this is just a *mirror* - we don't work with pull requests on github. To contribute, please see http://wiki.postgresql.org/wiki/Submitting_a_Patch</div>
+              <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
+                63 commits &nbsp;·&nbsp; 0 releases
+              </div>
+            </li><li style="margin-bottom:12px;">
+              <a href="https://github.com/NikolayS/pg_ash" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);">pg_ash</a>
+              <div style="font-size:12px;color:var(--muted);line-height:1.4;">Active Session History for PostgreSQL — wait event sampling with zero bloat (pg_cron + PGQ-style partition rotation)</div>
+              <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
+                4 commits &nbsp;·&nbsp; 0 releases
+              </div>
+            </li><li style="margin-bottom:12px;">
+              <a href="https://github.com/NikolayS/oak-tree-buzzer" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);">oak-tree-buzzer</a>
+              <div style="font-size:12px;color:var(--muted);line-height:1.4;">Dental office intercom app — LAN-only tablet buzzer system</div>
+              <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
+                1 commits &nbsp;·&nbsp; 2 releases
+              </div>
+            </li><li style="margin-bottom:12px;">
+              <a href="https://github.com/NikolayS/project-delta" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);">project-delta</a>
+              <div style="font-size:12px;color:var(--muted);line-height:1.4;">SAMO Skill Specification</div>
+              <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
+                2 commits &nbsp;·&nbsp; 0 releases
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
-
   <div class="footer">
-    The Samokhvalov Dispatch · Vol. I No. 1 · March 21, 2026 · Generated by TARS · github.com/NikolayS
+    <span>236 commits, one leaked key, and zero hours of sleep — see you next week, assuming the AI doesn't publish this edition's draft to a public repo first.</span>
+    <span>generated 2026-03-21</span>
   </div>
-
 </div>
 </body>
 </html>

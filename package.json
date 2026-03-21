@@ -1,0 +1,12 @@
+{
+  "name": "dispatch",
+  "version": "0.1.0",
+  "description": "weekly engineering newspaper generator",
+  "scripts": {
+    "generate": "bun scripts/generate.ts",
+    "generate:last-week": "bun scripts/generate.ts --from $(date -d '7 days ago' +%Y-%m-%d) --to $(date +%Y-%m-%d)"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

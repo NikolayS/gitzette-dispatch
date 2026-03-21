@@ -1,0 +1,8 @@
+{
+  "owner": "NikolayS",
+  "repos": {
+    "exclude": ["COIL", "callbot"]
+  },
+  "model": "anthropic/claude-opus-4-6",
+  "output": "index.html"
+}
