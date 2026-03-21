@@ -1,0 +1,660 @@
+[
+  {
+    "name": "oracle",
+    "description": "Ask the oracle when you're stuck. Invoke GPT-5 Pro with a custom context and files.",
+    "url": "https://github.com/steipete/oracle",
+    "stars": 1675,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 115,
+        "title": "Bug: browser attachment runs can fall back to Enter after upload timeout instead of failing before send",
+        "state": "open",
+        "date": "2026-03-16T11:45:59Z",
+        "url": "https://github.com/steipete/oracle/issues/115",
+        "author": "HeMuling"
+      },
+      {
+        "number": 86,
+        "title": "Bug: Gemini browser mode fails on Linux due to SQLite BigInt overflow",
+        "state": "open",
+        "date": "2026-02-03T22:04:24Z",
+        "url": "https://github.com/steipete/oracle/issues/86",
+        "author": "postpersonality"
+      },
+      {
+        "number": 51,
+        "title": "Add Windows cookie extraction support for Gemini browser mode",
+        "state": "open",
+        "date": "2025-12-27T17:37:54Z",
+        "url": "https://github.com/steipete/oracle/issues/51",
+        "author": "prathamdby"
+      }
+    ],
+    "commitCount": 15,
+    "topContributors": [
+      "steipete"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/steipete-oracle-0.jpg"
+    ]
+  },
+  {
+    "name": "discrawl",
+    "description": "cli for discord with sqlite backend",
+    "url": "https://github.com/steipete/discrawl",
+    "stars": 536,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 20,
+        "title": "Feature idea: Cloud database backends (Cloudflare D1 / Turso)",
+        "state": "open",
+        "date": "2026-03-09T05:50:39Z",
+        "url": "https://github.com/steipete/discrawl/issues/20",
+        "author": "ScuttleBot"
+      },
+      {
+        "number": 18,
+        "title": "Pre-commit + CI secret scanning (gitleaks) and enforced test",
+        "state": "open",
+        "date": "2026-03-08T14:56:42Z",
+        "url": "https://github.com/steipete/discrawl/issues/18",
+        "author": "thenotespublisher"
+      },
+      {
+        "number": 17,
+        "title": "Make env + keyring the recommended secret source (docs + code path)",
+        "state": "open",
+        "date": "2026-03-08T14:55:18Z",
+        "url": "https://github.com/steipete/discrawl/issues/17",
+        "author": "thenotespublisher"
+      },
+      {
+        "number": 15,
+        "title": "Using discrawl as memory augmentation for AI agents",
+        "state": "open",
+        "date": "2026-03-08T01:22:45Z",
+        "url": "https://github.com/steipete/discrawl/issues/15",
+        "author": "codexGW"
+      },
+      {
+        "number": 10,
+        "title": "input handling: avoid SQL string concatenation anywhere",
+        "state": "open",
+        "date": "2026-03-07T22:50:31Z",
+        "url": "https://github.com/steipete/discrawl/issues/10",
+        "author": "thenotespublisher"
+      },
+      {
+        "number": 9,
+        "title": "search/FTS: injection & tokenizer configuration",
+        "state": "open",
+        "date": "2026-03-07T22:49:52Z",
+        "url": "https://github.com/steipete/discrawl/issues/9",
+        "author": "thenotespublisher"
+      },
+      {
+        "number": 8,
+        "title": "Storage: schema migrations & versioning (embed migrations)",
+        "state": "open",
+        "date": "2026-03-07T22:48:11Z",
+        "url": "https://github.com/steipete/discrawl/issues/8",
+        "author": "thenotespublisher"
+      },
+      {
+        "number": 3,
+        "title": "token leak = full bot takeover. Evidence: session created from raw token.",
+        "state": "open",
+        "date": "2026-03-07T22:39:50Z",
+        "url": "https://github.com/steipete/discrawl/issues/3",
+        "author": "thenotespublisher"
+      }
+    ],
+    "commitCount": 27,
+    "topContributors": [
+      "steipete"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "summarize",
+    "description": "Point at any URL/YouTube/Podcast or file. Get the gist. CLI and Chrome Extension.",
+    "url": "https://github.com/steipete/summarize",
+    "stars": 5169,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 170,
+        "title": "0.12.0 regression: local .ogg transcription via Groq returns 403, while 0.11.1 works",
+        "state": "open",
+        "date": "2026-03-20T16:15:55Z",
+        "url": "https://github.com/steipete/summarize/issues/170",
+        "author": "mrpl327"
+      },
+      {
+        "number": 168,
+        "title": "Browser extension doesn't show the side panel in Arc Browser",
+        "state": "open",
+        "date": "2026-03-20T12:11:31Z",
+        "url": "https://github.com/steipete/summarize/issues/168",
+        "author": "inakiabt"
+      },
+      {
+        "number": 166,
+        "title": "Bug: OpenClaw CLI provider passes large web content as CLI argument (PR #165)",
+        "state": "open",
+        "date": "2026-03-17T20:41:16Z",
+        "url": "https://github.com/steipete/summarize/issues/166",
+        "author": "JithendraNara"
+      },
+      {
+        "number": 162,
+        "title": "Add copy-to-clipboard button for summarized results",
+        "state": "open",
+        "date": "2026-03-17T08:10:44Z",
+        "url": "https://github.com/steipete/summarize/issues/162",
+        "author": "howardpen9"
+      },
+      {
+        "number": 155,
+        "title": "Browser extension sidepanel chat doesn't respect `openai.useChatCompletions`",
+        "state": "open",
+        "date": "2026-03-14T11:17:27Z",
+        "url": "https://github.com/steipete/summarize/issues/155",
+        "author": "Zevan770"
+      }
+    ],
+    "commitCount": 30,
+    "topContributors": [
+      "steipete"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/steipete-summarize-0.jpg"
+    ]
+  },
+  {
+    "name": "agent-scripts",
+    "description": "Scripts for agents, shared between my repositories.",
+    "url": "https://github.com/steipete/agent-scripts",
+    "stars": 2246,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 6,
+        "title": "docs: subagent.md references non-existent scripts",
+        "state": "open",
+        "date": "2026-02-02T08:05:21Z",
+        "url": "https://github.com/steipete/agent-scripts/issues/6",
+        "author": "pual"
+      },
+      {
+        "number": 3,
+        "title": "Feedback on your markdown-converter skill",
+        "state": "open",
+        "date": "2026-01-05T22:57:17Z",
+        "url": "https://github.com/steipete/agent-scripts/issues/3",
+        "author": "RichardHightower"
+      }
+    ],
+    "commitCount": 1,
+    "topContributors": [
+      "steipete"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "gogcli",
+    "description": "Google Suite CLI: Gmail, GCal, GDrive, GContacts.",
+    "url": "https://github.com/steipete/gogcli",
+    "stars": 6435,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [
+      {
+        "number": 402,
+        "title": "feat(analytics): add Google Analytics and Google Search Console commands",
+        "state": "open",
+        "date": "2026-03-03T13:40:47Z",
+        "url": "https://github.com/steipete/gogcli/pull/402",
+        "author": "haresh-seenivasagan",
+        "body": "## Motivation\n\nI wanted to give my companies Claw🦞 access to Google Analytics and Search Console data for SEO audits and traffic analysis.\n\n## Summary\n| Command | What it does |\n|---------|-------------|\n| `gog analytics accounts` | List GA4 account summaries (`--all` for pagination) |\n| `gog analytics report <property>` | Run a GA4 report (dimensions, metrics, date ranges) |\n| `gog searchconsole sites` | List Search Console properties |\n| `gog searchconsole sites get <site>` | Show one Search Console property |\n| `gog searchconsole query <site>` | Run a Search Analytics query |\n| `gog searchconsole searchanalytics query <site>` | Explicit Search Analytics subcommand |\n| `gog searchconsole sitemaps <site>` | List sitemaps for a property |\n| `gog searchconsole sitemaps get <site> <feed>` | Show one sitemap |\n| `gog searchconsole sitemaps submit <site> <feed>` | Submit a sitemap |\n| `gog searchconsole sitemaps delete <site> <feed>` | Delete a sitemap |\n\nAnalytics is read-only. Search Console supports read/query operations plus sitemap submit/delete when authorized with non-readonly Search Console scope. Aliases: `ga`, `gsc`, `webmasters`.\n\n```bash\ngog analytics accounts --all --json\ngog analytics report 123456789 --from 7daysAgo --to today --dimensions date,country --metrics activeUsers,sessions\ngog searchconsole sites\ngog searchconsole searchanalytics query sc-domain:example.com --from 2026-02-01 --to 2026-02-07 --dimensions query,page --filter query:contains:gog --aggregation byPage\ngog searchconsole sitemaps submit sc-domain:example.com https://example.com/sitemap.xml\n```\n\nFollows existing patterns (`collectAllPages`, `tableWriter`, `failEmptyExit`, same flag names). Property IDs normalized so `123456789` and `properties/123456789` both work.\n\n## Tests\n\n```bash\ngo test ./...\n```\n"
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 466,
+        "title": "`gog auth remove` does not clean up config.json entries",
+        "state": "open",
+        "date": "2026-03-20T12:30:56Z",
+        "url": "https://github.com/steipete/gogcli/issues/466",
+        "author": "cryteam81"
+      },
+      {
+        "number": 465,
+        "title": "Add Google Sheets tab management commands",
+        "state": "open",
+        "date": "2026-03-20T10:47:24Z",
+        "url": "https://github.com/steipete/gogcli/issues/465",
+        "author": "hwellmade"
+      },
+      {
+        "number": 461,
+        "title": "people me/whoami fails when OAuth client project lacks People API",
+        "state": "open",
+        "date": "2026-03-19T13:58:10Z",
+        "url": "https://github.com/steipete/gogcli/issues/461",
+        "author": "cct08311github"
+      },
+      {
+        "number": 460,
+        "title": "people me/whoami fails with accessNotConfigured when default OAuth client has People API disabled",
+        "state": "open",
+        "date": "2026-03-19T13:58:03Z",
+        "url": "https://github.com/steipete/gogcli/issues/460",
+        "author": "cct08311github"
+      },
+      {
+        "number": 459,
+        "title": "Feature: trash-all / bulk trash by query (e.g. gog gmail trash-all \"from:x\")",
+        "state": "open",
+        "date": "2026-03-18T23:57:36Z",
+        "url": "https://github.com/steipete/gogcli/issues/459",
+        "author": "stephenandrew16"
+      },
+      {
+        "number": 456,
+        "title": "Add labels style command to change Gmail label colors",
+        "state": "open",
+        "date": "2026-03-17T10:57:24Z",
+        "url": "https://github.com/steipete/gogcli/issues/456",
+        "author": "iskw9973"
+      },
+      {
+        "number": 453,
+        "title": "feat(gmail): add --gmail-no-send flag for agent safety",
+        "state": "open",
+        "date": "2026-03-16T16:33:14Z",
+        "url": "https://github.com/steipete/gogcli/issues/453",
+        "author": "veteranbv"
+      },
+      {
+        "number": 451,
+        "title": "claude work skill to access google workspace",
+        "state": "open",
+        "date": "2026-03-15T04:20:37Z",
+        "url": "https://github.com/steipete/gogcli/issues/451",
+        "author": "sluramod"
+      },
+      {
+        "number": 449,
+        "title": "gmail search \"in:spam is:unread\" ignores is:unread filter — returns all spam regardless of read status",
+        "state": "open",
+        "date": "2026-03-13T18:06:59Z",
+        "url": "https://github.com/steipete/gogcli/issues/449",
+        "author": "TimTulsaCRS"
+      },
+      {
+        "number": 448,
+        "title": "Feature request: transfer ownership of calendar event",
+        "state": "open",
+        "date": "2026-03-13T17:37:27Z",
+        "url": "https://github.com/steipete/gogcli/issues/448",
+        "author": "markusbkoch"
+      }
+    ],
+    "commitCount": 34,
+    "topContributors": [
+      "steipete"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/steipete-gogcli-0.jpg"
+    ]
+  },
+  {
+    "name": "speaking",
+    "description": "Upcoming and past speaking engagements for Peter Steinberger @steipete",
+    "url": "https://github.com/steipete/speaking",
+    "stars": 180,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "steipete"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/steipete-speaking-0.jpg"
+    ]
+  },
+  {
+    "name": "ordercli",
+    "description": "CLI for Foodora and Deliveroo",
+    "url": "https://github.com/steipete/ordercli",
+    "stars": 57,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 5,
+        "title": "feat: add Wolt provider support",
+        "state": "open",
+        "date": "2026-02-07T15:03:36Z",
+        "url": "https://github.com/steipete/ordercli/issues/5",
+        "author": "EivindKjosbakken"
+      },
+      {
+        "number": 4,
+        "title": "Feature Request: Add Sweden (SE) Foodora support",
+        "state": "open",
+        "date": "2026-02-02T14:44:24Z",
+        "url": "https://github.com/steipete/ordercli/issues/4",
+        "author": "petterahlen-commits"
+      },
+      {
+        "number": 2,
+        "title": "Deliveroo UK: order_number type mismatch (int vs string)",
+        "state": "open",
+        "date": "2026-01-29T01:20:59Z",
+        "url": "https://github.com/steipete/ordercli/issues/2",
+        "author": "Paul-Simpson"
+      }
+    ],
+    "commitCount": 4,
+    "topContributors": [
+      "steipete"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "mcporter",
+    "description": "Call MCPs via TypeScript, masquerading as simple TypeScript API. Or package them as cli.",
+    "url": "https://github.com/steipete/mcporter",
+    "stars": 3093,
+    "releases": [],
+    "mergedPRs": [
+      {
+        "number": 92,
+        "title": "fix: align --raw-strings and --no-coerce semantics",
+        "state": "merged",
+        "date": "2026-03-02T21:37:25Z",
+        "url": "https://github.com/steipete/mcporter/pull/92",
+        "author": "steipete",
+        "body": "Follow-up to #59.\n\n- make --no-coerce disable all coercion (bool/null/JSON/numeric)\n- keep --raw-strings numeric-only\n- add regression tests for both modes\n- document both flags in call help\n- add changelog entry with thanks"
+      }
+    ],
+    "openPRs": [
+      {
+        "number": 95,
+        "title": "chore(deps): bump the npm_and_yarn group across 1 directory with 2 updates",
+        "state": "open",
+        "date": "2026-03-04T21:14:42Z",
+        "url": "https://github.com/steipete/mcporter/pull/95",
+        "author": "dependabot[bot]",
+        "body": "Bumps the npm_and_yarn group with 2 updates in the / directory: [@hono/node-server](https://github.com/honojs/node-server) and [hono](https://github.com/honojs/hono).\n\nUpdates `@hono/node-server` from 1.19.9 to 1.19.10\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/honojs/node-server/releases\"><code>@​hono/node-server</code>'s releases</a>.</em></p>\n<blockquote>\n<h2>v1.19.10</h2>\n<h2>Security Fix</h2>\n<p>Fixed an authorization bypass in Serve Static Middleware caused by inconsistent URL decoding (<code>%2F</code> handling) between the router and static file resolution. Users of Serve Static Middleware are encouraged to upgrade to this version.</p>\n<p>See GHSA-wc8c-qw6v-h7f6 for details.</p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/honojs/node-server/commit/2f8ca3665f5257305603783ec9999bd1a9bec0f2\"><code>2f8ca36</code></a> 1.19.10</li>\n<li><a href=\"https://github.com/honojs/node-server/commit/455015be1697dd89974a68b70350ea7b2d126d2e\"><code>455015b</code></a> Merge commit from fork</li>\n<li><a href=\"https://github.com/honojs/node-server/commit/cc05c48d8eb34007d5d5ff3861ea554721387041\"><code>cc05c48</code></a> chore: add benchmark for comparing with npm and local (dev) (<a href=\"https://redirect.github.com/honojs/node-server/issues/305\">#305</a>)</li>\n<li><a href=\"https://github.com/honojs/node-server/commit/58c44121523b418578be5bd911f2b67d8ef73ceb\"><code>58c4412</code></a> chore: Adding LICENSE file with MIT license referenced in README.md (<a href=\"https://redirect.github.com/honojs/node-server/issues/297\">#297</a>)</li>\n<li><a href=\"https://github.com/honojs/node-server/commit/b1daa4cfb30ea58a926f3befed2fb883ae2fd9df\"><code>b1daa4c</code></a> docs(readme): add <a href=\"https://github.com/usualoma\"><code>@​usualoma</code></a> as an author (<a href=\"https://redirect.github.com/honojs/node-server/issues/300\">#300</a>)</li>\n<li>See full diff in <a href=\"https://github.com/honojs/node-server/compare/v1.19.9...v1.19.10\">compare view</a></li>\n</ul>\n</details>\n<br />\n\nUpdates `hono` from 4.12.3 to 4.12.5\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/honojs/hono/releases\">hono's releases</a>.</em></p>\n<blockquote>\n<h2>v4.12.5</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>fix(request): return <code>string | undefined</code> from param() when path type is any by <a href=\"https://github.com/andrewdamelio\"><code>@​andrewdamelio</code></a> in <a href=\"https://redirect.github.com/honojs/hono/pull/4723\">honojs/hono#4723</a></li>\n<li>fix(jwt): validate token format in decode and decodeHeader functions by <a href=\"https://github.com/otoneko1102\"><code>@​otoneko1102</code></a> in <a href=\"https://redirect.github.com/honojs/hono/pull/4752\">honojs/hono#4752</a></li>\n<li>fix(jsx): Fix &quot;Invalid state: Controller is already closed&quot; by <a href=\"https://github.com/gaearon\"><code>@​gaearon</code></a> in <a href=\"https://redirect.github.com/honojs/hono/pull/4770\">honojs/hono#4770</a></li>\n<li>chore(eslint): upgrade <code>@hono/eslint-config</code> by <a href=\"https://github.com/BarryThePenguin\"><code>@​BarryThePenguin</code></a> in <a href=\"https://redirect.github.com/honojs/hono/pull/4781\">honojs/hono#4781</a></li>\n</ul>\n<h2>New Contributors</h2>\n<ul>\n<li><a href=\"https://github.com/andrewdamelio\"><code>@​andrewdamelio</code></a> made their first contribution in <a href=\"https://redirect.github.com/honojs/hono/pull/4723\">honojs/hono#4723</a></li>\n<li><a href=\"https://github.com/otoneko1102\"><code>@​otoneko1102</code></a> made their first contribution in <a href=\"https://redirect.github.com/honojs/hono/pull/4752\">honojs/hono#4752</a></li>\n<li><a href=\"https://github.com/gaearon\"><code>@​gaearon</code></a> made their first contribution in <a href=\"https://redirect.github.com/honojs/hono/pull/4770\">honojs/hono#4770</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a href=\"https://github.com/honojs/hono/compare/v4.12.4...v4.12.5\">https://github.com/honojs/hono/compare/v4.12.4...v4.12.5</a></p>\n<h2>v4.12.4</h2>\n<h2>Security fixes</h2>\n<p>This release includes fixes for the following security issues:</p>\n<h3>SSE Control Field Injection</h3>\n<p>Affects: <code>streamSSE()</code> in Streaming Helper. Fixes injection of unintended SSE fields by rejecting CR/LF characters in <code>event</code>, <code>id</code>, and <code>retry</code>. <a href=\"https://github.com/honojs/hono/security/advisories/GHSA-p6xx-57qc-3wxr\">https://github.com/honojs/hono/security/advisories/GHSA-p6xx-57qc-3wxr</a></p>\n<h3>Cookie Attribute Injection in <code>setCookie()</code></h3>\n<p>Affects: <code>setCookie()</code> from <code>hono/cookie</code>. Fixes cookie attribute manipulation by rejecting <code>;</code>, <code>\\r</code>, and <code>\\n</code> in <code>domain</code> and <code>path</code> options. <a href=\"https://github.com/honojs/hono/security/advisories/GHSA-5pq2-9x2x-5p6w\">https://github.com/honojs/hono/security/advisories/GHSA-5pq2-9x2x-5p6w</a></p>\n<h3>Middleware Bypass in Serve Static</h3>\n<p>Affects: Serve Static middleware. Fixes inconsistent URL decoding that could allow protected static resources to be accessed without triggering route-based middleware. <a href=\"https://github.com/honojs/hono/security/advisories/GHSA-q5qw-h33p-qvwr\">https://github.com/honojs/hono/security/advisories/GHSA-q5qw-h33p-qvwr</a></p>\n<p>Users who uses Strreaming Helper, Cookie utility, and Serve Static are strongly encouraged to upgrade to this version.</p>\n<hr />\n<h2>Other changes</h2>\n<ul>\n<li>fix(client): preserve route schema in ApplyGlobalResponse by <a href=\"https://github.com/agumy\"><code>@​agumy</code></a> in <a href=\"https://redirect.github.com/honojs/hono/pull/4777\">honojs/hono#4777</a></li>\n<li>fix(utils/url): specify the return type of <code>tryDecodeURI</code> by <a href=\"https://github.com/yusukebe\"><code>@​yusukebe</code></a> in <a href=\"https://redirect.github.com/honojs/hono/pull/4779\">honojs/hono#4779</a></li>\n</ul>\n<h2>New Contributors</h2>\n<ul>\n<li><a href=\"https://github.com/agumy\"><code>@​agumy</code></a> made their first contribution in <a href=\"https://redirect.github.com/honojs/hono/pull/4777\">honojs/hono#4777</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a href=\"https://github.com/honojs/hono/compare/v4.12.3...v4.12.4\">https://github.com/honojs/hono/compare/v4.12.3...v4.12.4</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/honojs/hono/commit/18cc595fc2a6a24c919bda8d733e7f95460eef4f\"><code>18cc595</code></a> 4.12.5</li>\n<li><a href=\"https://github.com/honojs/hono/commit/5d59ac770b8adb10dc7b1b45be748dc4931fb3ca\"><code>5d59ac7</code></a> chore(eslint): upgrade <code>@hono/eslint-config</code> (<a href=\"https://redirect.github.com/honojs/hono/issues/4781\">#4781</a>)</li>\n<li><a href=\"https://github.com/honojs/hono/commit/b8cff189051d408c8c4cf57d24ca82ec8712e73d\"><code>b8cff18</code></a> fix(jsx): Fix &quot;Invalid state: Controller is already closed&quot; (<a href=\"https://redirect.github.com/honojs/hono/issues/4770\">#4770</a>)</li>\n<li><a href=\"https://github.com/honojs/hono/commit/8c4d7f3d2feea19c726bcaf3b7d01b62215eae8b\"><code>8c4d7f3</code></a> fix(jwt): validate token format in decode and decodeHeader functions (<a href=\"https://redirect.github.com/honojs/hono/issues/4752\">#4752</a>)</li>\n<li><a href=\"https://github.com/honojs/hono/commit/0f499152ee20daf4f394d1f0ef5cc700ce7e2735\"><code>0f49915</code></a> fix(request): return <code>string | undefined</code> from param() when path type is any ...</li>\n<li><a href=\"https://github.com/honojs/hono/commit/19d20d23a2921e26c3bbfdb5549fce98b4a39b28\"><code>19d20d2</code></a> 4.12.4</li>\n<li><a href=\"https://github.com/honojs/hono/commit/44ae0c8cc4d5ab2bed529127a4ac72e1483ad073\"><code>44ae0c8</code></a> Merge commit from fork</li>\n<li><a href=\"https://github.com/honojs/hono/commit/f4123ed9ea3c7c52380cc99a079a4d773838846e\"><code>f4123ed</code></a> Merge commit from fork</li>\n<li><a href=\"https://github.com/honojs/hono/commit/80a9837904c346f264b57dbfd22822a46cc24b08\"><code>80a9837</code></a> fix(utils/url): specify the return type of <code>tryDecodeURI</code> (<a href=\"https://redirect.github.com/honojs/hono/issues/4779\">#4779</a>)</li>\n<li><a href=\"https://github.com/honojs/hono/commit/6a0607a929d888893f0c91d92dce2fcfdb3662a3\"><code>6a0607a</code></a> Merge commit from fork</li>\n<li>Additional commits viewable in <a href=\"https://github.com/honojs/hono/compare/v4.12.3...v4.12.5\">compare view</a></li>\n</ul>\n</details>\n<br />\n\n\nDependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all of the ignore conditions of the specified dependency\n- `@dependabot ignore <dependency name> major version` will close this group update PR and stop Dependabot creating any more for the specific dependency's major version (unless you unignore this specific dependency's major version or upgrade to it yourself)\n- `@dependabot ignore <dependency name> minor version` will close this group update PR and stop Dependabot creating any more for the specific dependency's minor version (unless you unignore this specific dependency's minor version or upgrade to it yourself)\n- `@dependabot ignore <dependency name>` will close this group update PR and stop Dependabot creating any more for the specific dependency (unless you unignore this specific dependency or upgrade to it yourself)\n- `@dependabot unignore <dependency name>` will remove all of the ignore conditions of the specified dependency\n- `@dependabot unignore <dependency name> <ignore condition>` will remove the ignore condition of the specified dependency and ignore conditions\nYou can disable automated security fix PRs for this repo from the [Security Alerts page](https://github.com/steipete/mcporter/network/alerts).\n\n</details>"
+      },
+      {
+        "number": 94,
+        "title": "fix: detect auth errors from error.code property (StreamableHTTPError…",
+        "state": "open",
+        "date": "2026-03-03T13:32:43Z",
+        "url": "https://github.com/steipete/mcporter/pull/94",
+        "author": "KentonYu",
+        "body": "  ## Summary\r\n\r\n  - MCP SDK's `StreamableHTTPError(401, ...)` and `SseError` store the HTTP status code in `error.code`, but the message\r\n   text may not contain the numeric status code (e.g., `\"Error POSTing to endpoint: {}\"`)\r\n  - `analyzeConnectionError` previously only parsed the message string to extract status codes, missing `error.code`\r\n  entirely\r\n  - This caused OAuth promotion to not trigger for Streamable HTTP 401 responses, falling back to legacy SSE transport\r\n  (GET), which the server doesn't support — resulting in a confusing 404 error\r\n\r\n  ## Changes\r\n\r\n  - **`src/error-classifier.ts`**: Add `extractErrorCode()` helper that reads `error.code` as a numeric HTTP status\r\n  (100–599). This source takes priority over message-text parsing in `analyzeConnectionError`\r\n  - **`tests/error-classifier.test.ts`**: Add tests for `error.code` extraction — 401/403 → auth, 404 → http, 500 →\r\n  http, no code → regression check\r\n  - **`tests/runtime-oauth-detection.test.ts`**: Add test confirming `isUnauthorizedError` returns true for errors with\r\n  `code: 401` even when message lacks \"401\"\r\n\r\n  ## Test plan\r\n\r\n  - [x] `npx vitest run tests/error-classifier.test.ts tests/runtime-oauth-detection.test.ts` — 21 tests pass\r\n  - [x] Full test suite — no regressions from this change"
+      },
+      {
+        "number": 93,
+        "title": "fix: support --args flag (plural) in config add",
+        "state": "open",
+        "date": "2026-03-03T04:47:18Z",
+        "url": "https://github.com/steipete/mcporter/pull/93",
+        "author": "Jah-yee",
+        "body": "Issue #90: config add silently drops --args flags\n\nThe CLI only handled --arg (singular) but users may pass --args (plural).\nNow both --arg and --args are accepted."
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 122,
+        "title": "SSE fallback incorrectly uses the same URL as Streamable HTTP, causing 400 errors on stateful servers",
+        "state": "open",
+        "date": "2026-03-19T12:03:13Z",
+        "url": "https://github.com/steipete/mcporter/issues/122",
+        "author": "ahonn"
+      },
+      {
+        "number": 121,
+        "title": "Static `Authorization` header from imported external configs overrides OAuth access token",
+        "state": "open",
+        "date": "2026-03-19T12:03:06Z",
+        "url": "https://github.com/steipete/mcporter/issues/121",
+        "author": "ahonn"
+      },
+      {
+        "number": 120,
+        "title": "mcporter auth figma error",
+        "state": "open",
+        "date": "2026-03-18T07:46:33Z",
+        "url": "https://github.com/steipete/mcporter/issues/120",
+        "author": "sobergou"
+      },
+      {
+        "number": 119,
+        "title": "CLI: --key value format passes numeric params as strings, causing invalid_type errors",
+        "state": "open",
+        "date": "2026-03-17T23:32:01Z",
+        "url": "https://github.com/steipete/mcporter/issues/119",
+        "author": "Skrblik"
+      },
+      {
+        "number": 117,
+        "title": "Support --header flag for ad-hoc HTTP servers (--http-url)",
+        "state": "open",
+        "date": "2026-03-17T04:11:03Z",
+        "url": "https://github.com/steipete/mcporter/issues/117",
+        "author": "lxw322"
+      },
+      {
+        "number": 116,
+        "title": "Support a per tool schema output",
+        "state": "open",
+        "date": "2026-03-17T01:54:45Z",
+        "url": "https://github.com/steipete/mcporter/issues/116",
+        "author": "miguelarios"
+      },
+      {
+        "number": 115,
+        "title": "OAuth flow hangs indefinitely when server rejects dynamic client registration (e.g., Figma MCP)",
+        "state": "open",
+        "date": "2026-03-16T22:40:14Z",
+        "url": "https://github.com/steipete/mcporter/issues/115",
+        "author": "leandroppf"
+      },
+      {
+        "number": 113,
+        "title": "Generated CLI: object-type parameters not JSON-parsed (inferType + optionParser missing 'object' case)",
+        "state": "open",
+        "date": "2026-03-16T21:09:28Z",
+        "url": "https://github.com/steipete/mcporter/issues/113",
+        "author": "v2nic"
+      },
+      {
+        "number": 109,
+        "title": "Add on-demand activation for heavy MCP servers",
+        "state": "open",
+        "date": "2026-03-15T10:01:36Z",
+        "url": "https://github.com/steipete/mcporter/issues/109",
+        "author": "Citrus086"
+      },
+      {
+        "number": 108,
+        "title": "resource content type blob/text silently dropped in all --output modes",
+        "state": "open",
+        "date": "2026-03-15T03:56:03Z",
+        "url": "https://github.com/steipete/mcporter/issues/108",
+        "author": "piezox"
+      }
+    ],
+    "commitCount": 15,
+    "topContributors": [
+      "steipete"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "imsg",
+    "description": "CLI for Apple's Messages.app so your agent can send and receive text messages/iMessages.",
+    "url": "https://github.com/steipete/imsg",
+    "stars": 906,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [
+      {
+        "number": 71,
+        "title": "feat: Add isGroup support to detect group chats",
+        "state": "open",
+        "date": "2026-03-02T20:56:13Z",
+        "url": "https://github.com/steipete/imsg/pull/71",
+        "author": "PeterRosdahl",
+        "body": "## Summary\nAdds the ability to detect whether a message is from a group chat.\n\n## Changes\n- Add `isGroup` boolean to `Message` struct\n- Update SQL queries to JOIN against `chat` table and fetch `chat.style`\n- Map `chat.style == 43` → `isGroup = true`\n- Add `is_group` field to JSON output\n\n## Testing\nTested with synthetic data by copying chat.db and modifying `style` to verify both cases:\n- `style=45` → `is_group: false` ✅\n- `style=43` → `is_group: true` ✅\n\n## Usage\n```bash\nimsg history --chat-id 3 --json | jq '.is_group'\n```\n\n---\n\n*Note: Apologies for PR #70 which was closed - I was a bit too quick on the keyboard and submitted before proper testing. This one has been verified.*"
+      },
+      {
+        "number": 69,
+        "title": "fix(react): add Enter keypress to confirm standard tapback selection",
+        "state": "open",
+        "date": "2026-03-02T20:28:25Z",
+        "url": "https://github.com/steipete/imsg/pull/69",
+        "author": "PeterRosdahl",
+        "body": "## Summary\n\nStandard tapback reactions (love, like, dislike, laugh, emphasis, question) open the tapback menu but never confirm the selection. The custom emoji code path presses Enter (`key code 36`) after typing the emoji, but the standard reaction path was missing this.\n\n## Changes\n\nAdded `delay 0.1` and `key code 36` after `keystroke reactionKey` in the standard reaction AppleScript, matching the custom emoji path.\n\n## Testing\n\nTested locally on macOS 15 (Sequoia) with imsg 0.5.0:\n- `imsg react --chat-id 3 --reaction like` ✅\n- `imsg react --chat-id 3 --reaction love` ✅  \n- `imsg react --chat-id 3 --reaction laugh` ✅\n\nFixes #53"
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 72,
+        "title": "watch: outbound messages echoed as is_from_me=false duplicates",
+        "state": "open",
+        "date": "2026-03-04T12:44:37Z",
+        "url": "https://github.com/steipete/imsg/issues/72",
+        "author": "egantz"
+      },
+      {
+        "number": 68,
+        "title": "image compatibility with intel-based Macs. - universal app?",
+        "state": "open",
+        "date": "2026-03-01T07:53:42Z",
+        "url": "https://github.com/steipete/imsg/issues/68",
+        "author": "akmacks"
+      },
+      {
+        "number": 66,
+        "title": "Tapback (Reaction) Support",
+        "state": "open",
+        "date": "2026-02-27T04:46:11Z",
+        "url": "https://github.com/steipete/imsg/issues/66",
+        "author": "safaaleigh"
+      },
+      {
+        "number": 65,
+        "title": "Feature request: Support sending threaded/inline replies via `imsg send`",
+        "state": "open",
+        "date": "2026-02-26T22:02:43Z",
+        "url": "https://github.com/steipete/imsg/issues/65",
+        "author": "blortski"
+      },
+      {
+        "number": 63,
+        "title": "imsg — Send, read, stream iMessage & SMS has bug not showing $",
+        "state": "open",
+        "date": "2026-02-22T09:56:29Z",
+        "url": "https://github.com/steipete/imsg/issues/63",
+        "author": "moltbot9-beep"
+      },
+      {
+        "number": 62,
+        "title": "OpenClaw support for iMSG as Legacy?",
+        "state": "open",
+        "date": "2026-02-19T14:01:37Z",
+        "url": "https://github.com/steipete/imsg/issues/62",
+        "author": "camerony"
+      },
+      {
+        "number": 60,
+        "title": "Typing indicators broken on macOS 26 (Tahoe) — imagent requires private entitlements",
+        "state": "open",
+        "date": "2026-02-17T03:48:07Z",
+        "url": "https://github.com/steipete/imsg/issues/60",
+        "author": "zoskebutler"
+      },
+      {
+        "number": 58,
+        "title": "typing: IMChatRegistry never populates — entitlement blocker + any;-; GUID mismatch",
+        "state": "open",
+        "date": "2026-02-16T23:03:07Z",
+        "url": "https://github.com/steipete/imsg/issues/58",
+        "author": "alexrudloff"
+      },
+      {
+        "number": 57,
+        "title": "Bug: `is_group` field missing from JSON output",
+        "state": "open",
+        "date": "2026-02-16T23:00:53Z",
+        "url": "https://github.com/steipete/imsg/issues/57",
+        "author": "clawbunny"
+      },
+      {
+        "number": 56,
+        "title": "typing/typing.start fails for chats with 'any;-;' guid prefix",
+        "state": "open",
+        "date": "2026-02-16T20:33:44Z",
+        "url": "https://github.com/steipete/imsg/issues/56",
+        "author": "chunwu-us"
+      },
+      {
+        "number": 55,
+        "title": "react: custom emoji reactions don't work — tapback menu has no text input",
+        "state": "open",
+        "date": "2026-02-16T16:55:13Z",
+        "url": "https://github.com/steipete/imsg/issues/55",
+        "author": "jordanstern"
+      },
+      {
+        "number": 54,
+        "title": "typing: 'any;-;' GUID prefix not recognized by IMCore",
+        "state": "open",
+        "date": "2026-02-16T16:50:49Z",
+        "url": "https://github.com/steipete/imsg/issues/54",
+        "author": "jordanstern"
+      },
+      {
+        "number": 53,
+        "title": "react: missing Enter keypress for standard tapback reactions",
+        "state": "open",
+        "date": "2026-02-16T16:50:35Z",
+        "url": "https://github.com/steipete/imsg/issues/53",
+        "author": "jordanstern"
+      },
+      {
+        "number": 51,
+        "title": "[BUG] typing command fails with 'any;-;' chat identifier prefix",
+        "state": "open",
+        "date": "2026-02-16T07:43:48Z",
+        "url": "https://github.com/steipete/imsg/issues/51",
+        "author": "claww13"
+      }
+    ],
+    "commitCount": 2,
+    "topContributors": [
+      "steipete"
+    ],
+    "demoImages": []
+  }
+]

@@ -1,0 +1,72 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "No releases, 132 commits, and a whole lot of open questions.",
+  "editionNote": "A quiet week on the release front, but @steipete's commit log tells a different story — nine repos buzzing with fixes, community PRs, and enough open issues to keep a bug tracker therapist employed.",
+  "articles": [
+    {
+      "repo": "gogcli",
+      "headline": "gogcli gets 34 commits and a surprise analytics pitch from the community",
+      "deck": "The Google Suite CLI saw the heaviest commit traffic this week, plus an outside contributor wants to bolt on Search Console.",
+      "body": "@steipete pushed 34 commits to gogcli this week, the highest count across all repos. Meanwhile, contributor haresh-seenivasagan opened <a href=\"https://github.com/steipete/gogcli/pull/402\">#402 feat(analytics): add Google Analytics and Google Search Console commands</a>, proposing a significant scope expansion. On the issue side, auth cleanup and People API failures remain open thorns — gog auth remove reportedly leaves stale entries in config.json, and the whoami command chokes when the OAuth client project lacks the People API.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "command line terminal window surrounded by floating envelopes, calendars, and magnifying glasses"
+    },
+    {
+      "repo": "summarize",
+      "headline": "summarize racks up 30 commits while a Groq regression festers",
+      "deck": "Heavy development energy, but a 0.12.0 bug that broke local audio transcription still awaits a fix.",
+      "body": "@steipete landed 30 commits in summarize this week, second only to gogcli. The open issue list, however, reads like a triage queue: a 0.12.0 regression where local .ogg transcription via Groq returns 403 errors that worked fine in 0.11.1, a broken side panel in Arc Browser, and a bug where the OpenClaw CLI provider unsafely passes large web content as a CLI argument. A copy-to-clipboard button request sits patiently at the end of the line.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "newspaper being squeezed through a funnel into a single sheet of paper on a desk"
+    },
+    {
+      "repo": "discrawl",
+      "headline": "discrawl pushes 27 commits as AI memory and cloud database ideas pile up",
+      "deck": "The Discord-to-SQLite CLI is getting real work, and its issue tracker is dreaming big.",
+      "body": "With 27 commits this week, discrawl saw serious attention from @steipete. The open issues suggest an ambitious roadmap: cloud database backends via Cloudflare D1 or Turso, using discrawl as memory augmentation for AI agents, and bolting on pre-commit secret scanning with gitleaks. A quieter but critical issue flags SQL string concatenation in input handling — a reminder that even CLI tools need to mind their injections.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "chat bubbles being funneled into a glowing database cylinder in a dark room"
+    },
+    {
+      "repo": "mcporter",
+      "headline": "mcporter fixes its string coercion split personality",
+      "deck": "@steipete merged a semantics alignment fix while three community PRs queue up at the door.",
+      "body": "@steipete merged <a href=\"https://github.com/steipete/mcporter/pull/92\">#92 fix: align --raw-strings and --no-coerce semantics</a>, tidying up how the MCP-to-TypeScript bridge handles parameter types. Three community PRs arrived this week: <a href=\"https://github.com/steipete/mcporter/pull/94\">#94</a> fixes auth error detection from StreamableHTTPError, <a href=\"https://github.com/steipete/mcporter/pull/93\">#93</a> adds support for a plural --args flag in config, and <a href=\"https://github.com/steipete/mcporter/pull/95\">#95</a> is Dependabot doing its usual grocery run. Meanwhile, an SSE fallback bug and a static Authorization header overriding OAuth tokens linger in the issue tracker.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "two mismatched electrical plugs finally connecting through an elegant adapter"
+    },
+    {
+      "repo": "oracle",
+      "headline": "oracle's browser mode trips over BigInt on Linux and timeouts on uploads",
+      "deck": "Fifteen commits land, but two bugs expose platform-specific cracks in the GPT-5 Pro frontend.",
+      "body": "@steipete pushed 15 commits to oracle this week. The issue tracker reveals two active bugs: Gemini browser mode fails on Linux due to a SQLite BigInt overflow, and browser attachment runs can silently fall back to pressing Enter after an upload timeout instead of failing before send. A third issue requests Windows cookie extraction support for Gemini browser mode — a sign the tool is outgrowing its macOS cradle.",
+      "tag": "PENDING",
+      "illustrationPrompt": "crystal ball cracked down the middle sitting on a Linux penguin pedestal"
+    },
+    {
+      "repo": "imsg",
+      "headline": "imsg gets group chat detection and tapback keyboard fix from the community",
+      "deck": "Two PRs from PeterRosdahl aim to make the iMessage CLI smarter about conversations and reactions.",
+      "body": "Contributor PeterRosdahl opened two PRs for imsg this week: <a href=\"https://github.com/steipete/imsg/pull/71\">#71 feat: Add isGroup support to detect group chats</a> and <a href=\"https://github.com/steipete/imsg/pull/69\">#69 fix(react): add Enter keypress to confirm standard tapback selection</a>. Both address gaps in how the CLI handles real-world messaging patterns. The issue tracker also flags outbound messages being echoed as false duplicates and a compatibility problem with Intel-based Macs.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "row of speech bubbles assembling themselves into a neat group on a conveyor belt"
+    },
+    {
+      "repo": "ordercli",
+      "headline": "ordercli fields requests for Wolt and Swedish Foodora while Deliveroo types clash",
+      "deck": "The food delivery CLI's geographic ambitions grow, but a type mismatch in Deliveroo UK orders needs fixing first.",
+      "body": "@steipete made 4 commits to ordercli this week. The issue tracker shows expansion pressure: a feature request for Wolt provider support and another for Sweden Foodora coverage. Closer to home, Deliveroo UK has a bug where order_number expects an int but sometimes arrives as a string — the kind of mismatch that ruins a perfectly good Friday night takeaway query.",
+      "tag": "PENDING",
+      "illustrationPrompt": "delivery bags from different countries arriving on a spinning airport baggage carousel"
+    },
+    {
+      "repo": "agent-scripts",
+      "headline": "agent-scripts documentation points to scripts that do not exist",
+      "deck": "A single commit and a gentle note that subagent.md references phantom files.",
+      "body": "One commit. One open issue noting that subagent.md references non-existent scripts. Another issue offers feedback on the markdown-converter skill. @steipete's shared agent scripts repo had a quiet week, but documentation ghosts are the kind of thing that trip up every downstream consumer.",
+      "tag": "PENDING",
+      "illustrationPrompt": "a map with dotted trails leading to empty pedestals in a misty library"
+    }
+  ],
+  "closingNote": "Zero releases shipped. 132 commits burned. The backlog grows stronger."
+}
