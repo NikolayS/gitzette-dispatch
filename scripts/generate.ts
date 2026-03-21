@@ -523,6 +523,8 @@ Return ONLY the JSON object, no markdown fences.`;
 
 function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string {
   const totalMerged = reposData.reduce((s, r) => s + r.mergedPRs.length, 0);
+  const totalOpen = reposData.reduce((s, r) => s + r.openPRs.length, 0);
+  const totalPRs = totalMerged + totalOpen; // all PRs touched this week
   const totalCommits = reposData.reduce((s, r) => s + r.commitCount, 0);
   const totalReleases = reposData.reduce((s, r) => s + r.releases.length, 0);
   const activeRepos = reposData.filter((r) => r.commitCount > 0);
@@ -533,7 +535,7 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
   <div style="display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink);margin-bottom:20px;">
     ${[
       [String(totalCommits), "commits"],
-      [String(totalMerged), "PRs merged"],
+      [String(totalPRs), "pull requests"],
       [String(totalReleases), "releases"],
     ].map(([val, label], i) => `
       <div style="padding:14px 10px 12px;${i < 2 ? "border-right:1px solid var(--ink);" : ""}text-align:center;">
