@@ -85,7 +85,8 @@ async function ghGet(path: string): Promise<any> {
 
 async function listRepos(owner: string): Promise<string[]> {
   const data = await ghGet(`/users/${owner}/repos?per_page=100&sort=pushed`);
-  return data.map((r: any) => r.name);
+  // skip forks — they add noise and inflate scan time
+  return data.filter((r: any) => !r.fork).map((r: any) => r.name);
 }
 
 interface Release {
@@ -488,6 +489,7 @@ Return a JSON object with this exact structure:
 }
 
 Order articles by newsworthiness (releases > big features > pending work).
+Maximum 8 articles total — pick the most newsworthy, drop the rest.
 Return ONLY the JSON object, no markdown fences.`;
 
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -991,6 +993,15 @@ async function main() {
       } else {
         console.log("(quiet week, skipped)");
       }
+    }
+
+    // cap at top 10 most active repos to keep LLM input + HTML manageable
+    if (reposData.length > 10) {
+      reposData = reposData
+        .sort((a, b) => (b.commitCount + b.releases.length * 3 + b.mergedPRs.length) -
+                        (a.commitCount + a.releases.length * 3 + a.mergedPRs.length))
+        .slice(0, 10);
+      console.log(`\ntrimmed to top 10 most active repos`);
     }
 
     // save cache
