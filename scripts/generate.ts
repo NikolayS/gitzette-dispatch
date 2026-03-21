@@ -758,23 +758,24 @@ async function buildHtml(
 
   // 1 image per project max — track which repos have had their image shown
   const imageShown = new Set<string>();
-  const articles = copy.articles
-    .map((a, i) => {
+  const splitAt = Math.ceil(copy.articles.length / 2); // ~half on each page
+
+  const renderedArticles = copy.articles.map((a, i) => {
       const repo = repoMap[a.repo];
       if (!repo) return "";
       const level = i === 0 ? "h1" : i < 3 ? "h2" : "h3";
-      // only show image if this repo hasn't had one yet
       const imgIdx = imageShown.has(a.repo) ? -1 : 0;
       if (imgIdx === 0) {
         imageShown.add(a.repo);
-        // inject AI illustration if no README screenshot
         if (!repo.demoImages[0] && illustrationCache[a.repo]) {
           repo.demoImages[0] = illustrationCache[a.repo]!;
         }
       }
       return renderArticle(a, repo, level as "h1" | "h2" | "h3", imgIdx < 0 ? 99 : imgIdx);
-    })
-    .join("\n");
+    });
+
+  const articles = renderedArticles.slice(0, splitAt).join("\n");
+  const articlesPage2 = renderedArticles.slice(splitAt).join("\n");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -798,12 +799,15 @@ async function buildHtml(
   .paper { max-width: 960px; margin: 24px auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 2px 12px rgba(0,0,0,.15); }
   /* broadsheet: two pages side by side on very wide screens */
   .page-2 { display: none; }
+  /* on narrow: show all articles on page 1 */
+  .articles-p2 { display: none; }
   @media (min-width: 1400px) {
     body { background: #d8d4cc; }
     .broadsheet-wrap { display: flex; align-items: flex-start; gap: 0; max-width: 1900px; margin: 32px auto; }
     .broadsheet-wrap .paper { max-width: none; flex: 1; margin: 0; box-shadow: 0 4px 24px rgba(0,0,0,.2); }
     .broadsheet-wrap .paper.page-2 { display: block; border-left: 3px double var(--rule); margin-left: -1px; }
-    /* on broadsheet, hide the sidebar from page 1 (stats move to page 2) */
+    .broadsheet-wrap .articles-p2 { display: block; }
+    /* on broadsheet, hide the sidebar from page 1 (stats + p2 articles move to page 2) */
     .broadsheet-wrap .paper:first-child .grid-2-1 { grid-template-columns: 1fr; }
     .broadsheet-wrap .paper:first-child .grid-2-1 .col:last-child { display: none; }
   }
@@ -927,6 +931,7 @@ async function buildHtml(
     </div>
   </div>
   <div class="body">
+    <div class="articles-p2">${articlesPage2}</div>
     ${buildDataGraphics(reposData, from, to)}
     <div style="padding-top:24px;border-top:2px solid var(--ink);margin-top:8px;">
       <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
