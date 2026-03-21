@@ -481,7 +481,7 @@ Return a JSON object with this exact structure:
       "deck": "one-sentence italic subheading expanding on the headline",
       "body": "2-4 sentence article body. Reference specific features/PRs from the data. Mention pending work if notable.",
       "tag": "RELEASE | FEATURE | SECURITY | PENDING | COMMUNITY",
-      "illustrationPrompt": "short subject description for an editorial illustration (10-15 words). Only for stories without obvious screenshots. E.g. 'robot reading a PostgreSQL query plan with magnifying glass' or 'lock and key with database cylinder'. Skip for repos that have demo screenshots."
+      "illustrationPrompt": "short subject description for a purely visual editorial illustration (10-15 words). No text, signs, labels, or readable characters in the scene. Only for stories without obvious screenshots. E.g. 'robot peering into a glowing cylinder' or 'lock and key with database cylinders stacked behind'. Skip for repos that have demo screenshots."
     }
   ],
   "closingNote": "one-line sign-off at the bottom of the paper (dry, funny)"

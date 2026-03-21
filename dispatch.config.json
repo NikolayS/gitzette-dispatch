@@ -7,7 +7,7 @@
   "imageGen": {
     "provider": "google",
     "model": "imagen-4.0-fast-generate-001",
-    "style": "Black and white newspaper woodcut illustration, 1920s engraving style, stark and editorial. No color. Subject: "
+    "style": "Black and white newspaper woodcut illustration, 1920s engraving style, stark and editorial. No color. No text, no words, no labels, no letters, no numbers — purely visual imagery only. Subject: "
   },
   "output": "index.html",
   "knownIncidents": [
