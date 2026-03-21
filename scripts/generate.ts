@@ -888,6 +888,7 @@ async function buildHtml(
       <span class="meta-right">github.com/${ownerHandle}</span>
     </div>
     <div class="masthead">the <span>dispatch</span></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(13px,2.5vw,18px);font-weight:700;letter-spacing:.06em;margin-top:4px;"><a href="https://github.com/${ownerHandle}" style="color:var(--ink);text-decoration:none;">@${ownerHandle}</a></div>
     <div class="tagline">${copy.tagline}</div>
     <div class="edition-bar">
       <span>${totalCommits} commits</span>
