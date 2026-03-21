@@ -3,7 +3,7 @@
   "repos": {
     "exclude": ["COIL", "callbot", "dispatch"]
   },
-  "model": "anthropic/claude-opus-4-6",
+  "model": "anthropic/claude-haiku-4-5",
   "imageGen": {
     "provider": "google",
     "model": "imagen-4.0-fast-generate-001",
