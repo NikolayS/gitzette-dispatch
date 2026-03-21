@@ -40,12 +40,16 @@ function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean }
   let to: Date | undefined;
   let noFetch = false;
   let noLlm = false;
+  let owner: string | undefined;
+  let output: string | undefined;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--from" && args[i + 1]) from = new Date(args[++i]);
     if (args[i] === "--to" && args[i + 1]) to = new Date(args[++i]);
     if (args[i] === "--no-fetch") noFetch = true;
     if (args[i] === "--no-llm") noLlm = true;
+    if (args[i] === "--owner" && args[i + 1]) owner = args[++i];
+    if (args[i] === "--output" && args[i + 1]) output = args[++i];
   }
 
   if (!to) to = new Date();
@@ -54,7 +58,7 @@ function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean }
     from.setDate(from.getDate() - 7);
   }
 
-  return { from, to, noFetch, noLlm };
+  return { from, to, noFetch, noLlm, owner, output };
 }
 
 // ── github api ───────────────────────────────────────────────────────────────
@@ -394,7 +398,8 @@ if (!OPENROUTER_KEY) throw new Error("OPENROUTER_API_KEY not set");
 async function generateCopy(
   reposData: RepoData[],
   from: Date,
-  to: Date
+  to: Date,
+  owner: string = "NikolayS"
 ): Promise<{
   masthead: string;
   tagline: string;
@@ -430,7 +435,7 @@ async function generateCopy(
   const fromLabel = from.toLocaleDateString("en-US", { month: "long", day: "numeric" });
   const toLabel = to.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
-  const prompt = `You are writing the editorial copy for a weekly engineering newspaper called "the dispatch" by Nikolay Samokhvalov (@NikolayS on GitHub), a PostgreSQL expert and open-source developer.
+  const prompt = `You are writing the editorial copy for a weekly engineering newspaper called "the dispatch" — a digest of GitHub activity by @${owner}.
 
 The newspaper covers his GitHub projects for the week of ${fromLabel} – ${toLabel}.
 
@@ -444,7 +449,7 @@ RULES — STYLE:
 - Sentence case for headlines (not Title Case)
 
 RULES — ATTRIBUTION:
-- Always refer to the author as "@NikolayS" — never "Samokhvalov", "Nikolay", "the developer", "the author"
+- Always refer to the author as "@${owner}" — never by full name, "the developer", "the author"
 - Repo/project names are ALWAYS lowercase, no exceptions, even at sentence start: "rpg" not "RPG", "sqlever" not "Sqlever", "pg_ash" not "PG_ash", "leandex" not "Leandex"
 
 RULES — CONTENT:
@@ -725,7 +730,8 @@ async function buildHtml(
   from: Date,
   to: Date,
   vol: number,
-  issue: number
+  issue: number,
+  ownerHandle: string = "NikolayS"
 ): string {
   const repoMap = Object.fromEntries(reposData.map((r) => [r.name, r]));
 
@@ -869,12 +875,12 @@ async function buildHtml(
 <div class="paper">
   <div class="header">
     <div class="header-kicker">
-      <span class="kicker-text"><a href="https://github.com/NikolayS">@NikolayS</a> — open-source digest</span>
+      <span class="kicker-text"><a href="https://github.com/${ownerHandle}">@${ownerHandle}</a> — open-source digest</span>
       <span class="kicker-date">${fromLabel} – ${toLabel}</span>
     </div>
     <div class="header-meta">
       <span class="meta-left">Vol. ${vol}, No. ${issue}</span>
-      <span class="meta-right">github.com/NikolayS</span>
+      <span class="meta-right">github.com/${ownerHandle}</span>
     </div>
     <div class="masthead">the <span>dispatch</span></div>
     <div class="tagline">${copy.tagline}</div>
@@ -959,9 +965,12 @@ async function buildHtml(
 import { existsSync } from "fs";
 
 async function main() {
-  const { from, to, noFetch, noLlm } = parseArgs();
+  const { from, to, noFetch, noLlm, owner: ownerOverride, output: outputOverride } = parseArgs();
 
-  const cacheKey = `${from.toISOString().slice(0, 10)}_${to.toISOString().slice(0, 10)}`;
+  const owner = ownerOverride || config.owner;
+  const outputFile = outputOverride || config.output;
+
+  const cacheKey = `${owner}_${from.toISOString().slice(0, 10)}_${to.toISOString().slice(0, 10)}`;
   const cacheDir = join(ROOT, ".cache");
   const cacheFile = join(cacheDir, `${cacheKey}.json`);
 
@@ -971,8 +980,8 @@ async function main() {
     console.log(`\nusing cached data from ${cacheFile}`);
     reposData = JSON.parse(readFileSync(cacheFile, "utf8"));
   } else {
-    console.log(`\nfetching repos for ${config.owner}...`);
-    const allRepos = await listRepos(config.owner);
+    console.log(`\nfetching repos for ${owner}...`);
+    const allRepos = await listRepos(owner);
 
     const excludeSet = new Set((config.repos.exclude || []).map((r) => r.toLowerCase()));
     const includeSet = config.repos.include ? new Set(config.repos.include.map((r) => r.toLowerCase())) : null;
@@ -989,7 +998,7 @@ async function main() {
     reposData = [];
     for (const repo of repos) {
       process.stdout.write(`  ${repo}... `);
-      const data = await getRepoData(config.owner, repo, from, to);
+      const data = await getRepoData(owner, repo, from, to);
       if (data) {
         reposData.push(data);
         console.log(`✓ (${data.commitCount} commits, ${data.releases.length} releases, ${data.mergedPRs.length} merged PRs)`);
@@ -1017,7 +1026,7 @@ async function main() {
     copy = JSON.parse(readFileSync(copyFile, "utf8"));
   } else {
     console.log(`\ngenerating copy via LLM (${config.model})...`);
-    copy = await generateCopy(reposData, from, to);
+    copy = await generateCopy(reposData, from, to, owner);
     await Bun.write(copyFile, JSON.stringify(copy, null, 2));
   }
 
@@ -1026,9 +1035,9 @@ async function main() {
   const issue = Math.ceil((to.getTime() - new Date("2026-03-15").getTime()) / (7 * 86400 * 1000)) + 1;
 
   console.log(`building html...`);
-  const html = await buildHtml(copy, reposData, from, to, vol, issue);
+  const html = await buildHtml(copy, reposData, from, to, vol, issue, owner);
 
-  const outPath = join(ROOT, config.output);
+  const outPath = join(ROOT, outputFile);
   writeFileSync(outPath, html, "utf8");
   console.log(`\n✓ written to ${outPath}`);
   console.log(`\nheadlines:`);
