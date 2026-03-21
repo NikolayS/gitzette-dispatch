@@ -230,7 +230,7 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
     const info = await ghGet(`/repos/${owner}/${repo}`);
 
     // releases in window
-    const allReleases = await ghGet(`/repos/${owner}/${repo}/releases?per_page=20`);
+    const allReleases = await ghGet(`/repos/${owner}/${repo}/releases?per_page=20`).catch(() => []);
     const releases: Release[] = allReleases
       .filter((r: any) => {
         const d = new Date(r.published_at);
@@ -245,7 +245,7 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
       }));
 
     // PRs — merged in window
-    const allPRs = await ghGet(`/repos/${owner}/${repo}/pulls?state=closed&per_page=50&sort=updated&direction=desc`);
+    const allPRs = await ghGet(`/repos/${owner}/${repo}/pulls?state=closed&per_page=50&sort=updated&direction=desc`).catch(() => []);
     const mergedPRs: PR[] = allPRs
       .filter((p: any) => {
         if (!p.merged_at) return false;
@@ -266,7 +266,7 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
       }));
 
     // PRs — opened within this week's window (not all currently open)
-    const openPRsRaw = await ghGet(`/repos/${owner}/${repo}/pulls?state=open&per_page=50&sort=created&direction=desc`);
+    const openPRsRaw = await ghGet(`/repos/${owner}/${repo}/pulls?state=open&per_page=50&sort=created&direction=desc`).catch(() => []);
     const openPRs: PR[] = openPRsRaw
       .filter((p: any) => {
         const d = new Date(p.created_at);
@@ -283,7 +283,7 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
       }));
 
     // Issues — currently open (exclude PRs)
-    const openIssuesRaw = await ghGet(`/repos/${owner}/${repo}/issues?state=open&per_page=20`);
+    const openIssuesRaw = await ghGet(`/repos/${owner}/${repo}/issues?state=open&per_page=20`).catch(() => []);
     const openIssues: Issue[] = openIssuesRaw
       .filter((i: any) => !i.pull_request)
       .map((i: any) => ({
