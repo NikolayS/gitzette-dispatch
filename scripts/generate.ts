@@ -324,69 +324,40 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
 
 // ── image generation ──────────────────────────────────────────────────────────
 
-/** Generate an illustration via Imagen 4 (Google) or gpt-image-1 (OpenAI fallback).
+/** Generate an illustration via Google Gemini 2.5 Flash Image (generateContent).
  *  Returns a data: URI string or null on failure. Never throws. */
 async function generateIllustration(subject: string): Promise<string | null> {
   const cfg = (config as any).imageGen;
   if (!cfg) return null;
 
-  const prompt = cfg.style + subject;
   const googleKey = process.env.GOOGLE_AI_KEY;
-  const openaiKey = process.env.OPENAI_API_KEY;
+  if (!googleKey) { console.warn("  no GOOGLE_AI_KEY"); return null; }
 
-  // try Google Imagen 4 first
-  if (googleKey) {
-    try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict?key=${googleKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            instances: [{ prompt }],
-            parameters: { sampleCount: 1, aspectRatio: "16:9" },
-          }),
-        }
-      );
-      const data: any = await res.json();
-      if (data.predictions?.[0]?.bytesBase64Encoded) {
-        const b64 = data.predictions[0].bytesBase64Encoded;
-        const buf = Buffer.from(b64, "base64");
-        return newspaperifyBuffer(buf);
-      }
-      console.warn(`  Imagen 4 unavailable: ${data.error?.message?.slice(0, 80) ?? "unknown"}`);
-    } catch (e) {
-      console.warn(`  Imagen 4 error: ${e}`);
-    }
-  }
+  const prompt = cfg.style + subject;
 
-  // fallback: OpenAI gpt-image-1
-  if (openaiKey) {
-    try {
-      const res = await fetch("https://api.openai.com/v1/images/generations", {
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${googleKey}`,
+      {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${openaiKey}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "gpt-image-1",
-          prompt,
-          n: 1,
-          size: "1536x1024",
-          output_format: "jpeg",
-          quality: "medium",
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ["IMAGE", "TEXT"] },
         }),
-      });
-      const data: any = await res.json();
-      if (data.data?.[0]?.b64_json) {
-        const buf = Buffer.from(data.data[0].b64_json, "base64");
+      }
+    );
+    const data: any = await res.json();
+    const parts = data?.candidates?.[0]?.content?.parts ?? [];
+    for (const part of parts) {
+      if (part.inlineData?.data) {
+        const buf = Buffer.from(part.inlineData.data, "base64");
         return newspaperifyBuffer(buf);
       }
-      console.warn(`  gpt-image-1 error: ${JSON.stringify(data.error ?? data).slice(0, 120)}`);
-    } catch (e) {
-      console.warn(`  gpt-image-1 error: ${e}`);
     }
+    console.warn(`  Gemini image no image in response: ${JSON.stringify(data).slice(0, 200)}`);
+  } catch (e) {
+    console.warn(`  Gemini image error: ${e}`);
   }
 
   return null;
