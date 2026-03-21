@@ -902,24 +902,6 @@ async function buildHtml(
         ${copy.editionNote ? `<p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">${copy.editionNote}</p>` : ""}
         ${articles}
       </div>
-      <div class="col">
-        <div style="padding-top:20px;">
-          <div class="tag">repos</div>
-          <ul style="list-style:none;margin-top:8px;">
-            ${reposData
-              .map(
-                (r) => `<li style="margin-bottom:12px;">
-              <a href="${r.url}" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);">${r.name}</a>
-              ${r.description ? `<div style="font-size:12px;color:var(--muted);line-height:1.4;">${r.description}</div>` : ""}
-              <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;">
-                ${r.commitCount} commits &nbsp;·&nbsp; ${r.releases.length} release${r.releases.length !== 1 ? "s" : ""}
-              </div>
-            </li>`
-              )
-              .join("")}
-          </ul>
-        </div>
-      </div>
     </div>
   </div>
   <div class="footer">
