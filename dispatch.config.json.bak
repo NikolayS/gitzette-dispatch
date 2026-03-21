@@ -1,0 +1,16 @@
+{
+  "owner": "NikolayS",
+  "repos": {
+    "exclude": ["COIL", "callbot", "dispatch"]
+  },
+  "model": "anthropic/claude-opus-4-6",
+  "imageGen": {
+    "provider": "google",
+    "model": "imagen-4.0-fast-generate-001",
+    "style": "Black and white newspaper woodcut illustration, 1920s engraving style, stark and editorial. No color. Subject: "
+  },
+  "output": "index.html",
+  "knownIncidents": [
+    "A pgMustard API key was leaked into a GitHub PR comment when an AI agent posted testing output as part of testing the new \\explain share pgmustard feature in rpg v0.8.0. The key was quickly spotted by @NikolayS and rotated. Write this as a short SECURITY article with dry wit — cautionary tale, not catastrophe."
+  ]
+}

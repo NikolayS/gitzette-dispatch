@@ -809,9 +809,13 @@ async function buildHtml(
   const toLabel = to.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   // generate AI illustrations for articles without README screenshots
+  // cap: max 2 AI illustrations per dispatch
+  const MAX_ILLUSTRATIONS = 2;
+  const MAX_REPO_IMAGES = 3;
   const illustrationCache: Record<string, string | null> = {};
   if (!skipIllustrations) {
     console.log("generating illustrations...");
+    let illustrationCount = 0;
     const repoImageUsed = new Set<string>();
     for (const a of copy.articles) {
       const repo = repoMap[a.repo];
@@ -821,25 +825,38 @@ async function buildHtml(
         repoImageUsed.add(a.repo);
         continue;
       }
+      // cap: skip illustration if we've already generated the max allowed
+      if (illustrationCount >= MAX_ILLUSTRATIONS) {
+        console.log(`  illustration for "${a.headline}"... skipped (cap of ${MAX_ILLUSTRATIONS} reached)`);
+        illustrationCache[a.headline] = null;
+        continue;
+      }
       // otherwise generate illustration keyed by article headline
       const subject = a.illustrationPrompt ?? `abstract editorial scene related to ${a.repo} software project`;
       process.stdout.write(`  illustration for "${a.headline}"... `);
       const url = await generateIllustration(subject);
       illustrationCache[a.headline] = url;
+      if (url) illustrationCount++;
       console.log(url ? "✓" : "skipped");
     }
   }
 
   // 1 image per project max — track which repos have had their image shown
+  // cap: max MAX_REPO_IMAGES repo (README) images per dispatch
   const imageShown = new Set<string>();
+  let repoImageCount = 0;
   const splitAt = Math.ceil(copy.articles.length / 2); // ~half on each page
 
   const renderedArticles = copy.articles.map((a, i) => {
       const repo = repoMap[a.repo];
       if (!repo) return "";
       const level = i === 0 ? "h1" : i < 3 ? "h2" : "h3";
-      const hasRepoImg = repo.demoImages[0] && !imageShown.has(a.repo);
-      if (hasRepoImg) imageShown.add(a.repo);
+      // allow repo image only if: repo has one, not yet shown, and under the cap
+      const hasRepoImg = repo.demoImages[0] && !imageShown.has(a.repo) && repoImageCount < MAX_REPO_IMAGES;
+      if (hasRepoImg) {
+        imageShown.add(a.repo);
+        repoImageCount++;
+      }
       // build a per-article demoImages array: repo screenshot (first use) or illustration
       const articleImages = hasRepoImg
         ? repo.demoImages
