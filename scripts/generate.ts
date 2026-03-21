@@ -777,7 +777,7 @@ async function buildHtml(
   .muted { color: var(--muted); }
   .paper { max-width: 960px; margin: 24px auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 2px 12px rgba(0,0,0,.15); }
   /* broadsheet: two pages side by side on very wide screens */
-  .page-2 { display: none; }
+  .page-2 { display: block; }
   /* articles-p2: always visible on page 1; moves to page 2 in broadsheet */
   .articles-p2 { display: block; }
   @media (min-width: 1400px) {
