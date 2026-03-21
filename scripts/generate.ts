@@ -522,6 +522,11 @@ RULES — STRUCTURE:
 - editionNote: punchy 1-sentence summary of the whole week (e.g. "Four releases, one leaked key, and a migration tool that arrived fully armed.")
 - closingNote: dry one-liner, like a newspaper colophon
 
+AVAILABLE REPOS (use ONLY these exact names in the "repo" field — no others):
+${reposData.map(r => `- ${r.name}${r.description ? ` (${r.description.slice(0,80)})` : ""}`).join("\n")}
+
+FORKS/MIRRORS: Some repos may be forks of upstream projects (e.g. "postgres" is a mirror of PostgreSQL). Only write about @${owner}'s OWN commits and PRs in those repos. Do not attribute upstream activity to @${owner}.
+
 Here is the raw data:
 ${dataJson}
 
