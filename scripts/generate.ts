@@ -399,7 +399,8 @@ async function generateCopy(
   reposData: RepoData[],
   from: Date,
   to: Date,
-  owner: string = "NikolayS"
+  owner: string = "NikolayS",
+  knownIncidents: string[] = []
 ): Promise<{
   masthead: string;
   tagline: string;
@@ -467,7 +468,7 @@ RULES — STRUCTURE:
 Here is the raw data:
 ${dataJson}
 
-${(config as any).knownIncidents?.length ? `KNOWN INCIDENTS THIS WEEK (confirmed by the author — must include as articles):\n${((config as any).knownIncidents as string[]).map((s: string, i: number) => `${i + 1}. ${s}`).join("\n")}` : ""}
+${knownIncidents.length ? `KNOWN INCIDENTS THIS WEEK (confirmed by the author — must include as articles):\n${knownIncidents.map((s, i) => `${i + 1}. ${s}`).join("\n")}` : ""}
 
 Return a JSON object with this exact structure:
 {
@@ -1026,7 +1027,9 @@ async function main() {
     copy = JSON.parse(readFileSync(copyFile, "utf8"));
   } else {
     console.log(`\ngenerating copy via LLM (${config.model})...`);
-    copy = await generateCopy(reposData, from, to, owner);
+    // only inject knownIncidents for the configured owner, not arbitrary --owner overrides
+    const incidents = (owner === config.owner) ? (config.knownIncidents || []) : [];
+    copy = await generateCopy(reposData, from, to, owner, incidents);
     await Bun.write(copyFile, JSON.stringify(copy, null, 2));
   }
 
