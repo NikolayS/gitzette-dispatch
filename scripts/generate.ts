@@ -903,7 +903,6 @@ async function buildHtml(
         ${articles}
       </div>
       <div class="col">
-        ${buildDataGraphics(reposData, from, to)}
         <div style="padding-top:20px;">
           <div class="tag">repos</div>
           <ul style="list-style:none;margin-top:8px;">
