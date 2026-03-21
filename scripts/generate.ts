@@ -508,6 +508,117 @@ Return ONLY the JSON object, no markdown fences.`;
   }
 }
 
+// ── data graphics ─────────────────────────────────────────────────────────────
+
+function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string {
+  // ── 1. Commit velocity bar chart ──────────────────────────────────────────
+  const activeRepos = reposData.filter((r) => r.commitCount > 0);
+  const maxCommits = Math.max(...activeRepos.map((r) => r.commitCount));
+  const barH = 18;
+  const barGap = 6;
+  const labelW = 90;
+  const chartW = 320;
+  const svgH = activeRepos.length * (barH + barGap) + 30;
+
+  const bars = activeRepos
+    .sort((a, b) => b.commitCount - a.commitCount)
+    .map((r, i) => {
+      const barW = Math.max(2, Math.round((r.commitCount / maxCommits) * chartW));
+      const y = i * (barH + barGap) + 20;
+      return `
+      <text x="${labelW - 4}" y="${y + barH - 4}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="11" fill="#444">${r.name}</text>
+      <rect x="${labelW}" y="${y}" width="${barW}" height="${barH}" fill="#0f0f0f"/>
+      <text x="${labelW + barW + 4}" y="${y + barH - 4}" font-family="IBM Plex Mono,monospace" font-size="11" fill="#666">${r.commitCount}</text>`;
+    })
+    .join("");
+
+  const commitChart = `
+  <div class="infographic">
+    <div class="infographic-label">commits this week</div>
+    <svg width="100%" viewBox="0 0 ${labelW + chartW + 60} ${svgH}" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="12" font-family="IBM Plex Mono,monospace" font-size="9" fill="#aaa" letter-spacing="1">REPOSITORY</text>
+      <text x="${labelW + chartW + 55}" y="12" font-family="IBM Plex Mono,monospace" font-size="9" fill="#aaa" letter-spacing="1" text-anchor="end">COMMITS</text>
+      ${bars}
+    </svg>
+  </div>`;
+
+  // ── 2. Release timeline ───────────────────────────────────────────────────
+  const allReleases = reposData
+    .flatMap((r) => r.releases.map((rel) => ({ repo: r.name, ...rel })))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  let releaseTimeline = "";
+  if (allReleases.length > 0) {
+    const fromMs = from.getTime();
+    const toMs = to.getTime();
+    const rangeMs = toMs - fromMs;
+    const tlW = 400;
+    const tlH = 60;
+
+    // day labels
+    const dayLabels = [];
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+      const x = Math.round(((d.getTime() - fromMs) / rangeMs) * tlW);
+      dayLabels.push(`<text x="${x}" y="${tlH - 2}" font-family="IBM Plex Mono,monospace" font-size="9" fill="#aaa" text-anchor="middle">${d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase()}</text>`);
+      dayLabels.push(`<line x1="${x}" y1="18" x2="${x}" y2="${tlH - 12}" stroke="#e0dbd4" stroke-width="1"/>`);
+    }
+
+    // release dots + labels
+    const dots = allReleases.map((rel, i) => {
+      const x = Math.round(((new Date(rel.date).getTime() - fromMs) / rangeMs) * tlW);
+      const y = 12 + (i % 2) * 14; // stagger to avoid overlap
+      return `
+        <circle cx="${x}" cy="${y}" r="4" fill="#0f0f0f"/>
+        <text x="${x}" y="${y - 6}" font-family="IBM Plex Mono,monospace" font-size="9" fill="#333" text-anchor="middle">${rel.repo} ${rel.tag}</text>`;
+    });
+
+    releaseTimeline = `
+  <div class="infographic" style="margin-top:16px;">
+    <div class="infographic-label">release timeline</div>
+    <svg width="100%" viewBox="0 0 ${tlW} ${tlH}" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="36" x2="${tlW}" y2="36" stroke="#0f0f0f" stroke-width="1.5"/>
+      ${dayLabels.join("")}
+      ${dots.join("")}
+    </svg>
+  </div>`;
+  }
+
+  // ── 3. PR merge rate ──────────────────────────────────────────────────────
+  const totalMerged = reposData.reduce((s, r) => s + r.mergedPRs.length, 0);
+  const totalOpen = reposData.reduce((s, r) => s + r.openPRs.length, 0);
+  const totalCommits = reposData.reduce((s, r) => s + r.commitCount, 0);
+  const totalReleases = reposData.reduce((s, r) => s + r.releases.length, 0);
+
+  const statsRow = `
+  <div class="infographic" style="margin-top:16px;">
+    <div class="infographic-label">week at a glance</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;">
+      ${[
+        ["commits", totalCommits],
+        ["releases", totalReleases],
+        ["PRs merged", totalMerged],
+        ["PRs opened", totalOpen],
+      ]
+        .map(
+          ([label, val]) => `
+        <div style="text-align:center;padding:8px 4px;border:1px solid var(--rule);">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;line-height:1;">${val}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;">${label}</div>
+        </div>`
+        )
+        .join("")}
+    </div>
+  </div>`;
+
+  return `
+<div style="padding:20px 0 0;">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:12px;">data</div>
+  ${statsRow}
+  ${commitChart}
+  ${releaseTimeline}
+</div>`;
+}
+
 // ── html template ─────────────────────────────────────────────────────────────
 
 function formatDate(iso: string): string {
@@ -678,6 +789,10 @@ async function buildHtml(
   .release-link { font-weight: 600; color: var(--ink); }
   .pending-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; border-left: 2px solid var(--rule); padding-left: 8px; }
 
+  /* infographics */
+  .infographic { margin-bottom: 4px; }
+  .infographic-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+
   /* rule */
   .rule { border: none; border-top: 1px solid var(--rule); margin: 0 0 0; }
 
@@ -713,6 +828,7 @@ async function buildHtml(
         ${articles}
       </div>
       <div class="col">
+        ${buildDataGraphics(reposData, from, to)}
         <div style="padding-top:20px;">
           <div class="tag">repos</div>
           <ul style="list-style:none;margin-top:8px;">
