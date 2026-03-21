@@ -118,6 +118,33 @@ interface RepoData {
   demoImages: string[]; // resolved raw URLs to screenshots/GIFs from README
 }
 
+import sharp from "sharp";
+
+/** Fetch an image URL and convert to newspaper style:
+ *  grayscale + contrast boost + slight grain. Returns data URI or null. */
+async function newspaperify(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `token ${GH_TOKEN}` },
+    });
+    if (!res.ok) return null;
+    const buf = Buffer.from(await res.arrayBuffer());
+
+    const processed = await sharp(buf)
+      .grayscale()
+      .normalise() // auto levels
+      .modulate({ brightness: 0.92, saturation: 0 })
+      .sharpen({ sigma: 0.8 }) // crisp edges like newsprint
+      .jpeg({ quality: 82, progressive: true })
+      .toBuffer();
+
+    return `data:image/jpeg;base64,${processed.toString("base64")}`;
+  } catch (e) {
+    console.warn(`  failed to process image ${url}: ${e}`);
+    return null;
+  }
+}
+
 /** Extract non-badge image URLs from a repo's README */
 async function getReadmeImages(owner: string, repo: string): Promise<string[]> {
   try {
@@ -148,7 +175,9 @@ async function getReadmeImages(owner: string, repo: string): Promise<string[]> {
       if (!url.startsWith("http")) {
         resolved = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${url.replace(/^\.\//, "")}`;
       }
-      images.push(resolved);
+      // fetch + process to newspaper style
+      const dataUri = await newspaperify(resolved);
+      if (dataUri) images.push(dataUri);
     }
 
     return images.slice(0, 1); // max 1 image per repo
