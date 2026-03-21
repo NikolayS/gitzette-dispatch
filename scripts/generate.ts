@@ -129,8 +129,8 @@ async function getReadmeImages(owner: string, repo: string): Promise<string[]> {
     const matches = [...content.matchAll(/!\[([^\]]*)\]\(([^)]+)\)/g)];
     const images: string[] = [];
 
-    // badge patterns to skip
-    const badgePatterns = [
+    // patterns to skip
+    const skipPatterns = [
       /shields\.io/,
       /badge/i,
       /codecov/,
@@ -138,21 +138,20 @@ async function getReadmeImages(owner: string, repo: string): Promise<string[]> {
       /githubusercontent\.com\/[^/]+\/[^/]+\/actions/,
       /img\.shields/,
       /badgen/,
+      /\.gif$/i, // no GIFs — static only
     ];
 
     for (const [, alt, url] of matches) {
-      // skip badges
-      if (badgePatterns.some((p) => p.test(url) || p.test(alt))) continue;
+      if (skipPatterns.some((p) => p.test(url) || p.test(alt))) continue;
 
       let resolved = url;
-      // resolve relative paths to raw GitHub URLs
       if (!url.startsWith("http")) {
         resolved = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${url.replace(/^\.\//, "")}`;
       }
       images.push(resolved);
     }
 
-    return images.slice(0, 3); // max 3 images per repo
+    return images.slice(0, 1); // max 1 image per repo
   } catch {
     return [];
   }
@@ -491,10 +490,10 @@ function renderArticle(
       : "";
 
   const img = repoData.demoImages[imageIndex];
-  const isGif = img?.endsWith(".gif");
+  const maxHeight = level === "h1" ? "320px" : "200px";
   const imageHtml = img
     ? `<div class="article-image">
-        <img src="${img}" alt="demo" style="width:100%;border:1px solid var(--rule);margin:10px 0;${isGif ? "" : "max-height:280px;object-fit:cover;"}">
+        <img src="${img}" alt="demo" style="width:100%;max-height:${maxHeight};object-fit:cover;border:1px solid var(--rule);margin:10px 0;">
       </div>`
     : "";
 
@@ -503,9 +502,8 @@ function renderArticle(
       <div class="tag">${article.tag}</div>
       <${level}><a href="${repoData.url}" class="headline-link">${article.headline}</${level}>
       <p class="deck">${article.deck}</p>
-      ${level === "h1" && imageHtml ? imageHtml : ""}
+      ${imageHtml}
       <p class="body-text">${article.body}</p>
-      ${level !== "h1" && imageHtml ? imageHtml : ""}
       ${releaseLinks ? `<div class="release-links">${releaseLinks}</div>` : ""}
       ${prLinks ? `<div class="pr-links">merged: ${prLinks}</div>` : ""}
       ${openPRNote}
@@ -545,20 +543,23 @@ async function buildHtml(
     }
   }
 
-  // track how many images we've used per repo
-  const imageUsed: Record<string, number> = {};
+  // 1 image per project max — track which repos have had their image shown
+  const imageShown = new Set<string>();
   const articles = copy.articles
     .map((a, i) => {
       const repo = repoMap[a.repo];
       if (!repo) return "";
       const level = i === 0 ? "h1" : i < 3 ? "h2" : "h3";
-      const imgIdx = imageUsed[a.repo] ?? 0;
-      imageUsed[a.repo] = imgIdx + 1;
-      // inject AI illustration into repo if no README screenshot
-      if (!repo.demoImages[imgIdx] && illustrationCache[a.repo]) {
-        repo.demoImages[imgIdx] = illustrationCache[a.repo]!;
+      // only show image if this repo hasn't had one yet
+      const imgIdx = imageShown.has(a.repo) ? -1 : 0;
+      if (imgIdx === 0) {
+        imageShown.add(a.repo);
+        // inject AI illustration if no README screenshot
+        if (!repo.demoImages[0] && illustrationCache[a.repo]) {
+          repo.demoImages[0] = illustrationCache[a.repo]!;
+        }
       }
-      return renderArticle(a, repo, level as "h1" | "h2" | "h3", imgIdx);
+      return renderArticle(a, repo, level as "h1" | "h2" | "h3", imgIdx < 0 ? 99 : imgIdx);
     })
     .join("\n");
 
