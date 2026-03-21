@@ -658,8 +658,8 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
     const starEmpty = "☆".repeat(empty);
     return `<tr style="border-bottom:1px solid var(--rule);">
       <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:10px 12px 10px 0;white-space:nowrap;vertical-align:middle;"><a href="${r.url}" style="color:var(--ink);text-decoration:none;">${r.name}</a></td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:36px;letter-spacing:4px;line-height:1;vertical-align:middle;padding:12px 14px 12px 0;">${starFill}<span style="color:#ddd;">${starEmpty}</span></td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:12px 0;">${r.stars.toLocaleString()}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:2px;line-height:1;vertical-align:middle;padding:10px 10px 10px 0;white-space:nowrap;">${starFill}<span style="color:#ddd;">${starEmpty}</span></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:10px 0;">${r.stars.toLocaleString()}</td>
     </tr>`;
   }).join("");
 
