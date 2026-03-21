@@ -13,7 +13,9 @@
  */
 
 import { readFileSync, writeFileSync } from "fs";
+import fs from "fs/promises";
 import { join, dirname } from "path";
+import path from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -324,14 +326,28 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
 
 // ── image generation ──────────────────────────────────────────────────────────
 
-/** Generate an illustration via Google Gemini 2.5 Flash Image (generateContent).
- *  Returns a data: URI string or null on failure. Never throws. */
+const ILLUS_CACHE_DIR = path.join(import.meta.dir, "../.cache/illustrations");
+await fs.mkdir(ILLUS_CACHE_DIR, { recursive: true });
+
+function illusCachePath(subject: string): string {
+  const slug = subject.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60);
+  return path.join(ILLUS_CACHE_DIR, `${slug}.txt`);
+}
+
+/** Generate an illustration via Google Gemini 2.5 Flash Image.
+ *  Caches result to disk — on quota/error, returns cached version if available.
+ *  Never throws. */
 async function generateIllustration(subject: string): Promise<string | null> {
   const cfg = (config as any).imageGen;
   if (!cfg) return null;
 
+  const cachePath = illusCachePath(subject);
+
   const googleKey = process.env.GOOGLE_AI_KEY;
-  if (!googleKey) { console.warn("  no GOOGLE_AI_KEY"); return null; }
+  if (!googleKey) {
+    console.warn("  no GOOGLE_AI_KEY — trying cache");
+    try { return await fs.readFile(cachePath, "utf8"); } catch { return null; }
+  }
 
   const prompt = cfg.style + subject;
 
@@ -352,15 +368,25 @@ async function generateIllustration(subject: string): Promise<string | null> {
     for (const part of parts) {
       if (part.inlineData?.data) {
         const buf = Buffer.from(part.inlineData.data, "base64");
-        return newspaperifyBuffer(buf);
+        const dataUri = await newspaperifyBuffer(buf);
+        // cache to disk
+        await fs.writeFile(cachePath, dataUri, "utf8");
+        return dataUri;
       }
     }
-    console.warn(`  Gemini image no image in response: ${JSON.stringify(data).slice(0, 200)}`);
+    console.warn(`  Gemini image failed: ${JSON.stringify(data).slice(0, 200)}`);
   } catch (e) {
     console.warn(`  Gemini image error: ${e}`);
   }
 
-  return null;
+  // fallback: return cached version if we have one
+  try {
+    const cached = await fs.readFile(cachePath, "utf8");
+    console.warn(`  using cached illustration for "${subject}"`);
+    return cached;
+  } catch {
+    return null;
+  }
 }
 
 // ── llm copy ─────────────────────────────────────────────────────────────────
