@@ -532,52 +532,48 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
 
   // ── 1. Big ticker — oversized stat blocks ─────────────────────────────────
   const ticker = `
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink);margin-bottom:20px;">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule);margin-bottom:20px;">
     ${[
       [String(totalCommits), "commits"],
       [String(totalPRs), "pull requests"],
       [String(totalReleases), "releases"],
     ].map(([val, label], i) => `
-      <div style="padding:14px 10px 12px;${i < 2 ? "border-right:1px solid var(--ink);" : ""}text-align:center;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;">${val}</div>
+      <div style="padding:14px 10px 12px;${i < 2 ? "border-right:1px solid var(--rule);" : ""}text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">${val}</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">${label}</div>
       </div>`).join("")}
   </div>`;
 
-  // ── 2. Commit bar chart — hatched fill ────────────────────────────────────
-  const barH = 20;
-  const barGap = 5;
-  const labelW = 88;
-  const chartW = 260;
-  const numW = 36;
+  // ── 2. Commit bar chart — softer newspaper style ─────────────────────────
+  const barH = 18;
+  const barGap = 7;
+  const labelW = 110; // wider to fit names like "oak-tree-buzzer"
+  const chartW = 240;
+  const numW = 32;
   const svgW = labelW + chartW + numW;
-  const svgH = activeRepos.length * (barH + barGap) + 20;
+  const svgH = activeRepos.length * (barH + barGap) + 22;
 
   const sortedRepos = [...activeRepos].sort((a, b) => b.commitCount - a.commitCount);
   const bars = sortedRepos.map((r, i) => {
     const barW = Math.max(3, Math.round((r.commitCount / maxCommits) * chartW));
     const y = i * (barH + barGap) + 18;
-    // alternating fill: solid for top, hatched for rest
-    const fill = i === 0 ? "#0f0f0f" : "url(#hatch)";
-    const textFill = i === 0 ? "#0f0f0f" : "#333";
+    // graduated grey fills: leader = #555, rest progressively lighter
+    const greys = ["#555", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd"];
+    const fill = greys[Math.min(i, greys.length - 1)];
+    const textFill = i === 0 ? "#333" : "#666";
     return `
-    <text x="${labelW - 6}" y="${y + barH - 5}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="${textFill}" font-weight="${i === 0 ? "700" : "400"}">${r.name}</text>
-    <rect x="${labelW}" y="${y}" width="${barW}" height="${barH}" fill="${fill}" stroke="#0f0f0f" stroke-width="${i === 0 ? 0 : 0.5}"/>
-    <text x="${labelW + barW + 5}" y="${y + barH - 5}" font-family="IBM Plex Mono,monospace" font-size="10" fill="#555" font-weight="${i === 0 ? "700" : "400"}">${r.commitCount}</text>`;
+    <text x="${labelW - 6}" y="${y + barH - 4}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="${textFill}" font-weight="${i === 0 ? "600" : "400"}">${r.name}</text>
+    <rect x="${labelW}" y="${y}" width="${barW}" height="${barH}" fill="${fill}" rx="1"/>
+    <text x="${labelW + barW + 5}" y="${y + barH - 4}" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="${i === 0 ? "600" : "400"}">${r.commitCount}</text>`;
   }).join("");
 
   const commitChart = `
   <div style="margin-bottom:20px;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">commits by repo</div>
     <svg width="100%" viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <line x1="0" y1="0" x2="0" y2="4" stroke="#0f0f0f" stroke-width="1.5"/>
-        </pattern>
-      </defs>
-      <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#bbb" letter-spacing="1">REPO</text>
-      <text x="${svgW}" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#bbb" text-anchor="end" letter-spacing="1">COMMITS</text>
-      <line x1="0" y1="14" x2="${svgW}" y2="14" stroke="#ddd" stroke-width="0.5"/>
+      <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" letter-spacing="1">REPO</text>
+      <text x="${svgW}" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" text-anchor="end" letter-spacing="1">COMMITS</text>
+      <line x1="0" y1="14" x2="${svgW}" y2="14" stroke="#e8e4dc" stroke-width="0.5"/>
       ${bars}
     </svg>
   </div>`;
