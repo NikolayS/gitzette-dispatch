@@ -615,6 +615,9 @@ async function buildHtml(
 
   /* header */
   .header { padding: 20px 24px 14px; border-bottom: 3px solid var(--ink); }
+  .header-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--rule); padding-bottom: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px; }
+  .header-kicker a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); }
+  .header-kicker a:hover { color: var(--link); border-color: var(--link); }
   .header-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
   .masthead { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(32px,7vw,64px); letter-spacing: -.03em; line-height: 1; }
   .masthead span { color: var(--muted); font-weight: 400; }
@@ -656,10 +659,13 @@ async function buildHtml(
 <body>
 <div class="paper">
   <div class="header">
+    <div class="header-kicker">
+      <span>Open-source activity of <a href="https://github.com/NikolayS">Nikolay Samokhvalov (@NikolayS)</a> — PostgreSQL expert &amp; open-source developer</span>
+      <span style="color:var(--muted);font-weight:400;">${fromLabel} – ${toLabel}</span>
+    </div>
     <div class="header-meta">
-      <span>github.com/NikolayS</span>
-      <span>${fromLabel} – ${toLabel}</span>
       <span>Vol. ${vol}, No. ${issue}</span>
+      <span>github.com/NikolayS</span>
     </div>
     <div class="masthead">the <span>dispatch</span></div>
     <div class="tagline">${copy.tagline}</div>
