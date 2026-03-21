@@ -659,16 +659,16 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
   // ── 3. Star leaderboard — ★ glyph fill ───────────────────────────────────
   const starredRepos = [...reposData].filter((r) => r.stars > 0).sort((a, b) => b.stars - a.stars);
   const maxStars = Math.max(...starredRepos.map((r) => r.stars), 1);
-  const STAR_COLS = 10; // max filled stars per row
   const starRows = starredRepos.map((r) => {
-    const filled = Math.max(1, Math.round((r.stars / maxStars) * STAR_COLS));
-    const empty = STAR_COLS - filled;
-    const starFill = "★".repeat(filled);
-    const starEmpty = "☆".repeat(empty);
+    const pct = Math.round((r.stars / maxStars) * 100);
     return `<tr style="border-bottom:1px solid var(--rule);">
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:10px 12px 10px 0;white-space:nowrap;vertical-align:middle;"><a href="${r.url}" style="color:var(--ink);text-decoration:none;">${r.name}</a></td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:2px;line-height:1;vertical-align:middle;padding:10px 10px 10px 0;white-space:nowrap;">${starFill}<span style="color:#ddd;">${starEmpty}</span></td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:10px 0;">${r.stars.toLocaleString()}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="${r.url}" style="color:var(--ink);text-decoration:none;">${r.name}</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:${pct}%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">${r.stars.toLocaleString()}</td>
     </tr>`;
   }).join("");
 
