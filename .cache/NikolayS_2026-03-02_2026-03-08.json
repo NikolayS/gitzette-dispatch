@@ -1,0 +1,35 @@
+[
+  {
+    "name": "postgres",
+    "description": "Mirror of the official PostgreSQL GIT repository. Note that this is just a *mirror* - we don't work with pull requests on github. To contribute, please see http://wiki.postgresql.org/wiki/Submitting_a_Patch",
+    "url": "https://github.com/NikolayS/postgres",
+    "stars": 3,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 72,
+    "topContributors": [
+      "michaelpq",
+      "petere",
+      "tglsfdc"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "pg_pipe",
+    "description": "Incremental data processing pipelines for Postgres — the anti-extension. Pure SQL + PL/pgSQL, works on any Postgres 14+ including RDS, Cloud SQL, AlloyDB, Supabase, Neon.",
+    "url": "https://github.com/NikolayS/pg_pipe",
+    "stars": 2,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "Nik Samokhvalov",
+      "NikolayS"
+    ],
+    "demoImages": []
+  }
+]

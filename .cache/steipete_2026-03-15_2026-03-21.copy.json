@@ -1,0 +1,40 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "One mega-release, five new providers, and a bug that thinks you spent $1,547 in a day.",
+  "editionNote": "codexbar v0.18.0 lands with four new AI providers while the community keeps feeding it more.",
+  "articles": [
+    {
+      "repo": "CodexBar",
+      "headline": "codexbar v0.18.0 opens the floodgates: Kilo, Ollama, OpenRouter, and a pace forecaster walk into a menu bar",
+      "deck": "The usage-tracking Mac app adds four providers in a single release and teaches Codex to predict when you'll blow your budget.",
+      "body": "Released March 16, codexbar v0.18.0 is the largest provider expansion yet. Kilo lands with API/CLI source modes, pass parsing, and zero-balance credit handling. Ollama arrives with token-account support and Chrome-default auto cookie import. OpenRouter brings credit-based tracking with key-quota popups. On the Codex side, historical pace risk forecasting with backfill and zero-usage-day handling gives users an early warning before limits bite. Gemini gets split meters for Pro, Flash, and Flash Lite buckets. A new merged-menu Overview tab with configurable providers rounds it out, along with an experimental option to suppress Claude Keychain prompts and CPU/energy regression fixes in JSONL scanner paths.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "crowded menu bar overflowing with AI provider logos spilling onto a Mac desktop"
+    },
+    {
+      "repo": "CodexBar",
+      "headline": "Alibaba, GPT-5.4 nano pricing, and per-model token counts: the community keeps shipping",
+      "deck": "Eight merged PRs this week add another provider, new model pricing, and architectural refactors to codexbar.",
+      "body": "The ink on v0.18.0 was barely dry when contributors pushed more work through. @ratulsarna added <a href=\"https://github.com/steipete/CodexBar/pull/574\">#574 Add Alibaba Coding Plan provider</a> and landed two refactors: <a href=\"https://github.com/steipete/CodexBar/pull/494\">#494 Refactor Claude provider planning foundations</a> and <a href=\"https://github.com/steipete/CodexBar/pull/539\">#539 Decompose Claude OAuth credentials store collaborators</a>. @iam-brain shipped <a href=\"https://github.com/steipete/CodexBar/pull/561\">#561 Add GPT-5.4 mini and nano pricing</a> and <a href=\"https://github.com/steipete/CodexBar/pull/546\">#546 Add per-model token counts to cost history</a>. Smaller fixes landed too: <a href=\"https://github.com/steipete/CodexBar/pull/543\">#543 Wrap long status blurbs in menu</a>, <a href=\"https://github.com/steipete/CodexBar/pull/552\">#552 fix: make Kimi resetTime optional</a>, and <a href=\"https://github.com/steipete/CodexBar/pull/548\">#548 Fix typo with Kilo dashboard link</a>.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "assembly line of robots each stamping a different AI provider badge onto a menu bar icon"
+    },
+    {
+      "repo": "CodexBar",
+      "headline": "Grok, Cursor granularity, and macOS Tahoe fixes queue up in codexbar's inbox",
+      "deck": "Five open PRs signal the next wave of providers and platform compatibility work.",
+      "body": "The pipeline stays busy. <a href=\"https://github.com/steipete/CodexBar/pull/570\">#570 Add Grok (xAI) provider</a> from @BryanTegomoh would bring yet another provider to the roster. <a href=\"https://github.com/steipete/CodexBar/pull/579\">#579 Cursor: Total / Auto / API usage bars</a> proposes fine-grained Cursor tracking. Platform polish is in flight with <a href=\"https://github.com/steipete/CodexBar/pull/580\">#580 Fix preferences sidebar clipping on macOS Tahoe</a> and <a href=\"https://github.com/steipete/CodexBar/pull/573\">#573 Improve CI caching, fix lint config, harden Linux supply chain</a>. Meanwhile, an open bug reports a display glitch showing 2.8 billion tokens and $1,547 for a single day — a cost calculation nobody wants to see on their menu bar.",
+      "tag": "PENDING",
+      "illustrationPrompt": "shocked engineer staring at a menu bar showing an absurdly large dollar amount"
+    },
+    {
+      "repo": "discrawl",
+      "headline": "discrawl eyes cloud backends, AI memory, and a security tightening",
+      "deck": "The Discord-to-SQLite CLI logs four quiet commits and a flurry of new issue roadmapping.",
+      "body": "No releases this week for discrawl, but @steipete filed a batch of issues that sketch the project's next arc. Cloud database backends via Cloudflare D1 and Turso are on the table, alongside using discrawl as memory augmentation for AI agents. Security-minded issues call for pre-commit gitleaks scanning, enforced tests, and eliminating SQL string concatenation. A fourth issue would make environment variables and keyring the recommended secret source. Four commits shipped, though details remain internal.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "Discord chat messages being funneled into a glowing cloud-shaped SQLite database"
+    }
+  ],
+  "closingNote": "Printed on recycled API tokens. Back next week — if the budget forecaster says we can afford it."
+}

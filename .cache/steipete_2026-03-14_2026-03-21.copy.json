@@ -1,0 +1,40 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "One mega-release, four new providers, and a bug report claiming $1,547 in phantom tokens.",
+  "editionNote": "codexbar v0.18.0 lands with five new provider integrations while the community keeps stacking PRs like cordwood.",
+  "articles": [
+    {
+      "repo": "CodexBar",
+      "headline": "codexbar v0.18.0 adds Kilo, Ollama, OpenRouter, and a forecasting engine that tells you when you'll run out",
+      "deck": "The menu-bar usage tracker ships its biggest provider expansion yet, plus historical pace risk forecasting for Codex.",
+      "body": "Released March 16, codexbar v0.18.0 lands five provider additions in a single cut. Kilo arrives with API/CLI source modes, pass parsing, and zero-balance credit handling. Ollama gets token-account support and Chrome-default auto cookie import. OpenRouter brings credit-based usage tracking with key-quota popups. On the Codex side, historical pace risk forecasting with backfill and zero-usage-day handling gives users an early warning before they blow through their quota. Gemini now splits Pro, Flash, and Flash Lite into separate meters. An experimental option to suppress Claude Keychain prompts rounds out the headline features, and CPU/energy regressions in the JSONL scanner path have been squashed.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "menu bar with multiple provider meters filling up like fuel gauges on a dashboard"
+    },
+    {
+      "repo": "CodexBar",
+      "headline": "Alibaba, GPT-5.4 nano, and per-model token counts land in a ten-PR merge blitz",
+      "deck": "Community contributors delivered a provider, new pricing tiers, and architectural refactors in a single week.",
+      "body": "Ten PRs merged this week. <a href=\"https://github.com/steipete/CodexBar/pull/574\">#574 Add Alibaba Coding Plan provider</a> extends codexbar into yet another ecosystem. <a href=\"https://github.com/steipete/CodexBar/pull/561\">#561 Add GPT-5.4 mini and nano pricing</a> and <a href=\"https://github.com/steipete/CodexBar/pull/511\">#511 Preserve exact GPT-5 Codex pricing keys</a> keep the cost engine current. <a href=\"https://github.com/steipete/CodexBar/pull/546\">#546 Add per-model token counts to cost history</a> gives users a breakdown they have been asking for. On the plumbing side, <a href=\"https://github.com/steipete/CodexBar/pull/494\">#494 Refactor Claude provider planning foundations</a> and <a href=\"https://github.com/steipete/CodexBar/pull/539\">#539 Decompose Claude OAuth credentials store collaborators</a> rework internals for what looks like a broader Claude overhaul. <a href=\"https://github.com/steipete/CodexBar/pull/525\">#525 fix: show all enabled providers in merged switcher</a> fixes a visibility bug, and <a href=\"https://github.com/steipete/CodexBar/pull/543\">#543 Wrap long status blurbs in menu</a> tidies the UI.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "stack of pull request papers flying into an open mailbox shaped like a menu bar icon"
+    },
+    {
+      "repo": "CodexBar",
+      "headline": "Grok provider, Cursor usage bars, and a macOS Tahoe window fix queue up for review",
+      "deck": "Five open PRs hint at where codexbar is headed next.",
+      "body": "<a href=\"https://github.com/steipete/CodexBar/pull/570\">#570 Add Grok (xAI) provider</a> would bring yet another AI service under the menu bar umbrella. <a href=\"https://github.com/steipete/CodexBar/pull/579\">#579 Cursor: Total / Auto / API usage bars + totalPercentUsed preference</a> adds granular Cursor tracking. <a href=\"https://github.com/steipete/CodexBar/pull/580\">#580 Fix preferences sidebar clipping and window sizing on macOS Tahoe</a> patches a layout regression on the latest OS. <a href=\"https://github.com/steipete/CodexBar/pull/573\">#573 Improve CI caching, fix lint config, harden Linux supply chain</a> tightens the build pipeline. Meanwhile, an open bug report claims 2.8 billion tokens and $1,547 charged in a single day — almost certainly a parsing issue, but certainly attention-grabbing.",
+      "tag": "PENDING",
+      "illustrationPrompt": "a receipt printer spitting out an impossibly long bill labeled two point eight billion tokens"
+    },
+    {
+      "repo": "discrawl",
+      "headline": "discrawl gets six quiet commits and a goreleaser bump from dependabot",
+      "deck": "The Discord CLI with a SQLite backbone stirs with maintenance work and ambitious open issues.",
+      "body": "Six commits landed in discrawl this week, though no releases shipped. <a href=\"https://github.com/steipete/discrawl/pull/23\">#23 build(deps): bump goreleaser/goreleaser-action from 6 to 7</a> sits open from dependabot. The issue tracker tells a bigger story: open tickets propose cloud database backends via Cloudflare D1 or Turso, using discrawl as memory augmentation for AI agents, and adding gitleaks-based secret scanning to the CI pipeline. The tool is small today but the roadmap reads large.",
+      "tag": "PENDING",
+      "illustrationPrompt": "a small robot crawling through a Discord chat log with a tiny SQLite database on its back"
+    }
+  ],
+  "closingNote": "Printed on recycled pull requests. Back next week, assuming nobody actually spent $1,547 in one day."
+}

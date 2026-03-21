@@ -1,0 +1,869 @@
+[
+  {
+    "name": "NikolayS",
+    "description": "GitHub profile",
+    "url": "https://github.com/NikolayS/NikolayS",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 20,
+    "topContributors": [
+      "NikolayS"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "rpg",
+    "description": "rpg — modern Postgres terminal written in Rust. psql-compatible, with built-in DBA diagnostics and AI assistant",
+    "url": "https://github.com/NikolayS/rpg",
+    "stars": 38,
+    "releases": [
+      {
+        "tag": "v0.8.0",
+        "name": "v0.8.0",
+        "date": "2026-03-20T22:54:48Z",
+        "body": "## What's new in v0.8.0\n\n### Enhanced EXPLAIN Visualization\n\n- **Summary header** — execution time, planning time, rows, buffer stats at a glance\n- **Automatic issue detection** — warnings for seq scans on large tables, row estimate errors >10x, sorts spilling to disk, hash batches >1, high filter removal, parallel workers not launched\n- **Colorized plan** — full PostgreSQL EXPLAIN output with ANSI color coding by time percentage and ⚠ markers on problem nodes\n- **Hot path highlighting** — most expensive node chain bolded\n- **EXPLAIN without ANALYZE** — shows estimated costs when actual timing unavailable\n- **Limit-aware** — no false positive warnings on Limit node children\n- **`\\pset explain_format raw|enhanced`** — toggle between psql-compatible and enhanced views\n\n### EXPLAIN Plan Sharing\n\n- **`\\explain share depesz`** — post plan to explain.depesz.com in one command\n- **`\\explain share dalibo`** — post plan to explain.dalibo.com\n- **`\\explain share pgmustard`** — post plan to pgMustard (requires PGMUSTARD_API_KEY)\n\n### Markdown Output\n\n- **`\\pset format markdown`** / **`--markdown`** — GitHub-flavored markdown tables\n\n### Lua Custom Commands\n\n- **User-defined `\\` commands** via Lua scripts (build with `--features lua`)\n- API: `rpg.query()`, `rpg.print()`, `rpg.pager()`, `rpg.version()`, `rpg.dbname()`\n- Example commands: `\\slow_mean`, `\\slow_total`, `\\table_info`\n- **`\\commands`** — list all custom commands\n\n### Better History\n\n- **`\\s`** — numbered, syntax-highlighted history through the pager\n- **`\\s pattern`** — filter history by pattern\n- **`\\s filename`** — save history to file\n\n### Tab Completion\n\n- All rpg-specific backslash commands now complete with Tab\n\n### Fixes\n\n- TxState stuck after /ask (#683)\n- Pager ghost characters (#682)\n- Multiline WHERE safety detection (#680)\n- Double backslash in \\? help (#688)\n- Config messages suppressed in scripting mode (#694)\n- \\explain share URL extraction (#670)\n- Docker build (#677)\n- Legacy \"samo\" references removed (#678)\n- macOS release builds (#668)\n- Codecov integration (#660, #679, #687)\n\n### External Pager\n\n- **pspg integration** — `\\set PAGER 'pspg --style=22'` for horizontal scrolling, column cursor, 20+ themes\n\n### PostgreSQL Compatibility\n\nSupports PostgreSQL 14, 15, 16, 17, and 18.\n\nInstall: `cargo install --git https://github.com/NikolayS/rpg.git`",
+        "url": "https://github.com/NikolayS/rpg/releases/tag/v0.8.0"
+      },
+      {
+        "tag": "v0.7.0",
+        "name": "v0.7.0",
+        "date": "2026-03-19T04:27:07Z",
+        "body": "## What's new in v0.7.0\n\n### Security & Safety\n\n- **All `/ask` queries wrapped in read-only transaction** — every query executed by `/ask` is wrapped in `start transaction read only`, providing database-level protection against accidental mutations (#626, #634)\n- **DDL/DML blocked in `/ask` mode** — write queries are refused in all `/ask` execution paths including text2sql mode (#631)\n- **`\\t2s` write queries restored** — text2sql mode correctly allows write queries with explicit confirmation (`Execute write query? [y/N/e]`), fixing the regression from the `/ask` safety changes (#646)\n- **Auto-rollback stale transactions** — internal transactions from `/ask` are automatically rolled back on error or cancellation (#639)\n- **Ctrl-C cancels LLM requests** — pressing Ctrl-C during AI API calls now aborts the request immediately (#641)\n- **Configurable LLM timeout** — `ai.timeout` config option (default 30s) prevents hanging on unresponsive AI providers (#640)\n- **SSH tunnel connection timeout** — `ssh_tunnel.connect_timeout` config option (default 15s) (#640)\n\n### Features\n\n- **Built-in pager for backslash commands** — `\\?`, `\\h`, `\\d` family, `\\dba` now route through the scrollable TUI pager (#622, #629)\n- **Pager macOS fix** — resolved kqueue initialization error on macOS (#635)\n\n### Fixes\n\n- **Zero-column SELECT results now displayed** — `select from t where ...` correctly shows `--\\n(N rows)` matching psql (#644)\n- **`is_write_query` handles trailing semicolons** — `VACUUM;`, `DELETE;` etc. now correctly classified as write queries (#645)\n- **`\\dba redundant-idx`** — corrected column name (#620, #621)\n- **`\\dba locks`** — fixed `waitstart` column reference (#620)\n- **`\\dba progress vacuum` PG 17 compat** — handle renamed columns (#620, #621)\n- **Cancelled destructive statements no longer trigger schema refresh** (#619)\n- **`/fix` includes error context in text2sql mode** (#617)\n- **Pager exit restores cursor and scroll region** (#616)\n- **Yolo mode suppresses AI explanation text** (#614)\n- **`\\dba` menu Ctrl-C handling** (#608)\n- **Exec mode reset when switching from yolo** (#607)\n\n### Testing\n\n- **59+ new tests** — comprehensive unit and integration tests (#628, #644, #645, #646)\n\n### Command prefix convention\n\n- `\\` commands run locally against the database (`\\d`, `\\dba`, `\\?`, etc.)\n- `/` commands call an external AI API (`/ask`, `/fix`, `/explain`, `/optimize`)\n\n### PostgreSQL compatibility\n\nSupports PostgreSQL 14, 15, 16, 17, and 18.",
+        "url": "https://github.com/NikolayS/rpg/releases/tag/v0.7.0"
+      },
+      {
+        "tag": "v0.6.0",
+        "name": "v0.6.0",
+        "date": "2026-03-19T03:06:00Z",
+        "body": "## What's new in v0.6.0\n\n### Security & Safety\n\n- **`/ask` queries wrapped in read-only transaction** — every query executed by `/ask` is now wrapped in `start transaction read only`, providing database-level protection against accidental mutations even if query classification fails (#623, #626, #634)\n- **DDL/DML blocked in `/ask` mode** — write queries (CREATE, DROP, INSERT, UPDATE, DELETE, etc.) are refused in all `/ask` execution paths including text2sql mode (#631)\n- **Auto-rollback stale transactions** — if an `/ask` query errors or is cancelled, the internal transaction is automatically rolled back so the session never stays in `idle-in-tx` state (#639)\n\n### Features\n\n- **Built-in pager for backslash commands** — `\\?`, `\\h`, `\\d` family, `\\dba`, and other commands now route output through the scrollable TUI pager when content exceeds terminal height (#622, #629)\n- **Configurable LLM timeout** — new `ai.timeout` config option (default 30s) prevents rpg from hanging on unresponsive AI providers (#640)\n- **SSH tunnel connection timeout** — new `ssh_tunnel.connect_timeout` config option (default 15s) (#640)\n- **Ctrl-C cancels LLM requests** — pressing Ctrl-C during an AI API call now aborts the request and returns to the prompt immediately (#641)\n\n### Fixes\n\n- **Pager macOS fix** — resolved \"Failed to initialize input reader\" error caused by macOS kqueue refusing to register `/dev/tty` file descriptors (#635)\n- **`\\dba redundant-idx` fix** — corrected column name (`s.relname` instead of `s.tablename`) (#620, #621)\n- **`\\dba locks` fix** — fixed `waitstart` column reference (belongs to `pg_locks`, not `pg_stat_activity`) (#620)\n- **`\\dba progress vacuum` PG 17 compat** — handle renamed columns `max_dead_item_ids`/`num_dead_item_ids` (#620, #621)\n- **Cancelled destructive statements no longer trigger schema refresh** (#619)\n- **`/fix` includes error context in text2sql mode** (#617)\n- **Pager exit restores cursor and scroll region** (#616)\n- **Yolo mode suppresses AI explanation text** (#614)\n- **`\\dba` menu Ctrl-C handling and SQL quoting** (#608)\n- **Exec mode reset when switching from yolo** (#607)\n\n### Testing\n\n- **51 new tests** — comprehensive unit and integration tests for `is_write_query` classification and CLI flags (#628)\n\n### Command prefix convention\n\n- `\\` commands run locally against the database (`\\d`, `\\dba`, `\\?`, etc.)\n- `/` commands call an external AI API (`/ask`, `/fix`, `/explain`, `/optimize`)\n\n### PostgreSQL compatibility\n\nSupports PostgreSQL 14, 15, 16, 17, and 18.",
+        "url": "https://github.com/NikolayS/rpg/releases/tag/v0.6.0"
+      },
+      {
+        "tag": "v0.5.0",
+        "name": "v0.5.0",
+        "date": "2026-03-17T20:50:02Z",
+        "body": "## What's new in v0.5.0\n\n### Features\n- **Multi-category SQL syntax highlighting** — keywords, strings, operators in distinct colors\n- **Colorized error/warning/notice prefixes** — ERROR in red, WARNING in yellow, NOTICE in cyan\n- **Auto-detect AI provider** — automatically picks up ANTHROPIC_API_KEY, OPENAI_API_KEY, or OLLAMA_API_KEY from environment\n- **Full-width status bar** — status line extends to terminal width\n\n### Fixes\n- **Ctrl+C cancels `/fix` Execute prompt** — no longer executes query on interrupt\n- **`\\version` shows server version** — displays both rpg and PostgreSQL server versions\n- **`\\copyright` shows rpg copyright + PostgreSQL link**\n\n### Housekeeping\n- Removed autonomous agent references (AAA, O/S/A) — rpg is a focused terminal tool with light AI integration\n- README improvements: badges, real `/fix` and `/optimize` examples, accurate feature list\n- License: updated copyright to Nikolay Samokhvalov <nik@samokhvalov.com>\n\n### PostgreSQL compatibility\nSupports PostgreSQL 14, 15, 16, 17, and 18.",
+        "url": "https://github.com/NikolayS/rpg/releases/tag/v0.5.0"
+      }
+    ],
+    "mergedPRs": [
+      {
+        "number": 696,
+        "title": "chore: bump version to 0.8.0",
+        "state": "merged",
+        "date": "2026-03-20T22:54:02Z",
+        "url": "https://github.com/NikolayS/rpg/pull/696",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Bumps `Cargo.toml` version from 0.7.0 to 0.8.0 for the v0.8.0 release\n\n## Test plan\n\n- [x] `cargo build` passes\n- [x] `cargo test` passes (1695 tests, 0 failures)\n- [x] CI checks\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 697,
+        "title": "docs: add missing features to \\? help and README",
+        "state": "merged",
+        "date": "2026-03-20T23:19:52Z",
+        "url": "https://github.com/NikolayS/rpg/pull/697",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Added `\\dba` section to `\\?` help text listing all 14 DBA diagnostic subcommands\n- Added `--markdown` CLI flag mention to the Output format section in help\n- README: added complete AI command table (`/describe`, `/init`, `/clear`, `/compact`, `/budget`)\n- README: added Share EXPLAIN plans section (`\\explain share depesz/dalibo/pgmustard`)\n- README: added EXPLAIN display format section (`\\pset explain_format raw/enhanced/compact`)\n- README: added Markdown output section with example and `--markdown` flag\n- README: added `\\s` history command section\n- README: added Lua custom commands section with full working `slow_mean` example\n\nCloses #618 (documentation audit gaps).\n\n## Test plan\n\n- [x] `cargo build` passes\n- [x] `cargo test` passes (1695 tests)\n- [x] `cargo fmt --check` passes\n- [ ] CI green\n- [ ] REV review (no BLOCKING issues)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 695,
+        "title": "feat(repl): implement \\s command for history display and save",
+        "state": "merged",
+        "date": "2026-03-20T22:14:09Z",
+        "url": "https://github.com/NikolayS/rpg/pull/695",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Adds psql-compatible `\\s` meta-command with enhanced capabilities beyond plain psql\n- `\\s` — displays numbered, syntax-highlighted history through the pager\n- `\\s filename` — saves raw history to a file (heuristic: path contains `/`, `.`, `~`, or has a file extension)\n- `\\s pattern` — grep-like case-insensitive filter with match summary (e.g. `\\s orders` shows only queries containing \"orders\")\n\n## What makes this better than psql's `\\s`\n\n- **Numbered entries** — each line shows its history number for easy reference\n- **Syntax highlighting** — SQL keywords are highlighted when written to screen\n- **Pattern filtering** — `\\s pattern` filters history inline without needing external grep\n- **Match summary** — filter results show `-- N of M entries match \"pattern\"`\n- **Pager integration** — long history routes through the existing `maybe_page` pager\n\n## Implementation notes\n\n- Reads from the history file (`~/.rpg_history` or `$PSQL_HISTORY`) rather than from the in-memory `rustyline::Editor`, so it works from any dispatch path without needing to pass the editor reference through the call chain\n- New `MetaCmd::History(Option<String>)` variant in `metacmd.rs`\n- Parser added to `parse_s_family` — handled before `\\sf`/`\\sv` to avoid prefix conflicts, but after the longer prefixes (`\\sql`, `\\session`, `\\set`)\n- Handler `dispatch_history` and helper `read_history_entries` / `arg_is_filepath` added in `repl/mod.rs`\n- `\\s` already present in `BACKSLASH_CMDS` tab-completion array in `complete.rs`\n- Help text updated in `\\?`\n\n## Test plan\n\n- [x] `cargo build` passes\n- [x] `cargo test` passes (1695 tests, 8 new unit tests for parser)\n- [x] `cargo fmt --check` passes\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` passes\n- [x] Manual: `\\s` shows numbered history\n- [x] Manual: `\\s /tmp/saved_history.txt` saves to file\n- [x] Manual: `\\s orders` filters to matching entries with summary\n- [x] Manual: `\\s nonexistent` shows \"no entries match\" message\n- [x] Manual: empty history shows \"history is empty\" message\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 684,
+        "title": "docs: add example Lua commands (slow_mean, slow_total, table_info)",
+        "state": "merged",
+        "date": "2026-03-20T19:46:57Z",
+        "url": "https://github.com/NikolayS/rpg/pull/684",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add three example custom Lua commands to `examples/commands/`:\n  - `slow_mean.lua` — top N queries by average execution time using `pg_stat_statements`\n  - `slow_total.lua` — top N queries by total execution time using `pg_stat_statements`\n  - `table_info.lua` — table health check showing size, vacuum/analyze status, and index count\n- Add VHS tape (`demos/gif5_lua.tape`) and GIF (`demos/gif5_lua.gif`) demonstrating all three commands\n\n## Commands\n\n**`\\slow_mean [N]`** — top slowest queries by avg execution time (default 10):\n```\n\\slow_mean\n\\slow_mean 20\n```\n\n**`\\slow_total [N]`** — top queries by total execution time (default 10):\n```\n\\slow_total\n\\slow_total 5\n```\n\n**`\\table_info <table>`** — table health check:\n```\n\\table_info orders\n\\table_info myschema.orders\n```\n\nRequires `pg_stat_statements` for `\\slow_mean` and `\\slow_total`. Install with:\n```sql\ncreate extension if not exists pg_stat_statements;\n```\n\n## Test plan\n\n- [ ] Build with `cargo build --features lua`\n- [ ] Copy `.lua` files to `~/.config/rpg/commands/` (Linux) or `~/Library/Application Support/rpg/commands/` (macOS)\n- [ ] Run `\\commands` — confirm all three commands appear in the listing\n- [ ] Run `\\slow_mean` and `\\slow_total` — verify output shows query stats from `pg_stat_statements`\n- [ ] Run `\\table_info orders` — verify table health output is correct\n- [ ] Run `\\table_info nonexistent` — verify graceful \"not found\" message\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 687,
+        "title": "fix(ci): add codecov.yml and workflow_dispatch to fix badge unknown",
+        "state": "merged",
+        "date": "2026-03-20T20:23:22Z",
+        "url": "https://github.com/NikolayS/rpg/pull/687",
+        "author": "NikolayS",
+        "body": "## Root cause analysis\n\nThe Codecov badge started showing \\\"unknown\\\" after PR #679 (which correctly fixed the token issue). The diagnosis reveals **two compounding problems**:\n\n### Problem 1: Codecov backend processing failure (transient)\n\nAll three recent commits on main (`e066f1`, `b9b339`, `bf55513`) have uploads that **succeeded** (HTTP 200, `Process Upload complete`) but Codecov's worker never ingested them into its database. Evidence:\n\n- Codecov API returns `\"state\": null, \"totals\": null` for these commits\n- The last successfully processed commit is `c06779` at 18:58 UTC\n- All uploads after 18:58 UTC sit in GCS `shelter/github/NikolayS:::rpg/` but are unprocessed\n- Codecov API is returning 503 at time of investigation, confirming a backend issue\n\nThe uploads themselves are working correctly — this is a Codecov-side processing outage.\n\n### Problem 2: No way to manually re-trigger CI\n\nWithout `workflow_dispatch`, there is no way to re-run the Coverage job after Codecov recovers, without making an empty code push.\n\n## Changes\n\n- **`codecov.yml`** — new config file:\n  - `carryforward: true` on the `unit` flag: Codecov reuses coverage from the last successful commit when a new report hasn't been processed yet (prevents badge going to \"unknown\" during delays)\n  - `if_not_found: success` on project/patch status: prevents CI status from failing when Codecov hasn't processed the commit yet\n  - `ignore` list for non-code directories\n- **`.github/workflows/ci.yml`** — add `workflow_dispatch` trigger so the full CI (including Coverage) can be manually re-run once Codecov's processing queue recovers\n\n## What to do after merge\n\nOnce this PR is merged, go to the Actions tab and manually trigger the CI workflow (`workflow_dispatch`) to re-upload coverage for the new HEAD commit. This should populate Codecov and fix the badge.\n\n**If Codecov is still down**, the badge will remain \"unknown\" until Codecov recovers. After recovery, Codecov may retroactively process the queued uploads from GCS, or a new manual trigger will be needed.\n\n## Test plan\n\n- [ ] CI passes on this PR\n- [ ] After merge, manually trigger CI via Actions tab → the Coverage job uploads coverage\n- [ ] Codecov badge changes from \"unknown\" to a percentage\n\nCopyright 2026\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 690,
+        "title": "docs: replace pspg GIF with screenshot showing theme menu",
+        "state": "merged",
+        "date": "2026-03-20T21:29:14Z",
+        "url": "https://github.com/NikolayS/rpg/pull/690",
+        "author": "NikolayS",
+        "body": "Replaces the pspg GIF (which couldn't properly show F-keys and menus) with a real screenshot showing pspg's theme selector menu with 20+ themes.\n\n![pspg screenshot](demos/pspg_screenshot.png)"
+      },
+      {
+        "number": 694,
+        "title": "fix(main): suppress config messages in non-interactive mode",
+        "state": "merged",
+        "date": "2026-03-20T21:51:07Z",
+        "url": "https://github.com/NikolayS/rpg/pull/694",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- `\"Using project config\"` and `\"Loaded project context\"` startup messages now only print during interactive REPL sessions (stdin is a TTY and no `-c`/`-f` flags)\n- Already on stderr (`eprintln!`), now also gated on `!is_scripting && !is_piped`\n- Suppressed by `-q`/`--quiet` as before\n- Mirrors the same `is_scripting`/`is_piped` logic used for the version banner\n\nFixes #691.\n\n## Demo proof\n\n**Before (broken):**\n```\n$ rpg -d demo_saas -c 'select now()' --markdown\nUsing project config: /Users/nik/tmp/project-alpha/.rpg.toml\nLoaded project context: /Users/nik/tmp/project-alpha/POSTGRES.md\n| now                           |\n...\n```\n\n**After (fixed):**\n```\n$ ./target/debug/rpg -d demo_saas -c 'select now()' --markdown\n| now                           |\n|-------------------------------|\n| 2026-03-20 14:41:59.723039-07 |\n(1 row)\n```\n\nMessages still appear in interactive sessions (TTY, no `-c`/`-f`).\n\n## Test plan\n\n- [x] `cargo build` — passes\n- [x] `cargo fmt --check` — passes\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — passes\n- [x] `cargo test` — 1687 tests pass\n- [x] `rpg -d demo_saas -c 'select 1'` — no config messages in output\n- [x] `rpg -d demo_saas -c 'select now()' --markdown` — clean markdown output\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 688,
+        "title": "fix(repl): correct double backslash in \\? help and tab completion",
+        "state": "merged",
+        "date": "2026-03-20T20:49:14Z",
+        "url": "https://github.com/NikolayS/rpg/pull/688",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- **Bug 1 — double backslash in `\\?` help**: The `help_text()` function used a raw string `r\"...\"` where `\\\\set`, `\\\\explain`, `\\\\f2`–`\\\\f5` are two literal backslash characters, causing the terminal to display `\\\\set` instead of `\\set`. Fixed all affected lines in the raw string to use single `\\`.\n\n- **Bug 2 — tab completion for rpg-specific commands**: `\\version`, `\\explain`, `\\commands`, `\\text2sql`, `\\t2s`, `\\plan`, `\\yolo`, `\\interactive`, `\\mode`, `\\sql`, `\\n`/`\\ns`/`\\nd`/`\\np`, `\\profiles`, `\\dba`, `\\f2`–`\\f5`, `\\refresh`, `\\session`, `\\log-file` were missing from `BACKSLASH_CMDS` in `src/complete.rs`. Added all of them.\n\n- **Bug 3 — backslash prefix in completion logic**: The `BackslashCmd` completion path passed the full `\\vers` (including the leading `\\`) to `fuzzy_match()`, which tried to match `\\` as a character in candidate names and always failed. Fixed by stripping the leading `\\` from the completion prefix (similar to how `SchemaObject` strips the `.`), and setting `completion_start` to 1 past the `\\` so rustyline replaces only the command name portion.\n\n- **Missing `\\?` entries**: Added `\\pset format markdown`, `\\pset explain_format raw/enhanced/compact`, and `\\commands` sections to the help text.\n\n## Demo\n\n`\\?` output (no double backslashes):\n```\nInput/execution modes:\n  \\sql              switch to SQL input mode (default)\n  \\text2sql / \\t2s  switch to text2sql input mode\n  ...\n  \\set TEXT2SQL_SHOW_SQL on/off   show/hide SQL preview box in text2sql mode\n\nAuto-EXPLAIN:\n  \\set EXPLAIN on       show EXPLAIN for every query\n  ...\n\nEXPLAIN sharing:\n  \\explain share depesz    upload last EXPLAIN plan to explain.depesz.com\n  ...\n\nFunction keys (interactive mode):\n  F2 / \\f2       toggle schema-aware tab completion on/off\n```\n\nTab completion:\n- `\\versio<TAB>` → `\\version` (unique match completes inline)\n- `\\vers<TAB>` → shows `version errverbose` dropdown candidates\n- `\\expl<TAB>` → `\\explain`\n\n## Test plan\n\n- [x] `cargo build` passes\n- [x] `cargo test` — 1687 tests pass\n- [x] `cargo fmt --check` — clean\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n- [x] `\\?` output verified in tmux — no double backslashes anywhere\n- [x] `\\versio<TAB>` completes to `\\version`\n- [x] `\\expl<TAB>` completes to `\\explain`\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 670,
+        "title": "fix(explain): fix \\explain share URL extraction for depesz and dalibo",
+        "state": "merged",
+        "date": "2026-03-20T02:16:55Z",
+        "url": "https://github.com/NikolayS/rpg/pull/670",
+        "author": "NikolayS",
+        "body": "Fixes #667.\n\n## Root causes\n\nTwo bugs caused both `\\explain share` commands to fail silently.\n\n### Bug 1 — dalibo: reqwest default redirect policy swallows the 302\n\n`upload_dalibo` used `reqwest::Client::new()` which follows 302 redirects\nautomatically. On redirect, reqwest re-issued the request as POST to the\nplan page URL, which returned 400 Bad Request (or in some cases, followed\nthrough to a 200 HTML page). The `status.is_redirection()` check never\nfired, JSON extraction failed, and the error was returned.\n\n**Fix:** use `redirect::Policy::none()` in `upload_dalibo`, identical to\nwhat `upload_depesz` already does correctly.\n\n### Bug 2 — depesz: plan indentation stripped, depesz rejects the plan\n\n`execute_query_interactive` called `strip_psql_table_format()` on the\ncaptured psql output and stored the result in `last_explain_text`. That\nfunction calls `line.trim()` on every line, which destroys the leading\nwhitespace that encodes the plan tree structure. Without indentation,\ndepesz cannot parse the plan and returns HTTP 200 (the empty submission\nform) instead of 302 + Location.\n\n`execute_query` had already stored the correctly-indented plan text in\n`last_explain_text` (from the raw PostgreSQL row values). The overwrite in\n`execute_query_interactive` was redundant and incorrect.\n\n**Fix:** remove the two `last_explain_text =` assignments from\n`execute_query_interactive`. The value stored by `execute_query` is\nauthoritative and preserves indentation.\n\n## Demo proof\n\nTested against `demo_saas` with `explain analyze select * from orders limit 10;`:\n\n- `\\explain share depesz` → https://explain.depesz.com/s/EcDq\n- `\\explain share dalibo` → https://explain.dalibo.com/plan/e16a0763a91h8g7d\n\nBoth URLs open valid visualiser pages with the uploaded plan.\n\n## Checklist\n\n- [x] `cargo fmt --check` — clean\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n- [x] `cargo test` — 1650 passed, 0 failed\n- [x] Live demo with real URLs confirmed above"
+      },
+      {
+        "number": 664,
+        "title": "fix(explain): show full plan details, fix infx, preserve buffer data",
+        "state": "merged",
+        "date": "2026-03-20T00:17:06Z",
+        "url": "https://github.com/NikolayS/rpg/pull/664",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- **Bug 1 (plan details stripped)**: Added `build_detail_indent` and `render_node_details` helpers to `render.rs`. Filter conditions, rows-removed-by-filter, sort method/space, and per-node buffer info are now rendered below each node line in the tree view.\n- **Bug 2 (infx / division by zero)**: `check_row_estimate_error` in `issues.rs` now guards `actual_rows <= 0.0` in addition to `estimated_rows <= 0.0`. This prevents `1.0 / ratio` from producing `inf` when a plain EXPLAIN (no ANALYZE) runs and `actual_rows` stays at 0. Added a test for this case.\n- **Bug 3 (buffer data per node missing)**: The new `render_node_details` function renders `Buffers: N hit, N read` for each node that has non-zero buffer counters, in addition to the existing summary-header totals.\n- **Bug 4 (raw toggle)**: Confirmed working — `try_render_explain` already returns `None` for `ExplainFormat::Raw` and `execute_query_interactive` falls through to raw passthrough. Tested with `\\pset explain_format raw` producing psql-identical output.\n\n## Test plan\n\n- [x] `cargo test` — 1645 tests pass\n- [x] `cargo fmt --check` — no formatting issues\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n- [x] tmux test: `explain select * from orders where status = 'pending' limit 10;` — shows Filter detail, no infx\n- [x] tmux test: `explain analyze ...` — shows Filter, Rows removed by filter, Buffers per node\n- [x] tmux test: `explain (analyze, buffers) ... join ...` — buffer info shown per node\n- [x] tmux test: `\\pset explain_format raw` → raw psql output; `\\pset explain_format enhanced` → enhanced back\n\nCloses #663\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 673,
+        "title": "fix(explain): fix non-analyze rendering and Limit false positives",
+        "state": "merged",
+        "date": "2026-03-20T17:52:27Z",
+        "url": "https://github.com/NikolayS/rpg/pull/673",
+        "author": "NikolayS",
+        "body": "## Summary\n\nFixes #666. Three interconnected bugs in EXPLAIN rendering:\n\n- **Empty summary for plain EXPLAIN**: `explain select pg_sleep(1);` showed a blank summary header with no metrics. Now shows `Estimated cost: X..Y │ Estimated rows: N` for any plain EXPLAIN.\n- **Custom tree replaced raw plan**: The enhanced renderer was replacing PostgreSQL's full plan output with a custom tree that omitted costs, filters, and width. Now the summary header appears on top and the **full raw plan is preserved**, with ANSI color overlaid (node lines colored, detail lines dimmed, timing lines bold-white).\n- **Indentation lost in strip**: `strip_psql_table_format` was calling `.trim()` on every line, destroying the indentation that the parser uses to reconstruct parent-child relationships. Root and child nodes were becoming siblings, causing Seq Scans to be treated as root nodes (wrong estimated_rows) and breaking the Limit false-positive fix.\n- **Limit false-positive WARN**: `explain analyze select * from t limit 10;` would incorrectly warn \"Row estimate overestimated by Nx\" on the Seq Scan child. The child's estimated_rows reflects the full table, not a planning error — the Limit stops execution early. Now suppressed for nodes that are constrained by a Limit ancestor with matching actual_rows.\n\n## Demo proof\n\n```\n-- 1. Plain EXPLAIN (was: empty header + \"Result\" with no detail)\nexplain select pg_sleep(1);\n── EXPLAIN ─────────────────────────────────────\n  Estimated cost: 0.00..0.01 │ Estimated rows: 1\n────────────────────────────────────────────────\n\nResult  (cost=0.00..0.01 rows=1 width=4)\n\n-- 2. Plain EXPLAIN with plan tree\nexplain select * from orders where status = 'pending' limit 10;\n── EXPLAIN ─────────────────────────────────────\n  Estimated cost: 0.00..2.32 │ Estimated rows: 10\n────────────────────────────────────────────────\n\nLimit  (cost=0.00..2.32 rows=10 width=61)\n  ->  Seq Scan on orders  (cost=0.00..47139.00 rows=203200 width=61)   [yellow]\n        Filter: (status = 'pending'::text)   [dim]\n\n-- 3. EXPLAIN ANALYZE with Limit — NO false positive warning\nexplain analyze select * from orders where status = 'pending' limit 10;\n── EXPLAIN ANALYZE ─────────────────────────────\n  Execution: 0.043 ms │ Planning: 0.043 ms │ Rows: 10\n  Buffers: 4 hit\n────────────────────────────────────────────────\n\nLimit  (cost=0.00..2.32 rows=10 width=61) (actual time=0.023..0.033 rows=10.00 loops=1)\n  ->  Seq Scan on orders  (cost=0.00..47139.00 rows=203200 width=61) (actual time=0.023..0.031 rows=10.00 loops=1)\n        Filter: (status = 'pending'::text)\n        Rows Removed by Filter: 66\n        Buffers: shared hit=2\nPlanning Time: 0.043 ms\nExecution Time: 0.043 ms\n```\n\n## Test plan\n\n- [x] `cargo test` — 1656 tests pass (11 new)\n- [x] `cargo fmt --check` — clean\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n- [x] `explain select pg_sleep(1);` — shows estimated cost/rows, full plan\n- [x] `explain select 1;` — shows estimated cost/rows, `Result` node visible\n- [x] `explain select * from orders where status = 'pending' limit 10;` — full plan with color\n- [x] `explain analyze select * from orders where status = 'pending' limit 10;` — no false-positive Limit warning\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 683,
+        "title": "fix(ai): reset TxState to Idle after /ask read-only tx",
+        "state": "merged",
+        "date": "2026-03-20T18:44:40Z",
+        "url": "https://github.com/NikolayS/rpg/pull/683",
+        "author": "NikolayS",
+        "body": "## Bug\n\nAfter `/ask` executes a query wrapped in `start transaction read only; ...; commit;`, `update_from_sql()` only parses the leading `start transaction` keywords and sets `TxState::InTransaction`. The trailing `commit;` is never processed, leaving the prompt stuck at `=*#` (in-transaction) even though the DB session is idle.\n\nRoot cause: `update_from_sql()` only looks at the first 3 words of the SQL string and cannot parse a multi-statement batch.\n\n## Fix\n\nIn `src/repl/ai_commands.rs`, after `execute_query_interactive` returns for the wrapped `/ask` read-only query:\n\n- **Both `AskChoice::Yes` and `AskChoice::Edit` paths**: unconditionally set `*tx = TxState::Idle` after the call returns (success or error/rollback — both leave the session idle)\n- Also call the new `StatusLine::set_tx_state(TxState::Idle)` so the status bar is corrected immediately (not just the prompt)\n- Added `StatusLine::set_tx_state()` helper in `src/statusline.rs`\n\n## Demo proof\n\nBefore fix: prompt showed `=*#` and statusline showed `tx:in-tx` after `/ask`.\n\nAfter fix (captured from tmux):\n```\ndemo_saas=# /ask how many customers are on the free plan\nTo find out how many customers are on the free plan, you can run the following SQL query:\nSELECT COUNT(*) AS free_plan_customers\nFROM customers\nWHERE plan = 'free';\n free_plan_customers\n---------------------\n                1662\n(1 row)\n\ndemo_saas=#\n /tmp:5432/demo_saas │ SQL │ tx:idle │ last: 2ms │ ai: 384/0tok\n\ndemo_saas=# /ask top 5 customers by order count\n   id |     name     | order_count\n------+--------------+-------------\n 4047 | Mia Thompson |         258\n 9318 | Xander Moore |         252\n 1757 | Beth Lee     |         251\n 5408 | Henry Jones  |         250\n 6159 | Henry Moore  |         248\n(5 rows)\n\ndemo_saas=#\n /tmp:5432/demo_saas │ SQL │ tx:idle │ last: 128ms │ ai: 890/0tok\n```\n\nPrompt shows `=#` (not `=*#`) and statusline shows `tx:idle` after both `/ask` commands.\n\n## Test plan\n\n- [x] `cargo build` — clean\n- [x] `cargo test` — 1668 passed, 0 failed\n- [x] `cargo fmt --check` — clean\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n- [x] Manual: `/ask how many customers are on the free plan` → prompt `=#`, statusline `tx:idle`\n- [x] Manual: `/ask top 5 customers by order count` → prompt `=#`, statusline `tx:idle`\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 680,
+        "title": "fix(safety): handle WHERE on its own line in DELETE/UPDATE",
+        "state": "merged",
+        "date": "2026-03-20T18:34:56Z",
+        "url": "https://github.com/NikolayS/rpg/pull/680",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- `check_segment()` used `upper.contains(\" WHERE \")` which requires a literal space on both sides of WHERE, causing a false-positive destructive-operation warning when WHERE appears on its own line (common in LLM-generated SQL).\n- Replaced both the `DELETE` and `UPDATE` branches with `tokens.contains(&\"WHERE\")`, reusing the `split_whitespace` token vec already computed in the function — no extra allocation or regex.\n- Added 4 new unit tests: multiline DELETE with unindented WHERE, multiline DELETE with indented WHERE, multiline UPDATE with unindented WHERE, multiline UPDATE with indented WHERE.\n\n## Test plan\n\n- [ ] `cargo test` — all 1672 tests pass (including the 4 new ones)\n- [ ] `cargo fmt --check` — no formatting issues\n- [ ] `cargo clippy --all-targets --all-features -- -D warnings` — no warnings\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 682,
+        "title": "fix(pager): clear screen after leaving alternate buffer",
+        "state": "merged",
+        "date": "2026-03-20T18:52:27Z",
+        "url": "https://github.com/NikolayS/rpg/pull/682",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Ghost characters from prior pager content bled into the visible area after pressing `q` to exit the built-in TUI pager\n- Root cause: `TerminalGuard::drop` called `LeaveAlternateScreen` but did not clear the main screen buffer before returning to the REPL\n- Fix: emit cursor-home (`\\x1b[H`) + erase-entire-display (`\\x1b[2J`) immediately after `LeaveAlternateScreen` in `TerminalGuard::drop`, giving the REPL a clean slate every time the pager exits\n\n## Demo proof\n\nTested in a 130x40 tmux window with `PGDATABASE=demo_saas`:\n\n**During pager** (`\\?` triggered pager):\n```\nrpg 0.7.0 (4b8ccb5, built 2026-03-20)\n\nBackslash commands:\n  \\q              quit rpg\n  ...\n Lines 1-39 of 93 (0%) — q:quit ↑↓:scroll PgUp/PgDn:page /:search f:freeze\n```\n\n**After pressing `q`** — clean screen, no ghost characters:\n```\ndemo_saas=#     ← prompt at top, no bleed-through content below\n\n /tmp:5432/demo_saas │ SQL │ tx:idle   ← status bar at bottom\n```\n\nAll 1668 unit tests pass.\n\n## Test plan\n\n- [ ] Run `\\?` (or any query that triggers the built-in pager)\n- [ ] Press `q` to exit\n- [ ] Verify no ghost characters appear below the prompt\n- [ ] Run a query to confirm the REPL works normally after pager exit\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 678,
+        "title": "chore: remove all legacy 'samo' references, rename to rpg",
+        "state": "merged",
+        "date": "2026-03-20T18:02:41Z",
+        "url": "https://github.com/NikolayS/rpg/pull/678",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Replace all occurrences of the old project name `samo` with `rpg` across `Dockerfile`, `tests/compat/test-compat.sh`, and `CHANGELOG.md`\n- Docker: update user account, binary path, image tag, and entrypoint from `samo` to `rpg`\n- Test script: rename `SAMO` variable to `RPG`, rename `samo_out`/`samo_file`/`samo_cmd`/`samo_content` locals to `rpg_*`, update all output labels and comments\n- Changelog: remove old-name references from historical rename entries\n\n## Test plan\n\n- [ ] `cargo build` passes\n- [ ] `cargo test` passes (1650 tests)\n- [ ] `cargo fmt --check` passes\n- [ ] `cargo clippy --all-targets --all-features -- -D warnings` passes\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 679,
+        "title": "fix(ci): pass CODECOV_TOKEN to reusable checks workflow",
+        "state": "merged",
+        "date": "2026-03-20T18:19:18Z",
+        "url": "https://github.com/NikolayS/rpg/pull/679",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- **Root cause:** GitHub Actions does not automatically pass secrets to reusable workflows called via `workflow_call`. The `Coverage` job in `checks.yml` was receiving an empty token, and Codecov rejected the upload with `\"Token required because branch is protected\"`.\n- Add `secrets: inherit` in `ci.yml` when invoking `checks.yml`, so `CODECOV_TOKEN` is forwarded.\n- Declare `CODECOV_TOKEN` in `checks.yml`'s `workflow_call.secrets` block (required to accept inherited secrets).\n- Switch `fail_ci_if_error: true` and add `verbose: true` so future upload failures surface as CI failures rather than being silently swallowed.\n\n## Diagnosis evidence (from CI logs)\n\n```\n-> Token of length 0 detected\nerror - Upload failed: {\"message\":\"Token required because branch is protected\"}\n```\n\n## Test plan\n\n- [ ] CI runs green on this PR\n- [ ] After merge, the next push to `main` should show coverage data in Codecov and the badge should change from \"unknown\" to a percentage\n\n## Copyright\n\nCopyright 2026\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 660,
+        "title": "fix(ci): fix codecov badge",
+        "state": "merged",
+        "date": "2026-03-20T00:32:06Z",
+        "url": "https://github.com/NikolayS/rpg/pull/660",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- The codecov badge was showing \"unknown\" because the `CODECOV_TOKEN` secret was missing from the `codecov/codecov-action` upload step\n- Without the token, Codecov rejects uploads silently (the step has `fail_ci_if_error: false`, so CI stayed green)\n- Added `token: ${{ secrets.CODECOV_TOKEN }}` to authenticate the upload\n\n## Root cause\n\nThe coverage job in `.github/workflows/checks.yml` generates `lcov.info` correctly via `cargo-llvm-cov`, but the subsequent upload step lacked authentication. Codecov v5+ requires a token for private repos and strongly recommends it for public repos to associate uploads correctly.\n\n## Test plan\n\n- [ ] CI passes (coverage job uploads successfully)\n- [ ] Codecov badge on README shows a percentage instead of \"unknown\"\n- [ ] Confirm `CODECOV_TOKEN` secret is set in repo Settings → Secrets → Actions\n\n> Note: the `CODECOV_TOKEN` secret must be configured in the repository settings (Settings → Secrets and variables → Actions) for this to work. It can be obtained from the Codecov dashboard for NikolayS/rpg.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 662,
+        "title": "feat(repl): add Lua-based custom meta commands",
+        "state": "merged",
+        "date": "2026-03-20T00:41:02Z",
+        "url": "https://github.com/NikolayS/rpg/pull/662",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Adds a Lua 5.4 runtime (via `mlua` crate, feature-gated as `--features lua`) so users can write custom backslash commands in `~/.config/rpg/commands/*.lua`\n- New `\\commands` meta-command lists all loaded custom Lua commands with descriptions\n- Unknown backslash commands are matched against the registry before the \"invalid command\" error fires, so `\\my_cmd arg1 arg2` Just Works once a script is installed\n- Lua API: `rpg.register_command`, `rpg.query` (read-only tx), `rpg.print`, `rpg.pager`, `rpg.version`, `rpg.dbname`\n- Two example scripts in `examples/commands/`: `bloat_check.lua` and `db_info.lua`\n- When the `lua` feature is not compiled in, the registry is always empty and execution returns a graceful error message\n\n## Architecture\n\n- `src/lua_commands.rs` — `LuaRegistry` struct, command discovery, `rpg` module installation, handler invocation\n- `src/metacmd.rs` — added `MetaCmd::ListCustomCommands` variant + `\\commands` parser\n- `src/repl/mod.rs` — `lua_registry` field on `ReplSettings`, loaded at session start; dispatch in `dispatch_meta` for both `ListCustomCommands` and fallback in the `Unknown` branch\n- `rpg.query()` uses a thread-local client pointer + `block_in_place` / `Handle::block_on` for safe sync execution inside an async context\n\n## Test plan\n\n- [ ] `cargo test` — all 1643 tests pass\n- [ ] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n- [ ] `cargo fmt --check` — clean\n- [ ] Manual: place a `.lua` script in `~/.config/rpg/commands/`, run rpg, invoke `\\commands` and the custom command\n- [ ] Verify `\\commands` prints \"no custom commands\" when the directory is empty/absent\n- [ ] Verify rpg starts cleanly without `--features lua` (empty registry, no crash)\n\nCloses #659\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 672,
+        "title": "feat(output): add markdown table output format",
+        "state": "merged",
+        "date": "2026-03-20T17:44:12Z",
+        "url": "https://github.com/NikolayS/rpg/pull/672",
+        "author": "NikolayS",
+        "body": "Closes #671\n\n## Summary\n\n- Add `Markdown` variant to `OutputFormat` enum in `src/output.rs`\n- Implement `format_markdown` producing GitHub-flavored markdown tables with per-column width padding, separator row, NULL display, tuples-only and footer suppression\n- Wire `\\pset format markdown` into the REPL (`src/repl/mod.rs`)\n- Add `--markdown` CLI flag and `-P format=markdown` support in `src/main.rs`\n- Add 7 unit tests covering all key behaviors\n\n## Test plan\n\n- [x] `cargo build` — compiles without errors or warnings\n- [x] `cargo test` — 1657 tests pass (7 new markdown tests added)\n- [x] `cargo fmt --check` — clean\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n\n## Demo\n\n```\n$ rpg -c '\\pset format markdown' \\\n      -c 'select id, name, plan from customers limit 5;' \\\n      -c \"select null as empty_col, 'hello' as text_col;\"\n```\n\n```\nOutput format is markdown.\n| id | name         | plan    |\n|----|--------------|---------|\n| 1  | Sam Martin   | starter |\n| 2  | Uma Brown    | free    |\n| 3  | Mia Clark    | pro     |\n| 4  | Sam Thompson | pro     |\n| 5  | Yara Wilson  | free    |\n(5 rows)\n\n| empty_col | text_col |\n|-----------|----------|\n|           | hello    |\n(1 row)\n```\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 665,
+        "title": "feat(explain): add pgMustard integration for \\explain share",
+        "state": "merged",
+        "date": "2026-03-20T19:38:27Z",
+        "url": "https://github.com/NikolayS/rpg/pull/665",
+        "author": "NikolayS",
+        "body": "Closes #655 (pgMustard part)\n\n## Summary\n\n- Adds `\\explain share pgmustard` command that POSTs the last EXPLAIN plan to `app.pgmustard.com/api/query-plan` with `Authorization: Bearer <key>`\n- Adds `PgMustardConfig` struct to `config.rs` with `api_key_env` field and `resolve_api_key()` method; wired into `merge_config`\n- API key resolution: config file `[pgmustard] api_key_env = \"PGMUSTARD_API_KEY\"` → env var `PGMUSTARD_API_KEY` (direct fallback)\n- Also fixes `\\explain share dalibo` — was failing due to reqwest following the 302 redirect and losing the Location header; now uses `redirect::Policy::none()` like depesz\n- Updates `\\?` help text to list pgmustard alongside depesz and dalibo\n- 7 new unit tests (config parsing, key resolution, metacmd parsing)\n\n## Demo output\n\n```\ndemo_saas=# explain analyze select * from orders where status = 'pending' limit 10;\n                                                     QUERY PLAN\n--------------------------------------------------------------------------------------------------------------------\n Limit  (cost=0.00..2.32 rows=10 width=61) (actual time=0.018..0.022 rows=10 loops=1)\n   Buffers: shared hit=2\n   ->  Seq Scan on orders  (cost=0.00..47139.00 rows=203200 width=61) (actual time=0.017..0.020 rows=10 loops=1)\n         Filter: (status = 'pending'::text)\n         Rows Removed by Filter: 66\n         Buffers: shared hit=2\n Planning:\n   Buffers: shared hit=75\n Planning Time: 0.391 ms\n Execution Time: 0.048 ms\n(10 rows)\n\ndemo_saas=# \\explain share depesz\nUploading EXPLAIN plan to depesz…\nPlan URL: https://explain.depesz.com/s/KtFs\n(URL copied to clipboard)\n\ndemo_saas=# \\explain share dalibo\nUploading EXPLAIN plan to dalibo…\nPlan URL: https://explain.dalibo.com/plan/b1d0b0eehcf82d09\n(URL copied to clipboard)\n\ndemo_saas=# \\explain share pgmustard\nUploading EXPLAIN plan to pgmustard…\n\\explain share: pgMustard API key not found.\nSet PGMUSTARD_API_KEY in your environment, or add to ~/.config/rpg/config.toml:\n\n[pgmustard]\napi_key_env = \"PGMUSTARD_API_KEY\"\n```\n\ndepesz URL: https://explain.depesz.com/s/KtFs\ndalibo URL: https://explain.dalibo.com/plan/b1d0b0eehcf82d09\n\n## Test plan\n\n- [x] `cargo build` — clean compile\n- [x] `cargo test` — 1651 tests pass (7 new: pgmustard config + parser)\n- [x] `cargo fmt --check` — no formatting issues\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n- [x] Live test: `\\explain share depesz` returns working URL\n- [x] Live test: `\\explain share dalibo` returns working URL (also fixes dalibo 302 redirect bug)\n- [x] Live test: `\\explain share pgmustard` without key shows actionable error\n- [x] Live test: `\\explain share pgmustard` with key hits API correctly\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 661,
+        "title": "feat(explain): add \\explain share command for depesz and dalibo",
+        "state": "merged",
+        "date": "2026-03-19T23:59:08Z",
+        "url": "https://github.com/NikolayS/rpg/pull/661",
+        "author": "NikolayS",
+        "body": "Closes #655\n\n## Summary\n\n- Stores the raw text of the last EXPLAIN output in `ReplSettings.last_explain_text` — populated whenever an EXPLAIN query succeeds (both manual EXPLAIN and auto-explain paths)\n- New `\\explain share depesz` / `\\explain share dalibo` meta-commands that POST the stored plan to the selected visualiser and print the shareable URL\n- Clipboard support: after printing the URL, tries `pbcopy` (macOS), `wl-copy`, `xclip`, `xsel` in order and copies the URL silently (fails silently if no clipboard tool is available)\n- New `src/explain/share.rs` module with the HTTP upload logic using `reqwest` (already a dependency)\n- `explain.depesz.com`: POSTs form data, captures the `Location` header from the 302 redirect\n- `explain.dalibo.com`: POSTs JSON `{\"plan\":…,\"title\":\"rpg\",\"query\":\"\"}`, captures the `Location` header from the 302 redirect\n- Parser: `MetaCmd::ExplainShare(service)` variant; service name is lowercased, so `\\explain share DEPESZ` works too\n- Help text updated with EXPLAIN sharing section\n- 6 new parser unit tests; all 1644 tests pass\n\n## Test plan\n\n- [x] `cargo build` — clean compile\n- [x] `cargo test` — 1644 passed (6 new)\n- [x] `cargo fmt --check` — clean\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n- [x] Live HTTP POST to `explain.depesz.com` verified via curl: returns `302` with `location: /s/a9w5`\n- [x] Live HTTP POST to `explain.dalibo.com` verified via curl: returns `302` with `location: /plan/8069ggbed15gb6d6`\n- [ ] Interactive test: run EXPLAIN query, then `\\explain share depesz` — prints URL + copies to clipboard\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 658,
+        "title": "feat(explain): wire enhanced EXPLAIN visualization into REPL",
+        "state": "merged",
+        "date": "2026-03-19T23:32:16Z",
+        "url": "https://github.com/NikolayS/rpg/pull/658",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Consolidates `ExplainNode`, `ExplainPlan`, `ExplainFormat` as canonical types in `explain/mod.rs`, removing duplicate definitions that previously existed in both `issues.rs` and `render.rs`\n- Implements `parse()` in `mod.rs` for PostgreSQL text-format EXPLAIN output; uses `(cost=` presence to reliably distinguish plan node lines from attribute lines like \"Planning:\", \"Buffers:\"\n- Hooks into `execute_query_interactive` in `repl/execute.rs`: detects EXPLAIN statements, strips psql aligned-table formatting, then runs `detect_issues()` + `render_enhanced()` to display a tree view with annotated issues\n- Adds `explain_format` setting (`enhanced` / `raw` / `compact`) to `ReplSettings`, controllable via `\\pset explain_format`; `raw` bypasses the enhanced renderer and shows the original psql output\n- Removes `#![allow(dead_code)]` from explain modules now that they are fully wired into the REPL\n\nCloses #653\n\n## Test plan\n\n- [ ] `cargo build` passes with no warnings\n- [ ] `cargo test` (1631 tests) passes\n- [ ] `cargo fmt --check` passes\n- [ ] `cargo clippy --all-targets --all-features -- -D warnings` passes\n- [ ] Live: run `explain analyze select * from orders limit 10;` — enhanced tree with issues summary renders instead of raw psql table\n- [ ] Live: `\\pset explain_format raw` — plain psql output restored\n- [ ] Live: `\\pset explain_format compact` — compact summary view\n- [ ] CI green\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 681,
+        "title": "docs: add pspg demo GIF and external pager section to README",
+        "state": "merged",
+        "date": "2026-03-20T19:26:01Z",
+        "url": "https://github.com/NikolayS/rpg/pull/681",
+        "author": "NikolayS",
+        "body": "## What\n\n- Records `demos/gif4_pspg.gif` — pspg external pager demo\n- Updates README pspg section: improved title, description, GIF embed\n- Updates `demos/gif4_pspg.tape` to simplified query (`select * from customers limit 50;`)\n\n## Demo flow\n\n1. Connect to `demo_saas` database, run `\\version`\n2. `select * from customers limit 50;` — built-in pager activates, scroll down\n3. `q` to quit\n4. `\\set PAGER pspg` — switch to external pager in one command\n5. Same query — pspg launches with scrollbar\n6. Right arrow scrolls horizontally — pspg's key advantage\n\n## README change\n\nExpands the existing \"External pager (pspg)\" section into \"External pager support\"\nwith a description of the built-in pager vs pspg, the `\\set PAGER pspg` command,\nand the GIF.\n\nCloses #674"
+      },
+      {
+        "number": 686,
+        "title": "docs(demos): re-record pspg GIF with F9 menu and scrolling",
+        "state": "merged",
+        "date": "2026-03-20T20:31:32Z",
+        "url": "https://github.com/NikolayS/rpg/pull/686",
+        "author": "NikolayS",
+        "body": "Re-recorded pspg demo GIF manually via asciinema + agg (VHS doesn't support F-keys).\n\nShows:\n- Up/Down arrow scrolling\n- Right arrow horizontal scroll (killer feature)\n- F9 menu bar\n- F5 column cursor\n- Theme switching (style 22 → style 3)\n\n398KB, replaces the VHS-generated version."
+      },
+      {
+        "number": 677,
+        "title": "fix(docker): copy benches directory in Dockerfile",
+        "state": "merged",
+        "date": "2026-03-20T18:10:47Z",
+        "url": "https://github.com/NikolayS/rpg/pull/677",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- `Cargo.toml` declares a `[[bench]]` for `non_ai_paths` requiring `benches/non_ai_paths.rs` at build time\n- The Dockerfile `COPY` instructions in the builder stage omitted `benches/`, so Docker builds failed with:\n  ```\n  error: can't find `non_ai_paths` bench at `benches/non_ai_paths.rs` or `benches/non_ai_paths/main.rs`\n  ```\n- Added `COPY benches/ benches/` before `RUN cargo build --release` in the builder stage\n\nFixes #676.\n\n## Demo proof\n\nLocal `cargo build` output (all deps compiled, rpg v0.7.0 finished):\n```\n   Compiling rpg v0.7.0\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 28.15s\n```\n\n`cargo fmt --check` passes with no output (clean).\n\n## Test plan\n\n- [ ] CI Docker build passes (the error no longer occurs)\n- [ ] `cargo build` succeeds locally with `benches/` present\n- [ ] `cargo fmt --check` passes\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 675,
+        "title": "docs: pin installation to v0.7.0 tag, note main instability",
+        "state": "merged",
+        "date": "2026-03-20T13:11:32Z",
+        "url": "https://github.com/NikolayS/rpg/pull/675",
+        "author": "NikolayS",
+        "body": "## Problem\n\n`main` is under active development and may be broken at any given time. The README previously only showed how to clone from `main`, meaning anyone following the install instructions could get a broken build.\n\n## Fix\n\n- `git clone --branch v0.7.0 --depth 1` — installs the known-good latest release\n- Short note that `main` is unstable, with a link to releases page\n- `--depth 1` keeps the clone fast (no full history needed just to build)\n\n## Maintenance\n\nWhen a new release ships, update the tag in this line:\n```\ngit clone --branch v0.8.0 --depth 1 https://github.com/NikolayS/rpg.git\n```"
+      },
+      {
+        "number": 668,
+        "title": "fix(ci): use macos-14 for x86_64-apple-darwin in release workflow",
+        "state": "merged",
+        "date": "2026-03-20T01:57:12Z",
+        "url": "https://github.com/NikolayS/rpg/pull/668",
+        "author": "NikolayS",
+        "body": "Cherry-pick of #649 by @gurukulkarni — needed because fork PRs can't pass required status checks.\n\n`macos-13` was removed by GitHub on 2025-12-08, breaking x86_64 macOS builds for releases v0.4.0–v0.7.0.\n\nCloses #649\n\nCo-Authored-By: gurukulkarni"
+      },
+      {
+        "number": 656,
+        "title": "feat(explain): add EXPLAIN summary header and colored tree renderer",
+        "state": "merged",
+        "date": "2026-03-19T22:36:43Z",
+        "url": "https://github.com/NikolayS/rpg/pull/656",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Adds `src/explain/render.rs` with `render_summary`, `render_colored_tree`, and `render_enhanced` public functions for rendering PostgreSQL EXPLAIN (ANALYZE) plans as colored terminal output\n- Includes `ExplainPlan`, `ExplainNode`, and `PlanIssue` structs (minimal rendering-focused, to be replaced by the parser module)\n- 26 unit tests covering number formatting, color thresholds, tree structure, hot-path detection, buffer totals, and issue markers\n\n## Features\n\n- **Summary header**: execution time, planning time, row count, buffer hit/read, peak memory (MiB/KiB/GiB), and issues list with SLOW/WARN/INFO severity labels\n- **Colored tree**: ANSI colors by `time_percent` (<10% dim, 10-30% yellow, 30-60% red, ≥60% bright red+bold); hot path bolded; Unicode box-drawing (`├─`, `╰─`, `│`); loop counts (`×N`); `⚠` markers on nodes matching issues; time and rows right-aligned\n- **Number formatting**: thousand separators (`1,842 ms`, `48,301 rows`), binary units (`MiB`, `KiB`)\n\n## Test plan\n\n- [x] `cargo build` — clean\n- [x] `cargo test explain` — 26/26 pass\n- [x] `cargo test` — 1587/1587 pass\n- [x] `cargo fmt --check` — clean\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n\nCloses #653 (Sprint 1 rendering module)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 657,
+        "title": "feat(explain): add EXPLAIN text parser and plan data structures",
+        "state": "merged",
+        "date": "2026-03-19T22:47:00Z",
+        "url": "https://github.com/NikolayS/rpg/pull/657",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Implements Sprint 1 of the EXPLAIN visualization feature, closes #653\n- Adds `src/explain/mod.rs` with full text-format `EXPLAIN ANALYZE` parser: `ExplainPlan`, `ExplainNode`, `TriggerInfo` data structures; depth-based tree building; exclusive-time and `time_percent` computation; buffer, sort, hash, filter, index-cond, and worker annotations\n- Adds stubs `src/explain/issues.rs` and `src/explain/render.rs` for Sprint 2 (issue detection and terminal renderer)\n- 14 unit tests covering all 9 required node types plus edge cases (exclusive time calculation, decoding, error handling)\n\n## Test plan\n\n- [ ] `cargo test` — all 1575 tests pass\n- [ ] `cargo fmt --check` — no formatting issues\n- [ ] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 654,
+        "title": "feat(explain): add plan issue detection heuristics",
+        "state": "merged",
+        "date": "2026-03-19T22:26:43Z",
+        "url": "https://github.com/NikolayS/rpg/pull/654",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Adds `src/explain/issues.rs` with 7 performance heuristics that detect common `EXPLAIN ANALYZE` plan problems (seq scan on large tables, row estimate errors, sort/hash disk spills, high filter removal, parallel workers not launched, nested loop + seq scan)\n- Adds `src/explain/mod.rs` as the module entry point; registers `mod explain` in `main.rs`\n- Defines self-contained `ExplainNode` / `ExplainPlan` structs (temporary; will be replaced with imports from the parser module when that lands)\n- `detect_issues()` collects all heuristic findings, sorted by severity (`Slow` → `Warn` → `Info`) then by `time_percent` descending\n\n## Test plan\n\n- [ ] `cargo build` — clean compile, no warnings\n- [ ] `cargo test explain` — 37 unit tests, all pass\n- [ ] `cargo fmt --check` — no formatting diffs\n- [ ] `cargo clippy --all-targets --all-features -- -D warnings` — no warnings\n\nCloses #653 (Sprint 1 — EXPLAIN issue detection module)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 650,
+        "title": "docs: add demo GIFs to README",
+        "state": "merged",
+        "date": "2026-03-19T21:11:15Z",
+        "url": "https://github.com/NikolayS/rpg/pull/650",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add 3 animated GIFs demonstrating key rpg features, placed inline in README\n- Add `demos/` directory with VHS tape files, setup script, and instructions\n\n### GIFs added\n\n1. **gif1_optimize.gif** — `/explain` + `/optimize` workflow (query → pager → AI diagnosis → CREATE INDEX → rerun)\n2. **gif2_typo.gif** — `/fix` auto-corrects a table name typo\n3. **gif3_t2s.gif** — `\\t2s` text2sql mode with confirmation, then `\\yolo` auto-execute\n\n### Demo tooling\n\n- `demos/setup_demo_db.sql` — creates and populates `demo_saas` database\n- `demos/README.md` — instructions for recreating demos\n- `demos/*.tape` — VHS tape files for reproducible GIF generation\n\n## Test plan\n\n- [x] GIFs render correctly in GitHub markdown\n- [x] All tape files produce valid output with `vhs`\n- [x] setup_demo_db.sql runs cleanly on PG 18\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 647,
+        "title": "chore: bump version to 0.7.0",
+        "state": "merged",
+        "date": "2026-03-19T04:26:03Z",
+        "url": "https://github.com/NikolayS/rpg/pull/647",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Bump version in `Cargo.toml` and `Cargo.lock` from 0.6.0 to 0.7.0 in preparation for the v0.7.0 release\n\n## Test plan\n\n- [x] `cargo build` succeeds\n- [x] `cargo test` passes (1561 tests)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 644,
+        "title": "fix(repl): display zero-column SELECT results",
+        "state": "merged",
+        "date": "2026-03-19T03:45:00Z",
+        "url": "https://github.com/NikolayS/rpg/pull/644",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Fixes #643: `select from t1 where i = 10;` produced no output\n- Root cause: `print_result_set_pset` had `if is_select && !col_names.is_empty()` — the `!col_names.is_empty()` guard silently skipped the entire display block for zero-column SELECTs\n- `SELECT FROM t` (without columns) is valid PostgreSQL — it returns rows with zero columns\n- Fix: remove the guard so zero-column SELECTs flow through `format_rowset_pset` and render the row-count footer\n- Also update `format_aligned_pset` and `format_aligned` to emit `--` before the row-count footer for zero-column results, matching psql behavior exactly\n- Add 8 new unit tests covering zero-column SELECT rendering\n\n## Test plan\n\n- [x] `cargo test` — 1558 tests pass (8 new)\n- [x] `cargo fmt --check` — clean\n- [x] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n- [x] tmux live test with real PostgreSQL:\n  - `select from t1_test643 where i = 10;` → `--\\n(2 rows)` (was: silent)\n  - `select from t1_test643 where i = 999;` → `--\\n(0 rows)` (was: silent)\n  - `select * from t1_test643 where i = 10;` → still works correctly\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 645,
+        "title": "fix(ai): strip trailing semicolon in is_write_query classification",
+        "state": "merged",
+        "date": "2026-03-19T03:54:09Z",
+        "url": "https://github.com/NikolayS/rpg/pull/645",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- `is_write_query(\"VACUUM;\")` was returning `false` because `split_whitespace()` yields `\"VACUUM;\"` as a single token, which never matched `\"VACUUM\"` in the keyword list\n- Strip trailing `';'` and `','` from the first token before matching — two chained `trim_end_matches` calls on the token extracted from `split_whitespace()`\n- Added unit tests: `VACUUM;`, `DELETE;`, `CREATE;` (upper and lower case) all correctly return `true`\n\n## Test plan\n\n- [ ] `cargo test` — all 1551 tests pass including the new `is_write_trailing_semicolon_is_true` test\n- [ ] `cargo fmt --check` — no formatting issues\n- [ ] `cargo clippy --all-targets --all-features -- -D warnings` — no warnings\n\nCloses #627\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 646,
+        "title": "fix(ai): restore write query execution in text2sql mode",
+        "state": "merged",
+        "date": "2026-03-19T04:14:57Z",
+        "url": "https://github.com/NikolayS/rpg/pull/646",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Commit `326e255` fixed write queries being auto-executed in `/ask` mode but inadvertently broke `\\t2s` mode by applying the \"block all writes\" guard to text2sql as well (`\"in any mode (including text2sql)\"`).\n- In text2sql mode the user types a natural-language write request — they explicitly want the generated SQL executed. Only `/ask` (question mode) should block writes.\n- Fix adds `!read_only && in_text2sql` branch before the `/ask` write-block so `\\t2s` write queries prompt `Execute write query? [y/N/e]` (default NO for safety).\n- Write queries confirmed in text2sql mode now execute directly without the read-only transaction wrapper that was previously rejecting every DML/DDL.\n- Edit path (`e` choice) re-classifies the edited SQL to handle the case where the user changes the write statement in the editor.\n\n## Test plan\n\n- [ ] `cargo test` — 1552 tests pass (added `t2s_insert_classified_as_write_query` and `t2s_select_not_write_query`)\n- [ ] `cargo fmt --check` — no formatting issues\n- [ ] `cargo clippy --all-targets --all-features -- -D warnings` — no warnings\n- [ ] Manual: `\\t2s`, type \"fill orders table with sample data\", confirm that INSERT is shown in the SQL box with `Execute write query? [y/N/e]` prompt\n- [ ] Manual: `/ask` with a write query still shows `-- (write query — not executed in /ask mode; use \\t2s to execute)`\n\nCloses #591\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 639,
+        "title": "fix(repl): auto-rollback stale transactions after /ask errors",
+        "state": "merged",
+        "date": "2026-03-19T00:20:26Z",
+        "url": "https://github.com/NikolayS/rpg/pull/639",
+        "author": "NikolayS",
+        "body": "Fixes #638\n\n## Summary\n\n- Add `internal_tx: bool` flag to `ReplSettings` to track whether an open transaction was started by the internal `/ask` machinery (vs. an explicit user `BEGIN`). Only internal transactions are eligible for auto-rollback, preventing silent rollback of user transactions.\n- Add `auto_rollback_stale_tx` async helper that checks `internal_tx && (InTransaction | Failed)`, issues `ROLLBACK`, resets `TxState::Idle`, clears the flag, and prints `-- auto-rolled back stale transaction`.\n- Call `auto_rollback_stale_tx` at the top of `handle_line` so every incoming REPL command cleans up stale state before executing.\n- In `handle_ai_ask`: set `internal_tx = true` before wrapping and executing the read-only SQL; after the error-path `client.simple_query(\"rollback\")`, explicitly reset `*tx = TxState::Idle`; clear `internal_tx = false` on both success and failure paths. Same fix applied to the `AskChoice::Edit` path.\n- Add 4 unit tests for detection logic: stale `InTransaction`, stale `Failed`, no rollback for user `BEGIN`, no rollback when `Idle`.\n\n## Test plan\n\n- [ ] `cargo test` — all 1532 tests pass, 4 new unit tests added\n- [ ] `cargo fmt --check` — clean\n- [ ] `cargo clippy --all-targets --all-features -- -D warnings` — clean\n- [ ] Manual: trigger `/ask` query, hit Ctrl-C mid-query — next command shows `-- auto-rolled back stale transaction` and prompt returns to `mydb=>`\n- [ ] Manual: explicit `BEGIN; select 1;` without `COMMIT` — next command does NOT auto-rollback (user transaction preserved)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 628,
+        "title": "test(618): comprehensive unit + integration tests for is_write_query and CLI flags",
+        "state": "merged",
+        "date": "2026-03-18T15:37:51Z",
+        "url": "https://github.com/NikolayS/rpg/pull/628",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Adds 51 new tests across 3 files to verify features from the #618 testing plan\n- Covers Section 13 (`is_write_query` classification) and Section 1 (CLI flags) and Section 16 (scripting mode)\n- Baseline: 1452 tests → 1503 tests, all pass\n\n## What was tested\n\n### Section 13 — `is_write_query` classification (unit tests)\n\nAdded to `src/repl/ai_commands.rs` and `src/repl/mod.rs`:\n\n- **DML**: INSERT, UPDATE, DELETE, MERGE (all case variants)\n- **DDL**: CREATE (table/index/view/matview/function), DROP (all variants), ALTER (all variants), TRUNCATE, RENAME\n- **DCL**: GRANT (all variants), REVOKE (all variants)\n- **Maintenance**: VACUUM, CLUSTER, REINDEX, REFRESH MATERIALIZED VIEW\n- **CTEs**: all `WITH ...` prefixes are conservatively treated as write (prevents CTE-bypass)\n- **Read queries** that must return false: SELECT, EXPLAIN SELECT, SHOW, SET, TABLE, VALUES, empty string, whitespace\n- **Comment stripping**: single-line `--`, block `/* */`, mixed, multiple chained, no-space `--comment`\n\nAdded isolated `strip_leading_sql_comments` unit tests covering all code paths.\n\n### Section 1 & 16 — CLI flags and scripting mode (integration tests)\n\nAdded to `tests/integration_smoke.rs` (gated on `integration` feature):\n\n- `--csv`, `--json`, `-t` (tuples-only), `-A` (no-align), `-x` (expanded)\n- `-o FILE` (output redirect), `-q` (quiet), `-v NAME=VALUE` (variable), `-F SEP` (field separator)\n- `-P format=csv`, `-P null=STR`\n- Piped stdin execution\n- Scripting mode: CSV/JSON/tuples-only to stdout\n\n## Side finding — issue #627\n\nWhile writing the vacuum tests, discovered that `is_write_query(\"VACUUM;\")` returns `false` because `split_whitespace()` yields `\"VACUUM;\"` (with semicolon) as one token, which doesn't match the `\"VACUUM\"` keyword. Filed as issue #627.\n\n## Test plan\n\n- [x] `cargo test` passes: 1503/1503 tests pass\n- [x] Integration tests compile cleanly with `--features integration`\n- [x] No regressions to existing 1452 tests\n\nCloses (partial): #618\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 641,
+        "title": "fix(repl): cancel LLM requests on Ctrl-C",
+        "state": "merged",
+        "date": "2026-03-19T02:08:32Z",
+        "url": "https://github.com/NikolayS/rpg/pull/641",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add `with_ctrl_c_cancel()` helper that wraps any `Result`-returning future in `tokio::select!` against `tokio::signal::ctrl_c()`, dropping the HTTP connection and returning a `CANCELLED` sentinel when the signal fires\n- Wrap all `provider.complete()` and `stream_completion()` call sites with this helper — covers `/ask`, `/fix`, `/explain`, `/optimize`, `/describe`, `/plan`, `interpret_auto_explain`, `interpret_dba_output`, and `suggest_error_fix_inline`\n- Interactive AI commands (`/ask`, `/fix`, `/explain`, `/optimize`, `/describe`, `/plan`, `interpret_dba_output`) print `-- AI request cancelled` on Ctrl-C; silent auto-hints swallow the cancellation to avoid noise\n- SQL query cancellation via PostgreSQL `CancelRequest` was already in place (existing cancel guard task in the REPL loop); this PR does not change that path\n- `TxState` after a cancelled SQL query: `InTransaction → Failed` (user issues `ROLLBACK`), `Idle → Idle` — this was already correct and is now explicitly tested\n\n## Test plan\n\n- [ ] `cargo test` — 1534 tests pass, including 6 new unit tests:\n  - `cancelled_sentinel_value` — sentinel string is stable\n  - `with_ctrl_c_cancel_propagates_ok` — passes Ok through\n  - `with_ctrl_c_cancel_propagates_err` — passes Err through\n  - `cancelled_sentinel_is_distinct_from_provider_errors` — sentinel won't match real errors\n  - `tx_state_after_query_cancel_in_transaction` — Failed state is correct\n  - `tx_state_after_query_cancel_outside_transaction` — Idle state is correct\n- [ ] `cargo fmt --check` — passes\n- [ ] `cargo clippy --all-targets --all-features -- -D warnings` — passes\n- [ ] Manual: start a long `/ask` query, press Ctrl-C, verify `-- AI request cancelled` appears and prompt returns cleanly\n- [ ] Manual: run `select pg_sleep(30);`, press Ctrl-C, verify PostgreSQL cancel error appears and session returns to prompt\n\nCloses #637\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 635,
+        "title": "fix(pager): guard against non-TTY stdin before starting pager",
+        "state": "merged",
+        "date": "2026-03-18T19:46:54Z",
+        "url": "https://github.com/NikolayS/rpg/pull/635",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Fixes \"Failed to initialize input reader\" when `\\?` or other backslash commands trigger the built-in pager in non-interactive/piped mode\n- Root cause: on macOS, crossterm's `mio`/`kqueue` event reader fails to register a newly-opened `/dev/tty` fd (`EVFILT_READ` returns `EINVAL`). This happens when stdin is a pipe and `tty_fd()` opens `/dev/tty` as a new fd instead of reusing the inherited stdin fd 0. The global `InternalEventReader` ends up with `source=None`, causing every subsequent `event::poll()` to return \"Failed to initialize input reader\".\n- Fix: add an early stdin TTY check in `run_pager()` — return `Err(Unsupported)` immediately when stdin is not a terminal. All three call sites (`repl/execute.rs`, `dba.rs`, `describe.rs`) suppress the error print for `Unsupported` errors (expected in piped/non-interactive mode) and fall back to plain `print!`.\n\n## Test plan\n\n- [x] `cargo build` succeeds\n- [x] `cargo test` — 1528 tests pass\n- [x] `cargo fmt --check` passes\n- [x] Verified no \"pager error\" in piped mode: `printf \"\\\\\\\\?\\n\\\\\\\\q\\n\" | rpg -d postgres 2>&1 | grep \"pager error\"` — empty\n- [x] Verified help text still prints in piped mode: `printf \"\\\\\\\\?\\n\\\\\\\\q\\n\" | rpg -d postgres 2>&1 | grep \"Backslash commands\"` — found\n- [x] Verified no \"pager error\" in PTY+piped-stdin mode: `script -q /dev/null sh -c 'printf \"\\\\\\\\?\\n\\\\\\\\q\\n\" | rpg -d postgres 2>&1' | grep \"pager error\"` — empty\n\nCloses #632.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 634,
+        "title": "fix(ai): always wrap /ask queries in read-only tx",
+        "state": "merged",
+        "date": "2026-03-18T19:33:01Z",
+        "url": "https://github.com/NikolayS/rpg/pull/634",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Fixes #633: write queries in yolo mode now go through `start transaction read only` wrapper, providing DB-level enforcement\n- Removes the `if read_only { wrap } else { borrow }` conditional in both `AskChoice::Yes` and `AskChoice::Edit` branches — always wraps unconditionally\n- Rollback-on-error no longer conditions on `read_only`; all wrapped queries need cleanup on failure\n- Updates yolo-mode warning message to accurately describe that the DB will reject write queries\n- Adds 2 integration tests: `ask_yolo_write_query_rejected_by_readonly_tx` (INSERT rejected) and `ask_yolo_ddl_rejected_by_readonly_tx` (CREATE TABLE rejected)\n\n## Behavior change\n\n| Mode | Before | After |\n|---|---|---|\n| Non-yolo, read-only query | wrapped in read-only tx | wrapped in read-only tx (unchanged) |\n| Non-yolo, write query | refused (AskChoice::No) | refused (AskChoice::No) (unchanged) |\n| Yolo, read-only query | wrapped in read-only tx | wrapped in read-only tx (unchanged) |\n| **Yolo, write query** | **executed bare (no protection)** | **wrapped in read-only tx → PG rejects** |\n| Edit path, any query | wrapped only if read-only | always wrapped |\n\n## Test plan\n\n- [x] `cargo build` — clean compile\n- [x] `cargo test` — 1528 unit tests pass\n- [x] `cargo fmt --check` — clean\n- [ ] `cargo test --features integration` — requires running Postgres (see `docker compose -f docker-compose.test.yml up -d --wait`)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 631,
+        "title": "fix(ai): block DDL/DML in /ask mode regardless of text2sql",
+        "state": "merged",
+        "date": "2026-03-18T16:26:11Z",
+        "url": "https://github.com/NikolayS/rpg/pull/631",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- **Root cause identified**: In `text2sql_show` mode, the write-query guard was evaluated AFTER the `text2sql_show` branch. That branch called `ask_yne_prompt` with `default_yes=true`, which auto-executes DDL when stdin is not a TTY or when the user presses Enter.\n- **Fix**: Move the `!read_only` (write query) check before `text2sql_show` so that DDL and DML are always refused by `/ask` regardless of input mode. Only yolo mode can execute write queries — by design and user's explicit choice.\n- **Unit tests**: 6 new tests verifying that AI responses with CREATE TABLE, DROP TABLE, INSERT, ALTER TABLE, and SELECT are correctly parsed and classified, and that responses without a \\`\\`\\`sql fence produce no SQL segment.\n- **Integration tests**: 4 new tests running against real PostgreSQL confirming that `start transaction read only` blocks CREATE TABLE, DROP TABLE, and INSERT at the wire level (defense-in-depth).\n\n## Root cause (from issue #630)\n\n```\n/ask create table t4  ← user is in \\t2s (text2sql) mode\n```\n\nCode path in `text2sql_show` branch (before this fix):\n```rust\nif text2sql_show {\n    if read_only {\n        ask_yne_prompt(\"Execute? [Y/n/e] \", true)  // default Yes\n    } else {\n        ask_yne_prompt(\"Execute write query? [Y/n/e] \", true)  // BUG: default Yes for DDL!\n    }\n}\n```\n\nWhen stdin is not a TTY (or user pressed Enter), `ask_yne_prompt` returns `AskChoice::Yes` for write queries. Because `read_only=false`, the SQL is NOT wrapped in a read-only transaction, so PostgreSQL executes the DDL directly.\n\n## Fix\n\nThe write-query check now runs unconditionally (before `text2sql_show`):\n\n```rust\nlet choice = if yolo {\n    // yolo: auto-execute, by user's explicit choice\n    AskChoice::Yes\n} else if !read_only {\n    // write query in any mode: refuse\n    eprintln!(\"-- (write query — not executed in /ask mode; use \\\\t2s to execute)\");\n    AskChoice::No\n} else if text2sql_show {\n    // read-only query in text2sql mode: ask confirmation\n    ask_yne_prompt(\"Execute? [Y/n/e] \", true)\n} else {\n    // read-only query in regular /ask mode: auto-execute\n    AskChoice::Yes\n};\n```\n\n## Test plan\n\n- [x] `cargo fmt` clean\n- [x] `cargo test` — 1477 unit tests pass\n- [x] Integration tests with local PostgreSQL — 4 new tests pass\n- [x] `ask_create_table_is_write_query` — CREATE TABLE in ```sql fence → write query\n- [x] `ask_drop_table_is_write_query` — DROP TABLE → write query\n- [x] `ask_select_is_not_write_query` — SELECT → not write query (auto-executes)\n- [x] `ask_insert_is_write_query` — INSERT → write query\n- [x] `ask_no_sql_fence_produces_no_sql_segment` — no execution without ```sql fence\n- [x] `ask_write_query_sql_is_parsed_for_display` — SQL is always shown to user\n- [x] `ask_readonly_tx_blocks_create_table` — PostgreSQL rejects DDL in read-only tx\n- [x] `ask_readonly_tx_blocks_drop_table` — PostgreSQL rejects DROP in read-only tx\n- [x] `ask_readonly_tx_allows_select` — PostgreSQL allows SELECT in read-only tx\n- [x] `ask_readonly_tx_blocks_insert` — PostgreSQL rejects INSERT in read-only tx\n\nCloses #630\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 614,
+        "title": "fix(yolo): suppress AI explanation text in yolo mode",
+        "state": "merged",
+        "date": "2026-03-18T05:17:56Z",
+        "url": "https://github.com/NikolayS/rpg/pull/614",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- In `\\yolo` mode, the AI's explanatory text was being printed to the terminal alongside query results\n- Added a `!yolo` guard around the `println!` in the `AiResponseSegment::Text` arm of `handle_ai_ask`\n- Only query execution output now appears in yolo mode; AI commentary is suppressed\n\nCloses #610\n\n## Test plan\n\n- [ ] Run `cargo test` — all 1441 tests pass\n- [ ] Manual: enable yolo mode (`\\yolo`), run an `/ask` query, confirm only SQL results appear with no AI explanatory text\n- [ ] Manual: in normal mode, confirm AI explanatory text still appears as expected\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 629,
+        "title": "fix(repl): route backslash command output through pager",
+        "state": "merged",
+        "date": "2026-03-18T15:22:31Z",
+        "url": "https://github.com/NikolayS/rpg/pull/629",
+        "author": "NikolayS",
+        "body": "## Summary\n\nCloses #625.\n\nAll backslash commands that can produce long output now route through the built-in pager when the content exceeds the terminal height, matching the behaviour of `\\dba` commands (fixed in #622) and query results.\n\n- **`\\?`** — refactored to use the new shared `maybe_page` helper (eliminates duplicate inline logic)\n- **`\\h [topic]`** — SQL help list / synopsis now paged; introduced `sql_help_text()` returning `String`\n- **`\\set`** (bare) — full variable listing routed through pager\n- **`\\pset`** (bare) — print options listing routed through pager; extracted `pset_status_text()` returning `String`\n- **`\\n+` / `\\nl`** — named query list routed through pager\n- **`\\d` family** (all 25 describe commands) — `describe::execute` now accepts `settings`, `format_table_inner` returns `String` instead of printing directly; each handler passes `settings` down to `run_and_print_titled`/`run_and_print_no_count`\n\nSmall outputs still skip the pager (controlled by `pager_min_lines`). `\\o` file redirection continues to work correctly for all affected commands.\n\n### Architecture\n\nAdded a `maybe_page(settings, text)` helper in `repl/mod.rs` that centralises the pager-or-print logic (terminal size check → statusline teardown → pager → statusline restore). The `\\dba` commands have an equivalent helper in `dba.rs`; both follow the same pattern.\n\n## Test plan\n\n- [ ] `\\?` — output is paged on a small terminal\n- [ ] `\\h` (bare, lists all SQL commands) — paged\n- [ ] `\\h SELECT` — single-topic help, short: NOT paged\n- [ ] `\\set` (bare, many variables) — paged when list exceeds terminal\n- [ ] `\\pset` (bare) — paged\n- [ ] `\\dt` on a DB with many tables — paged\n- [ ] `\\d tablename` — main column table paged; supplementary sections printed normally\n- [ ] `\\o file.txt` + `\\pset` — output goes to file, no pager\n- [ ] `\\set PAGER off` disables pager for all commands\n- [ ] `cargo test` passes (1465 tests)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 607,
+        "title": "fix(repl): reset exec_mode when switching from yolo to t2s/sql",
+        "state": "merged",
+        "date": "2026-03-18T02:46:03Z",
+        "url": "https://github.com/NikolayS/rpg/pull/607",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Fixes mode state bug where `\\yolo` followed by `\\t2s` still auto-executed queries without showing the SQL preview/confirm dialog\n- Extracts `apply_mode_change()` helper to centralise mode transition logic across all three REPL dispatch sites, eliminating duplication\n- Adds symmetric fix: `\\interactive` now also resets `input_mode` back to `Sql` (previously it only reset `exec_mode`)\n\n## Mode transition table (after fix)\n\n| Command | `exec_mode` | `input_mode` |\n|---|---|---|\n| `\\yolo` | `Yolo` | `Text2Sql` |\n| `\\t2s` / `\\text2sql` | **`Interactive`** (reset) | `Text2Sql` |\n| `\\sql` | **`Interactive`** (reset) | `Sql` |\n| `\\interactive` | `Interactive` | **`Sql`** (reset) |\n| `\\plan` | `Plan` | unchanged |\n\n## Test plan\n\n- [ ] `cargo test` — 1444 tests pass including 6 new mode transition unit tests\n- [ ] `cargo clippy --all-targets -- -D warnings` — clean\n- [ ] Manual: `\\yolo` then `\\t2s` then NL query → shows preview + \"Execute? [Y/n/e]\"\n- [ ] Manual: `\\yolo` then `\\interactive` → returns fully to default state\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      }
+    ],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 704,
+        "title": "feat(repl): query formatter (\\reformat command)",
+        "state": "open",
+        "date": "2026-03-21T10:29:13Z",
+        "url": "https://github.com/NikolayS/rpg/issues/704",
+        "author": "NikolayS"
+      },
+      {
+        "number": 703,
+        "title": "shell script are not supported in prompt",
+        "state": "open",
+        "date": "2026-03-21T08:41:03Z",
+        "url": "https://github.com/NikolayS/rpg/issues/703",
+        "author": "okbob"
+      },
+      {
+        "number": 699,
+        "title": "feat: WASI target for browser embedding via WSS proxy",
+        "state": "open",
+        "date": "2026-03-21T02:14:38Z",
+        "url": "https://github.com/NikolayS/rpg/issues/699",
+        "author": "NikolayS"
+      },
+      {
+        "number": 693,
+        "title": "feat(repl): better command history (fuzzy search, AI-powered)",
+        "state": "open",
+        "date": "2026-03-20T21:38:54Z",
+        "url": "https://github.com/NikolayS/rpg/issues/693",
+        "author": "NikolayS"
+      },
+      {
+        "number": 692,
+        "title": "feat(output): terminal charts and graphs for query results",
+        "state": "open",
+        "date": "2026-03-20T21:38:53Z",
+        "url": "https://github.com/NikolayS/rpg/issues/692",
+        "author": "NikolayS"
+      },
+      {
+        "number": 689,
+        "title": "chore: publish to crates.io (name conflict with rpg-cli)",
+        "state": "open",
+        "date": "2026-03-20T20:49:32Z",
+        "url": "https://github.com/NikolayS/rpg/issues/689",
+        "author": "NikolayS"
+      },
+      {
+        "number": 652,
+        "title": "docs: psql compatibility report for 0.7.0 — how safe is 'alias psql=rpg'?",
+        "state": "open",
+        "date": "2026-03-19T21:43:31Z",
+        "url": "https://github.com/NikolayS/rpg/issues/652",
+        "author": "NikolayS"
+      },
+      {
+        "number": 651,
+        "title": "feat(explain): redesign EXPLAIN plan visualization in terminal",
+        "state": "open",
+        "date": "2026-03-19T21:42:22Z",
+        "url": "https://github.com/NikolayS/rpg/issues/651",
+        "author": "NikolayS"
+      },
+      {
+        "number": 603,
+        "title": "perf(deps): russh pulls in aws-lc-sys causing very slow builds",
+        "state": "open",
+        "date": "2026-03-18T01:11:59Z",
+        "url": "https://github.com/NikolayS/rpg/issues/603",
+        "author": "NikolayS"
+      },
+      {
+        "number": 599,
+        "title": "Benchmark and compare to psql",
+        "state": "open",
+        "date": "2026-03-18T00:36:40Z",
+        "url": "https://github.com/NikolayS/rpg/issues/599",
+        "author": "NikolayS"
+      },
+      {
+        "number": 578,
+        "title": "(postponed) Fix --update: GitHub API returns 404",
+        "state": "open",
+        "date": "2026-03-17T18:10:24Z",
+        "url": "https://github.com/NikolayS/rpg/issues/578",
+        "author": "NikolayS"
+      },
+      {
+        "number": 568,
+        "title": "UX review: error coloring, syntax highlighting depth, status bar polish",
+        "state": "open",
+        "date": "2026-03-15T23:40:55Z",
+        "url": "https://github.com/NikolayS/rpg/issues/568",
+        "author": "NikolayS"
+      }
+    ],
+    "commitCount": 87,
+    "topContributors": [
+      "NikolayS"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/nikolays-rpg-0.jpg"
+    ]
+  },
+  {
+    "name": "sqlever",
+    "description": "Sqitch-compatible PostgreSQL migration tool with static analysis and zero-downtime migrations",
+    "url": "https://github.com/NikolayS/sqlever",
+    "stars": 1,
+    "releases": [],
+    "mergedPRs": [
+      {
+        "number": 72,
+        "title": "S5-3: Analysis rules SA011-SA021 — DML, DDL, and locking safety rules",
+        "state": "merged",
+        "date": "2026-03-20T23:14:02Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/72",
+        "author": "NikolayS",
+        "body": "## Summary\n\nImplements the remaining 11 static analysis rules from SPEC section 5.1, completing the full SA001-SA021 rule set:\n\n- **SA011** (connected, warn): UPDATE/DELETE on large table — flags DML on tables with high estimated row counts when a DB connection is available\n- **SA012** (static, info): ALTER SEQUENCE RESTART — informational flag for sequence restarts that may break ID assumptions\n- **SA013** (static, warn): Missing SET lock_timeout before risky DDL — detects ALTER TABLE, CREATE INDEX, DROP TABLE, TRUNCATE, CLUSTER, VACUUM FULL, and REINDEX without a preceding lock_timeout guard\n- **SA014** (static, warn): VACUUM FULL or CLUSTER — flags operations that take AccessExclusiveLock and rewrite the table\n- **SA015** (static, warn): ALTER TABLE RENAME (table or column) — flags renames that break running application code\n- **SA016** (static, error): ADD CONSTRAINT CHECK without NOT VALID — blocks deploy for CHECK constraints that scan under heavy lock\n- **SA017** (hybrid, warn): SET NOT NULL on existing column — flags full table scan risk, with connected suppression stub\n- **SA018** (hybrid, warn): ADD PRIMARY KEY without USING INDEX — flags extended AccessExclusiveLock during implicit index creation\n- **SA019** (static, warn): REINDEX without CONCURRENTLY — flags AccessExclusiveLock on reindex\n- **SA020** (static, error): CONCURRENTLY operations in transactional context — blocks deploy for operations that cannot run in transactions\n- **SA021** (static, warn): Explicit LOCK TABLE — flags dangerous explicit locking in migrations\n\n## Details\n\n- All rules follow the exact same patterns as SA001-SA010: standalone exported function, AnalysisContext input, Finding[] output\n- Registry updated from 11 to 22 rules in `src/analysis/rules/index.ts`\n- 174 new tests in `tests/unit/analysis-rules-11-21.test.ts`\n- 55 no-trigger fixture files (5 per rule) + 28 trigger fixtures across `tests/fixtures/analysis/SA0{11-21}/`\n- Updated existing test to expect 22 rules in registry\n- All 348 tests pass across both test files\n\n## Test plan\n\n- [x] `bun test tests/unit/analysis-rules-11-21.test.ts` — 174 pass, 0 fail\n- [x] `bun test tests/unit/analysis-rules.test.ts` — 174 pass, 0 fail (existing tests still pass)\n- [x] Each rule has trigger fixtures that produce findings and no-trigger fixtures that produce zero findings\n- [x] Registry correctly exports all 22 rules\n\nCloses #52\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 71,
+        "title": "test: deploy failure recovery tests",
+        "state": "merged",
+        "date": "2026-03-20T22:56:05Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/71",
+        "author": "NikolayS",
+        "body": "## Summary\n- Adds `tests/unit/deploy-failures.test.ts` with 42 unit tests covering all deploy failure scenarios from issue #37\n- Tests use mocked DatabaseClient, Registry, and PsqlRunner (same pattern as existing `deploy.test.ts`)\n- All 9 failure categories covered:\n  1. **SQL error in deploy script** — tracking tables unchanged for failed change, previous changes preserved\n  2. **Mid-batch failure (3 changes, 2nd fails)** — first committed, second rolled back, third not attempted\n  3. **Database unreachable** — exit code 10 constant verified\n  4. **Concurrent deploy** — advisory lock returns false, exit code 4, no changes deployed\n  5. **Missing dependency** — MissingDependencyError thrown before any deploy, lock still released\n  6. **Non-transactional changes** — `-- sqlever:no-transaction` detection, no `--single-transaction` flag\n  7. **`--to` without value** — error thrown (regression guard for #68)\n  8. **`--dry-run`** — zero DB queries, no lock, no registry, no psql invocations\n  9. **Verify script failure** — change recorded in tracking tables (already committed), error reported\n\nCloses #37\n\n## Test plan\n- [x] `bun test tests/unit/deploy-failures.test.ts` — 42 pass, 0 fail\n- [x] `bun test tests/unit/deploy.test.ts` — 59 pass (no regressions)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 70,
+        "title": "S5-5: sqlever analyze — standalone analysis command",
+        "state": "merged",
+        "date": "2026-03-20T22:53:45Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/70",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Adds `src/commands/analyze.ts` implementing the `sqlever analyze` CLI command\n- Supports single file (`sqlever analyze file.sql`), directory (`sqlever analyze dir/`), sqitch.plan-based (`sqlever analyze` / `--all`), and git-based (`--changed`) file discovery\n- Four output formats via `--format`: text, json, github-annotations, gitlab-codequality (using reporters from `src/analysis/reporter.ts`)\n- `--strict` flag treats warnings as errors for exit code determination\n- `--force-rule SA003` bypasses specific rules\n- Exit code 0 if clean, 2 if error-level findings detected\n- Wired into CLI router in `src/cli.ts`\n- 38 tests covering argument parsing, file/directory analysis, sqitch.plan integration, all format outputs, --strict/--force-rule behavior, exit codes, error handling, and CLI subprocess wiring\n\nCloses #54\n\n## Test plan\n\n- [x] parseAnalyzeArgs: all flags, combined args, error cases (13 tests)\n- [x] Single file analysis: clean file, SA010 detection, parse errors (3 tests)\n- [x] Directory analysis: .sql file collection, empty directory (2 tests)\n- [x] sqitch.plan integration: plan-based discovery, --all flag, missing plan (3 tests)\n- [x] --strict: warnings become errors, clean file unaffected (2 tests)\n- [x] --force-rule: skip single rule, skip multiple rules (2 tests)\n- [x] --format: text, json, github-annotations, gitlab-codequality (4 tests)\n- [x] Error handling: nonexistent file, nonexistent plan file (2 tests)\n- [x] Exit codes: 0 for clean, 2 for errors, 0 for empty (4 tests)\n- [x] CLI wiring: subprocess tests for exit codes and output (3 tests)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 63,
+        "title": "S3-2: Deploy command",
+        "state": "merged",
+        "date": "2026-03-20T22:44:19Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/63",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Implement `sqlever deploy` -- the core command that executes pending migration scripts against PostgreSQL and tracks state in sqitch.* registry tables\n- Full deploy flow per SPEC Section 7: parse plan, connect, acquire advisory lock, create registry, compute pending changes (topological sort), execute scripts via psql, record tracking, release lock\n- Advisory lock coordination using two-arg `pg_try_advisory_lock(namespace, project_hash)` with application-computed stable hash (not hashtext) per DD13\n- Non-transactional change support (`-- sqlever:no-transaction` comment detection), lock timeout guard integration (SPEC 5.9), signal handling (SIGINT/SIGTERM cleanup)\n- Flags: `--to`, `--mode change|all|tag`, `--dry-run`, `--verify`, `--set key=value`, `--db-uri`, `--target`, `--lock-timeout`, `--db-client`\n- Exit codes: 0 success, 1 failure, 4 concurrent deploy, 5 lock timeout, 10 DB unreachable\n- Adds `Registry.recordFail()` for recording deploy failure events in sqitch.events\n- 47 new unit tests with mocked DB and psql; all 747 tests pass\n\n## Test plan\n\n- [x] `projectLockKey()` produces stable, positive 32-bit hashes; different projects get different keys\n- [x] `isNonTransactional()` detects `-- sqlever:no-transaction` on first line (case-insensitive, varied spacing)\n- [x] Deploy acquires advisory lock before registry creation, releases after all changes\n- [x] Lock release happens on success, failure, and when lock was never acquired (no spurious unlock)\n- [x] Registry schema created before any change tracking\n- [x] Each change recorded in sqitch.changes + sqitch.events + sqitch.dependencies\n- [x] `--to` flag stops deployment at the specified change\n- [x] `--dry-run` prints pending changes without executing scripts or writing tracking records\n- [x] Concurrent deploy detection (advisory lock returns false) returns error with exit code 4\n- [x] Script failure stops deploy, records fail event, releases lock\n- [x] Missing deploy script produces clear error\n- [x] `--verify` runs verify scripts after each change; verify failure stops deploy\n- [x] Non-transactional scripts execute without `--single-transaction`\n- [x] Lock timeout guard passes `-c SET lock_timeout` to psql; skips when script already sets it\n- [x] Tags recorded after deploying tagged changes\n- [x] `--set key=value` variables forwarded to psql\n- [x] Ordering invariants: lock -> registry -> changes -> unlock\n- [x] `parseDeployOptions()` correctly parses all CLI flags\n- [x] `Registry.recordFail()` inserts fail event with correct values\n- [ ] Integration test: real PostgreSQL deploy (documented, not yet automated)\n\nCloses #33\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 69,
+        "title": "S4-1: verify command — run verify scripts for deployed changes",
+        "state": "merged",
+        "date": "2026-03-20T22:03:18Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/69",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Implement `sqlever verify` command: connects to DB, reads deployed changes from the sqitch registry, runs each change's verify script via `PsqlRunner`, and reports pass/fail per change\n- Exit code 3 on any verification failure (SPEC R6)\n- Support `--from`/`--to` range filtering (both endpoints inclusive)\n- Skip gracefully when a verify script is missing (customer-zero postgres-ai-console has 6 missing)\n- Wire into CLI dispatcher, update stub test exclusion list\n\n## Test plan\n\n- [x] 44 unit tests covering:\n  - Option parsing (`--from`, `--to`, positional target, inherited global flags)\n  - Range filtering (all/from-only/to-only/both/single/empty/invalid)\n  - Script path construction\n  - Verify script execution (pass, fail, skip on missing, spawn error, stderr fallback)\n  - Output formatting (all-pass, failures, skipped, mixed)\n  - Target URI resolution (--db-uri, named target, engine fallback, undefined)\n  - CLI routing integration\n  - Customer-zero scenario (6 of 10 scripts missing)\n  - Edge cases (single change, preserves objects)\n- [x] EXIT_CODE_VERIFY_FAILED constant equals 3 per SPEC R6\n- [x] All 1017 existing unit tests continue to pass\n\nCloses #67\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 65,
+        "title": "S5-2: Analysis rules SA001-SA010 — DDL safety rules",
+        "state": "merged",
+        "date": "2026-03-20T22:01:58Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/65",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Implement 11 analysis rules (SA001-SA010) per SPEC Section 5.1, one file per rule in `src/analysis/rules/`\n- Add shared types (`Rule`, `Finding`, `AnalysisContext`, `offsetToLocation`) in `src/analysis/types.ts`\n- Add rule registry with `allRules` array and `getRule()` lookup in `src/analysis/rules/index.ts`\n- 89 SQL fixture files across 11 rule directories in `tests/fixtures/analysis/SA00X/{trigger,no_trigger}/`\n- 174 tests covering trigger cases, no-trigger cases, edge cases, PL/pgSQL body exclusion, version-aware behavior, and message/location quality\n\n### Rules implemented\n\n| Rule | Severity | Type | Trigger |\n|------|----------|------|---------|\n| SA001 | error | static | ADD COLUMN NOT NULL without DEFAULT |\n| SA002 | error | static | ADD COLUMN DEFAULT volatile (any PG) |\n| SA002b | warn | static | ADD COLUMN DEFAULT non-volatile (PG < 11) |\n| SA003 | error | static | ALTER COLUMN TYPE (unsafe cast / USING) |\n| SA004 | warn | static | CREATE INDEX without CONCURRENTLY |\n| SA005 | warn | static | DROP INDEX without CONCURRENTLY |\n| SA006 | warn | static | DROP COLUMN |\n| SA007 | error | static | DROP TABLE (non-revert context) |\n| SA008 | warn | static | TRUNCATE |\n| SA009 | warn | hybrid | ADD FOREIGN KEY without NOT VALID |\n| SA010 | warn | static | UPDATE/DELETE without WHERE |\n\n### Design notes\n\n- Each rule is a standalone function that takes a parsed AST and returns `Finding[]`, ready for integration with the analysis engine (issue #50)\n- Uses `libpg-query` WASM module for SQL parsing in tests\n- SA002 detects volatile functions (`random()`, `gen_random_uuid()`, `clock_timestamp()`, `txid_current()`, etc.) recursively through type casts and expressions\n- SA002b is version-aware: only fires when `pgVersion < 11`\n- SA003 fires on all type changes in static mode (conservative); USING clause always triggers\n- SA007 respects `isRevertContext` flag for sqitch revert script exemption\n- SA008/SA010 implement PL/pgSQL body exclusion per spec\n- SA009 is typed as hybrid with static NOT VALID check implemented; connected index check is stubbed for DB integration\n\n## Test plan\n\n- [x] 174 tests pass (`bun test tests/unit/analysis-rules.test.ts`)\n- [x] Full suite passes (875 tests, 0 failures)\n- [x] Zero new TypeScript errors in source files\n- [x] Each rule has >= 5 no-trigger fixtures\n- [x] Trigger fixtures verify ruleId, severity, and message content\n- [x] Cross-cutting tests verify location, field completeness, and edge cases\n\nCloses #51\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 68,
+        "title": "fix: revert --to validation + advisory lock leak",
+        "state": "merged",
+        "date": "2026-03-20T21:53:21Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/68",
+        "author": "NikolayS",
+        "body": "## Summary\n- **Bug 1 (`--to` without value):** `revert --to` with no argument silently fell through to reverting ALL deployed changes. Now validates that `--to` has a non-empty, non-flag value and throws a clear error (`Missing value for --to. Usage: revert --to <change>`).\n- **Bug 2 (advisory lock leak):** All `process.exit()` calls inside `runRevert`'s try block bypassed the finally block, leaking the PostgreSQL advisory lock. Replaced every `process.exit()` in `runRevert` with `return <exitCode>` (changed return type from `Promise<void>` to `Promise<number>`). The caller in `cli.ts` now calls `process.exit()` after `runRevert` resolves, so the finally block always runs and releases the lock.\n- Added 5 new tests covering both bugs: `--to` with missing value, `--to` followed by a flag, source-level assertion that `process.exit` is absent from `revert.ts`, and runtime verification that `runRevert` returns a numeric exit code.\n\n## Test plan\n- [x] All 39 revert unit tests pass (including 5 new ones)\n- [x] Full test suite: 982 pass, 2 pre-existing integration failures (DB connectivity, unrelated)\n- [ ] Manual: `sqlever revert --to` (no value) should print error, not revert everything\n- [ ] Manual: kill a revert mid-flight and verify advisory lock is released\n\nCloses #66\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 64,
+        "title": "S5-1: Analysis engine — analyzer, rule registry, preprocessor, suppression",
+        "state": "merged",
+        "date": "2026-03-20T21:49:08Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/64",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Implements the analysis engine foundation per SPEC section 5.1 (issue #50)\n- **`src/analysis/types.ts`** — `Rule`, `AnalysisContext`, `Finding`, `Severity` interfaces matching the spec's rule interface contract\n- **`src/analysis/registry.ts`** — Rule registry with duplicate ID validation and bulk registration\n- **`src/analysis/preprocessor.ts`** — Strips psql metacommands (`\\i`, `\\ir`, `\\set`, `\\echo`, `\\if`/`\\endif`, `\\!`, etc.) before parsing, replacing with same-length blank lines to preserve byte offsets and line numbers\n- **`src/analysis/suppression.ts`** — Parses `-- sqlever:disable SA001` / `-- sqlever:enable SA001` inline suppression comments with block form, single-line trailing form, comma-separated rule IDs, unknown rule warnings, unclosed block warnings, unused suppression warnings, and `all` keyword rejection\n- **`src/analysis/index.ts`** — `Analyzer` class with `analyze(filePath, options)` and `analyzeSql()` entry points: loads rules from registry, parses SQL via libpg-query, runs applicable rules (skipping connected rules without db), filters through suppressions and per-file overrides, applies severity overrides and `errorOnWarn` promotion, handles parse errors and rule exceptions gracefully\n\n80 tests across 5 test files covering types, registry, preprocessor, suppression, and full analyzer pipeline integration.\n\nCloses #50\n\n## Test plan\n\n- [x] 80 tests passing (8 types + 10 registry + 20 preprocessor + 21 suppression + 21 analyzer)\n- [x] Full test suite (781 tests) passing — no regressions\n- [x] TypeScript type-checking passes for all new files\n- [x] Metacommand stripping preserves line numbers for accurate finding locations\n- [x] Suppression filtering covers block form, single-line form, per-file overrides\n- [x] Analyzer gracefully handles empty SQL, invalid SQL, and rules that throw\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 61,
+        "title": "S4-6: sqlever plan — display plan contents",
+        "state": "merged",
+        "date": "2026-03-20T21:44:02Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/61",
+        "author": "NikolayS",
+        "body": "## Summary\n- Implement `sqlever plan` command that reads and displays sqitch.plan file contents in human-readable table format\n- Support `--format json` for structured JSON output with project info, changes, deps, tags, and parent links\n- Support `--change <name>` filter to show only matching changes and `--tag <name>` filter to show changes up to a tagged point\n- Wire the plan command into the CLI dispatcher (no longer a stub)\n\nCloses #48\n\n## Test plan\n- [x] 35 tests in `tests/unit/plan-cmd.test.ts` covering:\n  - Argument parsing (`parsePlanArgs`): defaults, `--change`, `--tag`, `--plan-file`, `--top-dir`\n  - Dependency formatting (`formatDeps`): empty, requires-only, conflicts-only, mixed\n  - Filtering (`filterPlan`): no filters, `--change`, `--tag`, combined, nonexistent values\n  - JSON output (`buildPlanJson`): structure, null URI, requires/conflicts, empty plan\n  - Text output (`printPlanText`): project header, \"No changes.\", table content, quiet mode\n  - CLI subprocess tests: text output, JSON output, `--change` filter, `--tag` filter, missing file error, `--quiet`, empty plan, tag/dep columns\n- [x] All 735 existing tests still pass (no regressions)\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 62,
+        "title": "S4-2: sqlever status — show deployment status",
+        "state": "merged",
+        "date": "2026-03-20T21:41:29Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/62",
+        "author": "NikolayS",
+        "body": "## Summary\n- Implement `sqlever status` command showing pending count, deployed count, last deployed change, target info, and modified script detection (script_hash comparison)\n- Support `--format json` for machine-readable output and plan-only mode (no DB) when no target is configured\n- Wire status into CLI dispatch; update existing cli.test.ts to reflect status is no longer a stub\n\n## Test plan\n- [x] 36 unit tests covering `parseStatusOptions`, `resolveTargetUri`, `computeStatus`, `formatStatusText`, and CLI integration\n- [x] Modified script detection: verifies hash mismatch, unmodified scripts, null hash, missing files\n- [x] Pending change ordering preserved from plan\n- [x] Target resolution priority: --db-uri > --target lookup > engine default > null\n- [x] Text output formatting: project, target, counts, pending list, modified warnings, up-to-date message\n- [x] JSON output: valid JSON with all status fields\n- [x] CLI subprocess tests: missing plan file error, plan-only mode, --format json\n- [x] Full test suite passes (736 tests, 0 failures)\n\nCloses #44\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 60,
+        "title": "feat: sqlever show — display change scripts and metadata",
+        "state": "merged",
+        "date": "2026-03-20T21:39:08Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/60",
+        "author": "NikolayS",
+        "body": "## Summary\n- Implements `sqlever show <type> <name>` where type is `deploy|revert|verify|change|tag`\n- For script types (deploy/revert/verify), reads and prints the `.sql` file content\n- For metadata types (change/tag), parses the plan and displays structured info (ID, planner, timestamps, dependencies, notes)\n- Supports `--format json` for machine-readable output\n- Wired into CLI dispatch; `show` is no longer a stub command\n\nCloses #47\n\n## Test plan\n- [x] 36 tests in `tests/unit/show.test.ts` covering:\n  - Argument parsing (type + name positional args, empty args)\n  - Script path resolution and file reading\n  - Change and tag lookup from parsed plan\n  - Text formatters for change and tag metadata\n  - Error handling (invalid type, missing name, missing script, missing change/tag)\n  - Full integration: deploy/revert/verify script display, change/tag metadata display\n  - CLI subprocess tests for all types plus error cases\n  - JSON output mode for scripts and change metadata\n- [x] Existing CLI tests updated (`show` removed from stub list)\n- [x] Full test suite passes (736 tests)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 58,
+        "title": "S4-7: sqlever rework — rework an existing change",
+        "state": "merged",
+        "date": "2026-03-20T21:37:55Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/58",
+        "author": "NikolayS",
+        "body": "## Summary\n- Implements `sqlever rework <change> [-n note]` command with full Sqitch rework semantics (closes #49)\n- Verifies the change exists in the plan and has a tag after its last occurrence, copies current deploy/revert/verify scripts to `<change>@<tag>.sql` backups, creates fresh template scripts for the new version, and appends a reworked entry to the plan with `[change@tag]` dependency\n- Wires the command into the CLI dispatcher alongside `init` and `add`\n- 28 tests covering: argument parsing (3), plan analysis/findReworkContext (7), runRework integration (14), and CLI subprocess (4)\n\n## Test plan\n- [x] All 728 tests pass (0 failures)\n- [x] Rework creates @tag backup files with original content\n- [x] Fresh scripts contain template content with correct `requires` referencing `change@tag`\n- [x] Plan entry appended with correct dependency, parent, and change ID\n- [x] Errors on: missing change name, unknown change, no tag after change, missing plan file\n- [x] Handles: change not at end of plan, multiple rework rounds, empty note, missing scripts, custom dirs\n- [x] CLI subprocess tests verify end-to-end behavior including error messages\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 59,
+        "title": "S4-4: sqlever tag -- create tag at current deployment state",
+        "state": "merged",
+        "date": "2026-03-20T21:36:23Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/59",
+        "author": "NikolayS",
+        "body": "## Summary\n- Implements the `tag` command (`src/commands/tag.ts`) that creates a tag at the current plan state, attached to the last change\n- Computes Sqitch-compatible tag IDs via `computeTagId` (SHA-1 envelope format)\n- Appends tag entries to `sqitch.plan` using `appendTag` from the plan writer\n- Supports `-n`/`--note` flag and automatic `@` prefix stripping\n- Wires tag into CLI dispatch in `src/cli.ts`\n- 26 tests covering: arg parsing, tag name validation, ID computation, duplicate detection, empty-plan errors, multi-change plans, URI handling, roundtrip parseability, and CLI subprocess integration\n\nCloses #46\n\n## Test plan\n- [x] `parseTagArgs` correctly extracts tag name and `-n`/`--note` flag\n- [x] `isValidTagName` accepts valid names (dots, hyphens, underscores) and rejects invalid ones\n- [x] `runTag` appends correct `@tag` line to plan file with proper format\n- [x] Tag ID computed correctly matches `computeTagId` output\n- [x] Duplicate tag names are rejected with exit code 1\n- [x] Empty plan (no changes) is rejected with exit code 1\n- [x] Missing plan file is rejected with exit code 1\n- [x] Leading `@` prefix is stripped from user input\n- [x] Plan remains parseable after tag is appended (roundtrip test)\n- [x] Multiple distinct tags can be added sequentially\n- [x] CLI subprocess tests verify end-to-end behavior\n- [x] Full test suite (726 tests) passes with no regressions\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 57,
+        "title": "S3-3: Revert command",
+        "state": "merged",
+        "date": "2026-03-20T21:35:00Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/57",
+        "author": "NikolayS",
+        "body": "## Summary\n- Implement `sqlever revert [target] [--to change] [-y]` per SPEC R1 and issue #34\n- Full revert flow: advisory lock, deployed change lookup, reverse-order execution via PsqlRunner, tracking table updates, graceful failure handling with `fail` event recording\n- Non-TTY stdin detection requires `-y` or errors out (CI safety)\n- Add `Registry.recordFailEvent()` to record failures without deleting changes from tracking tables\n\n## Changes\n- **`src/commands/revert.ts`** (new) — Core revert command: argument parsing, target URI resolution, confirmation prompt, change computation, script execution loop, fail-event recording, advisory lock lifecycle\n- **`src/db/registry.ts`** — Add `recordFailEvent()` method for recording `fail` events without deleting change/dependency rows\n- **`src/cli.ts`** — Wire `revert` command into CLI router\n- **`tests/unit/revert.test.ts`** (new) — 33 unit tests covering: argument parsing (8), revert ordering (8), input building (3), confirmation prompt (2), target URI resolution (4), Registry.recordFailEvent (2), integration scenarios (3), CLI routing (3)\n- **`tests/unit/cli.test.ts`** — Remove `revert` from stub command list\n\n## Test plan\n- [x] 33 new unit tests pass (`bun test tests/unit/revert.test.ts`)\n- [x] Full suite: 733 tests pass, 0 failures (`bun test`)\n- [x] No new TypeScript errors (`bun x tsc --noEmit`)\n- [ ] Integration: deploy 3+ changes, `revert --to <mid>` reverts only later ones\n- [ ] Integration: `revert -y` skips prompt\n- [ ] Integration: non-revertable migration (exception in revert script) records `fail` event, exits 1\n\nCloses #34\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 56,
+        "title": "S4-3: sqlever log — deployment history with filters",
+        "state": "merged",
+        "date": "2026-03-20T21:30:48Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/56",
+        "author": "NikolayS",
+        "body": "## Summary\n- Add `Registry.getEvents()` method with parameterized SQL queries supporting event type, limit, offset, and reverse ordering filters\n- Create `src/commands/log.ts` with CLI argument parsing (`--event deploy|revert|fail`, `--limit N`, `--offset N`, `--reverse`, `--format json`), text table and JSON output formatters, and config-based DB URI/project resolution\n- Wire the `log` command into CLI dispatch in `src/cli.ts`\n- 33 unit tests covering argument parsing (valid/invalid), registry query construction, parameterized SQL injection prevention, output formatting (text table + JSON), and CLI integration\n\nCloses #45\n\n## Test plan\n- [x] All 33 new tests in `tests/unit/log.test.ts` pass\n- [x] All 733 tests across the full suite pass (0 failures)\n- [ ] Manual test: `sqlever log --db-uri postgresql://... --event deploy --limit 5`\n- [ ] Manual test: `sqlever log --db-uri postgresql://... --format json --reverse`\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      }
+    ],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 144,
+        "title": "REAL-TEST-5: Build compiled binary and verify it works end-to-end",
+        "state": "open",
+        "date": "2026-03-21T05:37:26Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/144",
+        "author": "NikolayS"
+      },
+      {
+        "number": 143,
+        "title": "REAL-TEST-4: Mid-deploy handoff — real Sqitch deploys half, sqlever deploys rest",
+        "state": "open",
+        "date": "2026-03-21T05:37:24Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/143",
+        "author": "NikolayS"
+      },
+      {
+        "number": 142,
+        "title": "REAL-TEST-3: sqlever analyze on real SQL files — verify findings are correct",
+        "state": "open",
+        "date": "2026-03-21T05:37:22Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/142",
+        "author": "NikolayS"
+      },
+      {
+        "number": 141,
+        "title": "REAL-TEST-2: Deploy + revert against real PostgreSQL — full lifecycle",
+        "state": "open",
+        "date": "2026-03-21T05:37:20Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/141",
+        "author": "NikolayS"
+      },
+      {
+        "number": 73,
+        "title": "Post-MVP roadmap — validation, polish, advanced features",
+        "state": "open",
+        "date": "2026-03-21T00:04:32Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/73",
+        "author": "NikolayS"
+      },
+      {
+        "number": 1,
+        "title": "Polish the SPEC",
+        "state": "open",
+        "date": "2026-03-20T17:23:55Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/1",
+        "author": "NikolayS"
+      }
+    ],
+    "commitCount": 59,
+    "topContributors": [
+      "NikolayS",
+      "Nik Samokhvalov"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "pg_ash",
+    "description": "Active Session History for PostgreSQL — wait event sampling with zero bloat (pg_cron + PGQ-style partition rotation)",
+    "url": "https://github.com/NikolayS/pg_ash",
+    "stars": 199,
+    "releases": [],
+    "mergedPRs": [
+      {
+        "number": 26,
+        "title": "docs: fix badge count, remove dated comparison note, minor wording improvements",
+        "state": "merged",
+        "date": "2026-03-17T21:25:16Z",
+        "url": "https://github.com/NikolayS/pg_ash/pull/26",
+        "author": "NikolayS",
+        "body": "- Badge: 37/37 → 38/38 (was wrong since v1.3 added set_debug_logging)\n- Comparison table: remove 'as of early 2026' — replaced with 'limited managed support' (won't date)\n- set_debug_logging signature: `(bool)` → `([bool])` to show param is optional\n- psql `\\set color` block: changed from ```sql``` to plain code block (it's a psql meta-command, not SQL)\n- Known limitations: 'potential future improvement' → 'not yet implemented' (cleaner)\n- Deleted 10 stale branches from merged PRs"
+      },
+      {
+        "number": 24,
+        "title": "docs: add SECURITY.md security policy",
+        "state": "merged",
+        "date": "2026-03-17T13:59:11Z",
+        "url": "https://github.com/NikolayS/pg_ash/pull/24",
+        "author": "NikolayS",
+        "body": "Updated the security policy to reflect current supported versions and reporting procedures."
+      },
+      {
+        "number": 23,
+        "title": "ci: add dependabot.yml for GitHub Actions version updates",
+        "state": "merged",
+        "date": "2026-03-17T13:55:06Z",
+        "url": "https://github.com/NikolayS/pg_ash/pull/23",
+        "author": "NikolayS",
+        "body": "Added GitHub Actions to Dependabot configuration."
+      },
+      {
+        "number": 25,
+        "title": "chore(deps): bump actions/checkout from 4 to 6",
+        "state": "merged",
+        "date": "2026-03-17T21:20:20Z",
+        "url": "https://github.com/NikolayS/pg_ash/pull/25",
+        "author": "dependabot[bot]",
+        "body": "Bumps [actions/checkout](https://github.com/actions/checkout) from 4 to 6.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a href=\"https://github.com/actions/checkout/releases\">actions/checkout's releases</a>.</em></p>\n<blockquote>\n<h2>v6.0.0</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>Update README to include Node.js 24 support details and requirements by <a href=\"https://github.com/salmanmkc\"><code>@​salmanmkc</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2248\">actions/checkout#2248</a></li>\n<li>Persist creds to a separate file by <a href=\"https://github.com/ericsciple\"><code>@​ericsciple</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2286\">actions/checkout#2286</a></li>\n<li>v6-beta by <a href=\"https://github.com/ericsciple\"><code>@​ericsciple</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2298\">actions/checkout#2298</a></li>\n<li>update readme/changelog for v6 by <a href=\"https://github.com/ericsciple\"><code>@​ericsciple</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2311\">actions/checkout#2311</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a href=\"https://github.com/actions/checkout/compare/v5.0.0...v6.0.0\">https://github.com/actions/checkout/compare/v5.0.0...v6.0.0</a></p>\n<h2>v6-beta</h2>\n<h2>What's Changed</h2>\n<p>Updated persist-credentials to store the credentials under <code>$RUNNER_TEMP</code> instead of directly in the local git config.</p>\n<p>This requires a minimum Actions Runner version of <a href=\"https://github.com/actions/runner/releases/tag/v2.329.0\">v2.329.0</a> to access the persisted credentials for <a href=\"https://docs.github.com/en/actions/tutorials/use-containerized-services/create-a-docker-container-action\">Docker container action</a> scenarios.</p>\n<h2>v5.0.1</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>Port v6 cleanup to v5 by <a href=\"https://github.com/ericsciple\"><code>@​ericsciple</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2301\">actions/checkout#2301</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a href=\"https://github.com/actions/checkout/compare/v5...v5.0.1\">https://github.com/actions/checkout/compare/v5...v5.0.1</a></p>\n<h2>v5.0.0</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>Update actions checkout to use node 24 by <a href=\"https://github.com/salmanmkc\"><code>@​salmanmkc</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2226\">actions/checkout#2226</a></li>\n<li>Prepare v5.0.0 release by <a href=\"https://github.com/salmanmkc\"><code>@​salmanmkc</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2238\">actions/checkout#2238</a></li>\n</ul>\n<h2>⚠️ Minimum Compatible Runner Version</h2>\n<p><strong>v2.327.1</strong><br />\n<a href=\"https://github.com/actions/runner/releases/tag/v2.327.1\">Release Notes</a></p>\n<p>Make sure your runner is updated to this version or newer to use this release.</p>\n<p><strong>Full Changelog</strong>: <a href=\"https://github.com/actions/checkout/compare/v4...v5.0.0\">https://github.com/actions/checkout/compare/v4...v5.0.0</a></p>\n<h2>v4.3.1</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>Port v6 cleanup to v4 by <a href=\"https://github.com/ericsciple\"><code>@​ericsciple</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2305\">actions/checkout#2305</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a href=\"https://github.com/actions/checkout/compare/v4...v4.3.1\">https://github.com/actions/checkout/compare/v4...v4.3.1</a></p>\n<h2>v4.3.0</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>docs: update README.md by <a href=\"https://github.com/motss\"><code>@​motss</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1971\">actions/checkout#1971</a></li>\n<li>Add internal repos for checking out multiple repositories by <a href=\"https://github.com/mouismail\"><code>@​mouismail</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1977\">actions/checkout#1977</a></li>\n<li>Documentation update - add recommended permissions to Readme by <a href=\"https://github.com/benwells\"><code>@​benwells</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2043\">actions/checkout#2043</a></li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a href=\"https://github.com/actions/checkout/blob/main/CHANGELOG.md\">actions/checkout's changelog</a>.</em></p>\n<blockquote>\n<h1>Changelog</h1>\n<h2>v6.0.2</h2>\n<ul>\n<li>Fix tag handling: preserve annotations and explicit fetch-tags by <a href=\"https://github.com/ericsciple\"><code>@​ericsciple</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2356\">actions/checkout#2356</a></li>\n</ul>\n<h2>v6.0.1</h2>\n<ul>\n<li>Add worktree support for persist-credentials includeIf by <a href=\"https://github.com/ericsciple\"><code>@​ericsciple</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2327\">actions/checkout#2327</a></li>\n</ul>\n<h2>v6.0.0</h2>\n<ul>\n<li>Persist creds to a separate file by <a href=\"https://github.com/ericsciple\"><code>@​ericsciple</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2286\">actions/checkout#2286</a></li>\n<li>Update README to include Node.js 24 support details and requirements by <a href=\"https://github.com/salmanmkc\"><code>@​salmanmkc</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2248\">actions/checkout#2248</a></li>\n</ul>\n<h2>v5.0.1</h2>\n<ul>\n<li>Port v6 cleanup to v5 by <a href=\"https://github.com/ericsciple\"><code>@​ericsciple</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2301\">actions/checkout#2301</a></li>\n</ul>\n<h2>v5.0.0</h2>\n<ul>\n<li>Update actions checkout to use node 24 by <a href=\"https://github.com/salmanmkc\"><code>@​salmanmkc</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2226\">actions/checkout#2226</a></li>\n</ul>\n<h2>v4.3.1</h2>\n<ul>\n<li>Port v6 cleanup to v4 by <a href=\"https://github.com/ericsciple\"><code>@​ericsciple</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2305\">actions/checkout#2305</a></li>\n</ul>\n<h2>v4.3.0</h2>\n<ul>\n<li>docs: update README.md by <a href=\"https://github.com/motss\"><code>@​motss</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1971\">actions/checkout#1971</a></li>\n<li>Add internal repos for checking out multiple repositories by <a href=\"https://github.com/mouismail\"><code>@​mouismail</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1977\">actions/checkout#1977</a></li>\n<li>Documentation update - add recommended permissions to Readme by <a href=\"https://github.com/benwells\"><code>@​benwells</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2043\">actions/checkout#2043</a></li>\n<li>Adjust positioning of user email note and permissions heading by <a href=\"https://github.com/joshmgross\"><code>@​joshmgross</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2044\">actions/checkout#2044</a></li>\n<li>Update README.md by <a href=\"https://github.com/nebuk89\"><code>@​nebuk89</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2194\">actions/checkout#2194</a></li>\n<li>Update CODEOWNERS for actions by <a href=\"https://github.com/TingluoHuang\"><code>@​TingluoHuang</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2224\">actions/checkout#2224</a></li>\n<li>Update package dependencies by <a href=\"https://github.com/salmanmkc\"><code>@​salmanmkc</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/2236\">actions/checkout#2236</a></li>\n</ul>\n<h2>v4.2.2</h2>\n<ul>\n<li><code>url-helper.ts</code> now leverages well-known environment variables by <a href=\"https://github.com/jww3\"><code>@​jww3</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1941\">actions/checkout#1941</a></li>\n<li>Expand unit test coverage for <code>isGhes</code> by <a href=\"https://github.com/jww3\"><code>@​jww3</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1946\">actions/checkout#1946</a></li>\n</ul>\n<h2>v4.2.1</h2>\n<ul>\n<li>Check out other refs/* by commit if provided, fall back to ref by <a href=\"https://github.com/orhantoy\"><code>@​orhantoy</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1924\">actions/checkout#1924</a></li>\n</ul>\n<h2>v4.2.0</h2>\n<ul>\n<li>Add Ref and Commit outputs by <a href=\"https://github.com/lucacome\"><code>@​lucacome</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1180\">actions/checkout#1180</a></li>\n<li>Dependency updates by <a href=\"https://github.com/dependabot\"><code>@​dependabot</code></a>- <a href=\"https://redirect.github.com/actions/checkout/pull/1777\">actions/checkout#1777</a>, <a href=\"https://redirect.github.com/actions/checkout/pull/1872\">actions/checkout#1872</a></li>\n</ul>\n<h2>v4.1.7</h2>\n<ul>\n<li>Bump the minor-npm-dependencies group across 1 directory with 4 updates by <a href=\"https://github.com/dependabot\"><code>@​dependabot</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1739\">actions/checkout#1739</a></li>\n<li>Bump actions/checkout from 3 to 4 by <a href=\"https://github.com/dependabot\"><code>@​dependabot</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1697\">actions/checkout#1697</a></li>\n<li>Check out other refs/* by commit by <a href=\"https://github.com/orhantoy\"><code>@​orhantoy</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1774\">actions/checkout#1774</a></li>\n<li>Pin actions/checkout's own workflows to a known, good, stable version. by <a href=\"https://github.com/jww3\"><code>@​jww3</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1776\">actions/checkout#1776</a></li>\n</ul>\n<h2>v4.1.6</h2>\n<ul>\n<li>Check platform to set archive extension appropriately by <a href=\"https://github.com/cory-miller\"><code>@​cory-miller</code></a> in <a href=\"https://redirect.github.com/actions/checkout/pull/1732\">actions/checkout#1732</a></li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a href=\"https://github.com/actions/checkout/commit/de0fac2e4500dabe0009e67214ff5f5447ce83dd\"><code>de0fac2</code></a> Fix tag handling: preserve annotations and explicit fetch-tags (<a href=\"https://redirect.github.com/actions/checkout/issues/2356\">#2356</a>)</li>\n<li><a href=\"https://github.com/actions/checkout/commit/064fe7f3312418007dea2b49a19844a9ee378f49\"><code>064fe7f</code></a> Add orchestration_id to git user-agent when ACTIONS_ORCHESTRATION_ID is set (...</li>\n<li><a href=\"https://github.com/actions/checkout/commit/8e8c483db84b4bee98b60c0593521ed34d9990e8\"><code>8e8c483</code></a> Clarify v6 README (<a href=\"https://redirect.github.com/actions/checkout/issues/2328\">#2328</a>)</li>\n<li><a href=\"https://github.com/actions/checkout/commit/033fa0dc0b82693d8986f1016a0ec2c5e7d9cbb1\"><code>033fa0d</code></a> Add worktree support for persist-credentials includeIf (<a href=\"https://redirect.github.com/actions/checkout/issues/2327\">#2327</a>)</li>\n<li><a href=\"https://github.com/actions/checkout/commit/c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5\"><code>c2d88d3</code></a> Update all references from v5 and v4 to v6 (<a href=\"https://redirect.github.com/actions/checkout/issues/2314\">#2314</a>)</li>\n<li><a href=\"https://github.com/actions/checkout/commit/1af3b93b6815bc44a9784bd300feb67ff0d1eeb3\"><code>1af3b93</code></a> update readme/changelog for v6 (<a href=\"https://redirect.github.com/actions/checkout/issues/2311\">#2311</a>)</li>\n<li><a href=\"https://github.com/actions/checkout/commit/71cf2267d89c5cb81562390fa70a37fa40b1305e\"><code>71cf226</code></a> v6-beta (<a href=\"https://redirect.github.com/actions/checkout/issues/2298\">#2298</a>)</li>\n<li><a href=\"https://github.com/actions/checkout/commit/069c6959146423d11cd0184e6accf28f9d45f06e\"><code>069c695</code></a> Persist creds to a separate file (<a href=\"https://redirect.github.com/actions/checkout/issues/2286\">#2286</a>)</li>\n<li><a href=\"https://github.com/actions/checkout/commit/ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493\"><code>ff7abcd</code></a> Update README to include Node.js 24 support details and requirements (<a href=\"https://redirect.github.com/actions/checkout/issues/2248\">#2248</a>)</li>\n<li><a href=\"https://github.com/actions/checkout/commit/08c6903cd8c0fde910a37f88322edcfb5dd907a8\"><code>08c6903</code></a> Prepare v5.0.0 release (<a href=\"https://redirect.github.com/actions/checkout/issues/2238\">#2238</a>)</li>\n<li>Additional commits viewable in <a href=\"https://github.com/actions/checkout/compare/v4...v6\">compare view</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility score](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=actions/checkout&package-manager=github_actions&previous-version=4&new-version=6)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it\n- `@dependabot show <dependency name> ignore conditions` will show all of the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop Dependabot creating any more for this major version (unless you reopen the PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop Dependabot creating any more for this minor version (unless you reopen the PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop Dependabot creating any more for this dependency (unless you reopen the PR or upgrade to it yourself)\n\n\n</details>"
+      }
+    ],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 4,
+    "topContributors": [
+      "NikolayS",
+      "dependabot[bot]"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/nikolays-pg-ash-0.jpg"
+    ]
+  },
+  {
+    "name": "oak-tree-buzzer",
+    "description": "Dental office intercom app — LAN-only tablet buzzer system",
+    "url": "https://github.com/NikolayS/oak-tree-buzzer",
+    "stars": 0,
+    "releases": [
+      {
+        "tag": "v1.3.1",
+        "name": "Oak Tree Buzzer v1.3.1",
+        "date": "2026-03-17T15:24:11Z",
+        "body": "Debug build — install directly on Android tablets.\nVersion visible in bottom-right corner of the app.\n",
+        "url": "https://github.com/NikolayS/oak-tree-buzzer/releases/tag/v1.3.1"
+      },
+      {
+        "tag": "v1.2.5",
+        "name": "Oak Tree Buzzer v1.2.5",
+        "date": "2026-03-15T15:22:41Z",
+        "body": "Debug build — install directly on Android tablets.\nVersion visible in bottom-right corner of the app.\n",
+        "url": "https://github.com/NikolayS/oak-tree-buzzer/releases/tag/v1.2.5"
+      }
+    ],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 1,
+    "topContributors": [
+      "DrCharlesPepper"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/nikolays-oak-tree-buzzer-0.jpg"
+    ]
+  },
+  {
+    "name": "project-delta",
+    "description": "SAMO Skill Specification",
+    "url": "https://github.com/NikolayS/project-delta",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 1,
+        "title": "Autoresearch pattern for AAA architecture",
+        "state": "open",
+        "date": "2026-03-15T22:43:39Z",
+        "url": "https://github.com/NikolayS/project-delta/issues/1",
+        "author": "NikolayS"
+      }
+    ],
+    "commitCount": 2,
+    "topContributors": [
+      "Nik Samokhvalov"
+    ],
+    "demoImages": []
+  }
+]

@@ -1,0 +1,88 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Four releases in four days, one leaked API key, and a migration tool that learned to test itself.",
+  "editionNote": "rpg shipped four releases in a single week, sqlever merged eight test suites, and an AI agent reminded everyone why secrets belong in vaults.",
+  "articles": [
+    {
+      "repo": "rpg",
+      "headline": "rpg teaches EXPLAIN to read its own X-rays",
+      "deck": "v0.8.0 lands enhanced EXPLAIN visualization, one-command plan sharing, Lua scripting, and markdown output.",
+      "body": "rpg v0.8.0 dropped on March 20 with a headline feature that turns raw EXPLAIN output into a colorized, annotated diagnostic report. The new visualization adds a summary header with execution time and buffer stats, automatic warnings for seq scans on large tables, row estimate errors over 10x, sorts spilling to disk, and parallel workers that never launched. Hot path highlighting bolds the most expensive node chain. Plan sharing ships with three targets: <a href=\"https://github.com/NikolayS/rpg/pull/670\">#670</a> fixed URL extraction for explain.depesz.com and explain.dalibo.com, and pgMustard integration rounds out the trio. User-defined slash commands via Lua scripts let users build custom DBA tools like /slow_mean, /slow_total, and /table_info. The <a href=\"https://github.com/NikolayS/rpg/pull/695\">#695 /s command</a> adds numbered, syntax-highlighted, filterable history through the pager. Tab completion now covers all rpg-specific backslash commands.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "robot doctor examining a colorized PostgreSQL query plan on a lightbox with warning markers"
+    },
+    {
+      "repo": "rpg",
+      "headline": "rpg v0.7.0 locks the AI in a read-only cage",
+      "deck": "Every /ask query now runs inside a read-only transaction, and Ctrl-C finally kills hung LLM calls.",
+      "body": "Released March 19, v0.7.0 focuses on making the AI assistant safe to use near production data. All /ask queries are wrapped in a read-only transaction, DDL and DML are blocked in /ask mode entirely, and stale transactions auto-rollback on error or cancellation. The /t2s text-to-sql mode keeps its write capability but now requires explicit confirmation. Ctrl-C cancels in-flight LLM requests immediately, and a new ai.timeout config option (default 30s) prevents rpg from hanging on unresponsive providers. Backslash commands like /?, /h, /d, and /dba now route through the built-in scrollable TUI pager.",
+      "tag": "RELEASE",
+      "illustrationPrompt": null
+    },
+    {
+      "repo": "rpg",
+      "headline": "v0.6.0 and v0.5.0: the warm-up acts that shipped the same week",
+      "deck": "Two earlier releases landed March 17-19, bringing read-only AI safety, syntax highlighting, and auto-detected API keys.",
+      "body": "v0.6.0, released March 19, delivered the first iteration of /ask read-only transaction wrapping, the built-in pager for backslash commands, configurable LLM and SSH tunnel timeouts, and a batch of /dba fixes for redundant-idx, locks, and progress vacuum on PG 17. v0.5.0, released March 17, introduced multi-category SQL syntax highlighting, colorized error/warning/notice prefixes, auto-detection of AI provider keys from environment variables, and a full-width status bar. Both releases support PostgreSQL 14 through 18.",
+      "tag": "RELEASE",
+      "illustrationPrompt": null
+    },
+    {
+      "repo": "rpg",
+      "headline": "An AI agent, a pgMustard key, and a public PR comment walk into a repo",
+      "deck": "A leaked API key during /explain share testing prompted a quick rotation and a new security rule for AI agents.",
+      "body": "While testing the new /explain share pgmustard feature for rpg v0.8.0, an AI agent helpfully posted its testing output — including a pgMustard API key — into a GitHub PR comment. @NikolayS spotted the leak quickly and rotated the key. The aftermath: <a href=\"https://github.com/NikolayS/rpg/pull/705\">#705 docs(claude): add security rule against API keys in comments</a> was merged, adding explicit instructions for AI agents to never include secrets in visible output. A small rule for Claude, a giant reminder for everyone letting agents near credentials.",
+      "tag": "SECURITY",
+      "illustrationPrompt": "skeleton key dangling from a speech bubble posted on a public bulletin board"
+    },
+    {
+      "repo": "sqlever",
+      "headline": "sqlever merges eight test suites in a single week",
+      "deck": "From Sqitch compatibility to security edge cases, the migration tool got 100 commits and a wall of new coverage.",
+      "body": "sqlever saw a testing blitz this week with eight dedicated test PRs merged. <a href=\"https://github.com/NikolayS/sqlever/pull/134\">#134 TEST-1: Sqitch compatibility deep tests</a> validates drop-in replacement behavior. <a href=\"https://github.com/NikolayS/sqlever/pull/136\">#136 TEST-3: Deep static analysis tests (71 tests)</a> hammers the SQL analyzer. <a href=\"https://github.com/NikolayS/sqlever/pull/133\">#133 TEST-4: Expand/contract deep end-to-end tests</a> and <a href=\"https://github.com/NikolayS/sqlever/pull/137\">#137 TEST-5: Batch DML end-to-end deep tests</a> cover zero-downtime migration patterns. <a href=\"https://github.com/NikolayS/sqlever/pull/135\">#135 TEST-6: AI + DBLab deep integration tests</a> and <a href=\"https://github.com/NikolayS/sqlever/pull/138\">#138 TEST-7: Security + edge-case tests</a> round out the safety net. On the feature side, <a href=\"https://github.com/NikolayS/sqlever/pull/123\">#123 deploy --phase expand|contract with status reporting</a> landed, and <a href=\"https://github.com/NikolayS/sqlever/pull/145\">#145</a> fixed a bug where revert ignored the no-transaction directive. Open issues suggest real-world PostgreSQL testing and a compiled binary verification are next.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "migration tool wearing a hard hat walking through eight checkpoints on a test track"
+    },
+    {
+      "repo": "rpg",
+      "headline": "rpg eyes the browser: WASI target and WSS client in the works",
+      "deck": "Two open PRs aim to compile rpg to WebAssembly and run it inside a browser tab via WebSocket proxy.",
+      "body": "<a href=\"https://github.com/NikolayS/rpg/pull/700\">#700 feat(wasi): WASI target for browser embedding via WSS proxy</a> and <a href=\"https://github.com/NikolayS/rpg/pull/706\">#706 feat(wasi): implement WSS client backend</a> are both open this week. If merged, they would let rpg compile to a WASI target and connect to Postgres through a WebSocket Secure proxy — meaning a Rust terminal client running in your browser. Separately, <a href=\"https://github.com/NikolayS/rpg/pull/702\">#702</a> aims to push unit test coverage from 68% toward 75%, and <a href=\"https://github.com/NikolayS/rpg/pull/701\">#701</a> proposes an interactive history picker for /s.",
+      "tag": "PENDING",
+      "illustrationPrompt": "terminal prompt floating inside a browser window connected by a glowing websocket thread"
+    },
+    {
+      "repo": "pg_ash",
+      "headline": "pg_ash gets a security policy and a dependabot",
+      "deck": "Housekeeping week for the Active Session History extension: docs, CI, and dependency updates.",
+      "body": "@NikolayS merged <a href=\"https://github.com/NikolayS/pg_ash/pull/24\">#24 docs: add SECURITY.md security policy</a> and <a href=\"https://github.com/NikolayS/pg_ash/pull/23\">#23 ci: add dependabot.yml for GitHub Actions version updates</a>. Dependabot promptly obliged with <a href=\"https://github.com/NikolayS/pg_ash/pull/25\">#25 bump actions/checkout from 4 to 6</a>. Badge counts and wording got a cleanup in <a href=\"https://github.com/NikolayS/pg_ash/pull/26\">#26</a>. No new features, but the project now has a proper front door.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "library card catalog labeled SECURITY.md being filed into a small extension box"
+    },
+    {
+      "repo": "postgres",
+      "headline": "USDT tracepoints for PostgreSQL wait events surface as a proof-of-concept",
+      "deck": "A new PR on @NikolayS's Postgres fork proposes static tracepoints for wait event tracing.",
+      "body": "<a href=\"https://github.com/NikolayS/postgres/pull/18\">#18 PoC: USDT static tracepoints for wait event tracing</a> opened this week on the Postgres mirror fork. The PR would add DTrace/SystemTap-compatible probes to PostgreSQL wait events, complementing pg_ash's sampling approach with zero-overhead static instrumentation. Still a proof of concept.",
+      "tag": "PENDING",
+      "illustrationPrompt": "magnifying glass hovering over a PostgreSQL elephant revealing hidden wait event signals"
+    },
+    {
+      "repo": "oak-tree-buzzer",
+      "headline": "Dental office buzzer app ships a debug build you can sideload",
+      "deck": "v1.3.1 of oak-tree-buzzer adds a version stamp and a directly installable Android APK.",
+      "body": "oak-tree-buzzer v1.3.1 dropped March 17 as a debug build installable directly on Android tablets. The only visible change: version number now appears in the bottom-right corner. The LAN-only dental intercom remains @NikolayS's most niche project.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "Android tablet on a dental office counter showing a version number in tiny text"
+    },
+    {
+      "repo": "gitzette",
+      "headline": "The newspaper that writes itself took 12 commits to learn how",
+      "deck": "gitzette, the tool generating this very newspaper, saw active development alongside its output repo.",
+      "body": "gitzette picked up 12 commits this week while gitzette-dispatch — the repo housing the rendered output — absorbed 42. @NikolayS also pushed 24 commits to the NikolayS profile repo. The meta-circularity of a newspaper reporting on the tool that generates it is not lost on the editors.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "printing press printing a newspaper whose headline is about the printing press"
+    }
+  ],
+  "closingNote": "Printed by a tool that is also in this newspaper. The editors see no conflict of interest."
+}

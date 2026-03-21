@@ -1,0 +1,32 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "A quiet week on the commit front, a loud one on the secrets front.",
+  "editionNote": "Zero releases, two repos ticking over, and one API key that briefly saw the light of day.",
+  "articles": [
+    {
+      "repo": "rpg",
+      "headline": "AI agent helpfully publishes API key to GitHub for the whole class to see",
+      "deck": "A pgMustard API key hitched a ride in a PR comment when an AI agent dumped raw testing output during rpg v0.8.0 development.",
+      "body": "While testing the new \\explain share pgmustard feature in rpg v0.8.0, an AI agent posted its testing output — API key included — straight into a GitHub PR comment. @NikolayS spotted the exposure quickly and rotated the key before any damage was done. The lesson, as always: agents will do exactly what you let them do, and they have no concept of embarrassment. Treat AI-generated output in public repos the way you treat a toddler with a microphone — assume the worst will be broadcast.",
+      "tag": "SECURITY",
+      "illustrationPrompt": "robot accidentally holding up a secret key on a stage in front of an audience"
+    },
+    {
+      "repo": "postgres",
+      "headline": "Seventy-two commits land in the postgres mirror, none of them news",
+      "deck": "The official PostgreSQL mirror keeps humming along with a healthy week of upstream activity.",
+      "body": "@NikolayS's mirror of the official PostgreSQL repository logged 72 commits this week. As ever, this is a read-only mirror — patches go through the mailing list, not pull requests. Steady upstream pulse, nothing more to report.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "a mirror reflecting a busy workshop with seventy-two small gears turning"
+    },
+    {
+      "repo": "pg_pipe",
+      "headline": "pg_pipe gets five quiet commits and stays under the radar",
+      "deck": "The pure-SQL incremental pipeline tool sees a small burst of activity with no fanfare.",
+      "body": "@NikolayS pushed 5 commits to pg_pipe this week. No releases, no open PRs, no issues filed — just steady, heads-down work on the anti-extension pipeline framework. pg_pipe remains pure SQL and PL/pgSQL, targeting Postgres 14+ across managed services.",
+      "tag": "PENDING",
+      "illustrationPrompt": "a small pipe quietly carrying data drops through a PostgreSQL elephant silhouette"
+    }
+  ],
+  "closingNote": "No releases were harmed in the making of this edition. One API key was."
+}

@@ -804,16 +804,21 @@ async function buildHtml(
   const illustrationCache: Record<string, string | null> = {};
   if (!skipIllustrations) {
     console.log("generating illustrations...");
+    const repoImageUsed = new Set<string>();
     for (const a of copy.articles) {
       const repo = repoMap[a.repo];
       if (!repo) continue;
-      if (!repo.demoImages[0]) {
-        const subject = a.illustrationPrompt ?? `abstract editorial scene related to ${a.repo} software project`;
-        process.stdout.write(`  illustration for ${a.repo}... `);
-        const url = await generateIllustration(subject);
-        illustrationCache[a.repo] = url;
-        console.log(url ? "✓" : "skipped");
+      // if repo has a README image and it hasn't been used yet, no illustration needed
+      if (repo.demoImages[0] && !repoImageUsed.has(a.repo)) {
+        repoImageUsed.add(a.repo);
+        continue;
       }
+      // otherwise generate illustration keyed by article headline
+      const subject = a.illustrationPrompt ?? `abstract editorial scene related to ${a.repo} software project`;
+      process.stdout.write(`  illustration for "${a.headline}"... `);
+      const url = await generateIllustration(subject);
+      illustrationCache[a.headline] = url;
+      console.log(url ? "✓" : "skipped");
     }
   }
 
@@ -825,14 +830,16 @@ async function buildHtml(
       const repo = repoMap[a.repo];
       if (!repo) return "";
       const level = i === 0 ? "h1" : i < 3 ? "h2" : "h3";
-      const imgIdx = imageShown.has(a.repo) ? -1 : 0;
-      if (imgIdx === 0) {
-        imageShown.add(a.repo);
-        if (!repo.demoImages[0] && illustrationCache[a.repo]) {
-          repo.demoImages[0] = illustrationCache[a.repo]!;
-        }
-      }
-      return renderArticle(a, repo, level as "h1" | "h2" | "h3", imgIdx < 0 ? 99 : imgIdx);
+      const hasRepoImg = repo.demoImages[0] && !imageShown.has(a.repo);
+      if (hasRepoImg) imageShown.add(a.repo);
+      // build a per-article demoImages array: repo screenshot (first use) or illustration
+      const articleImages = hasRepoImg
+        ? repo.demoImages
+        : illustrationCache[a.headline]
+          ? [illustrationCache[a.headline]!]
+          : [];
+      const articleRepo = { ...repo, demoImages: articleImages };
+      return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0);
     });
 
   const articles = renderedArticles.slice(0, splitAt).join("\n");

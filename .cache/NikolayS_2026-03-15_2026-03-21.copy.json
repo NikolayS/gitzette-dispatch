@@ -1,0 +1,56 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Four releases, one AI agent with loose lips, and a dental office buzzer walks into a repo.",
+  "editionNote": "Eighty-seven commits to rpg alone, four releases across two repos, and one API key that briefly saw the light of day.",
+  "articles": [
+    {
+      "repo": "rpg",
+      "headline": "rpg v0.8.0 Ships EXPLAIN Visualization That Actually Explains Things",
+      "deck": "The Rust-based Postgres terminal gets colorized plan output, automatic issue detection, one-command plan sharing, and Lua scripting in a single week that also saw v0.5.0 through v0.7.0.",
+      "body": "Four releases in five days. @NikolayS burned through versions 0.5.0 to 0.8.0, each stacking features like a DBA stacks indexes on a troubled table. The headline act in v0.8.0: enhanced EXPLAIN visualization with a summary header, hot-path highlighting, automatic warnings for sequential scans on large tables, row estimate errors over 10x, and sorts spilling to disk. Plans can be shared to explain.depesz.com, explain.dalibo.com, or pgMustard in a single command. Lua scripting landed too — user-defined slash commands via <code>rpg.query()</code> and friends, gated behind a <code>--features lua</code> build flag. Earlier in the week, v0.6.0 and v0.7.0 locked down the <code>/ask</code> AI path with read-only transaction wrapping (<a href=\"https://github.com/NikolayS/rpg/pull/670\">#670</a>), while v0.5.0 added multi-category SQL syntax highlighting and auto-detection of AI provider keys. Open issues hint at what's next: a <code>/reformat</code> command, terminal charts for query results, and a WASI target for browser embedding.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "colorized database query plan tree with warning markers and a hot glowing path through it"
+    },
+    {
+      "repo": "rpg",
+      "headline": "AI Agent Leaks pgMustard API Key Into Public PR Comment",
+      "deck": "The new \\explain share pgmustard feature worked a little too well — an AI agent helpfully posted testing output, key included, to a GitHub PR.",
+      "body": "When you teach an AI agent to share query plans with pgMustard, it might also share your API key with the world. That's what happened this week in rpg: an agent posted testing output containing PGMUSTARD_API_KEY into a public PR comment. @NikolayS spotted it quickly and rotated the key before damage was done. The lesson is blunt: agents posting to public repositories need credential scanning, full stop. The feature itself — <code>/explain share pgmustard</code> — shipped in v0.8.0 and works fine, assuming your helpers know what to keep quiet.",
+      "tag": "SECURITY",
+      "illustrationPrompt": "robot accidentally dropping a golden key into a public mailbox on a busy street"
+    },
+    {
+      "repo": "sqlever",
+      "headline": "sqlever Gets a Static Analysis Engine With 21 Safety Rules",
+      "deck": "The Sqitch-compatible migration tool now scans DDL and DML for zero-downtime hazards before they hit production.",
+      "body": "Fifty-nine commits, ten merged PRs, and sqlever went from a migration runner to something with opinions. The analysis engine landed in <a href=\"https://github.com/NikolayS/sqlever/pull/64\">#64</a> with a rule registry, preprocessor, and suppression system. Rules SA001 through SA010 cover DDL safety (<a href=\"https://github.com/NikolayS/sqlever/pull/65\">#65</a>); SA011 through SA021 add DML and locking checks (<a href=\"https://github.com/NikolayS/sqlever/pull/72\">#72</a>). A standalone <code>sqlever analyze</code> command (<a href=\"https://github.com/NikolayS/sqlever/pull/70\">#70</a>) lets teams lint migration files without deploying. The deploy command itself (<a href=\"https://github.com/NikolayS/sqlever/pull/63\">#63</a>), verify (<a href=\"https://github.com/NikolayS/sqlever/pull/69\">#69</a>), status (<a href=\"https://github.com/NikolayS/sqlever/pull/62\">#62</a>), and plan (<a href=\"https://github.com/NikolayS/sqlever/pull/61\">#61</a>) all merged this week. Open issues suggest real-world testing is imminent: mid-deploy Sqitch handoffs, end-to-end binary verification, and analysis against actual SQL files.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "magnifying glass inspecting a SQL migration script with red warning flags on dangerous statements"
+    },
+    {
+      "repo": "postgres",
+      "headline": "USDT Tracepoints for PostgreSQL Wait Events Surface as Proof of Concept",
+      "deck": "A new PR proposes static tracepoints that would let DTrace and BPF tools observe Postgres wait events without polling.",
+      "body": "@NikolayS opened <a href=\"https://github.com/NikolayS/postgres/pull/18\">#18</a> on the postgres mirror this week — a proof-of-concept adding USDT static tracepoints for wait event tracing. The approach would give DTrace and BPF-based tools direct hooks into PostgreSQL's wait event machinery, replacing the sampling-based workarounds that tools like pg_ash currently rely on. Sixty-three commits hit the fork. The PR remains open.",
+      "tag": "PENDING",
+      "illustrationPrompt": "stethoscope attached to a PostgreSQL elephant listening to its internal wait signals"
+    },
+    {
+      "repo": "pg_ash",
+      "headline": "pg_ash Gets Housekeeping: Dependabot, Security Policy, Badge Fixes",
+      "deck": "The Active Session History extension receives maintenance attention between the bigger battles.",
+      "body": "No features, no drama — just responsible stewardship. @NikolayS added a SECURITY.md policy (<a href=\"https://github.com/NikolayS/pg_ash/pull/24\">#24</a>), enabled Dependabot for GitHub Actions version updates (<a href=\"https://github.com/NikolayS/pg_ash/pull/23\">#23</a>), and fixed badge counts and documentation wording (<a href=\"https://github.com/NikolayS/pg_ash/pull/26\">#26</a>). Dependabot promptly bumped actions/checkout from 4 to 6 (<a href=\"https://github.com/NikolayS/pg_ash/pull/25\">#25</a>). Four commits, four merged PRs. Clean.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": null
+    },
+    {
+      "repo": "oak-tree-buzzer",
+      "headline": "Dental Office Intercom App Quietly Buzzes to v1.3.1",
+      "deck": "The LAN-only Android tablet buzzer system ships two debug builds in three days, because even dentists deserve version numbers.",
+      "body": "Two releases — v1.2.5 on March 15 and v1.3.1 on March 17 — both debug builds for direct Android tablet installation. The version is now visible in the bottom-right corner of the app. One commit. No PRs. Just a dentist's office getting slightly more organized.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "Android tablet on a dental office wall showing a buzzer notification with a version number in the corner"
+    }
+  ],
+  "closingNote": "Next week's forecast: more releases, fewer leaked secrets, and at least one Lua script nobody asked for."
+}
