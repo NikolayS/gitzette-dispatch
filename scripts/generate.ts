@@ -522,38 +522,99 @@ Return ONLY the JSON object, no markdown fences.`;
 // ── data graphics ─────────────────────────────────────────────────────────────
 
 function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string {
-  // ── 1. Commit velocity bar chart ──────────────────────────────────────────
+  const totalMerged = reposData.reduce((s, r) => s + r.mergedPRs.length, 0);
+  const totalCommits = reposData.reduce((s, r) => s + r.commitCount, 0);
+  const totalReleases = reposData.reduce((s, r) => s + r.releases.length, 0);
   const activeRepos = reposData.filter((r) => r.commitCount > 0);
-  const maxCommits = Math.max(...activeRepos.map((r) => r.commitCount));
-  const barH = 18;
-  const barGap = 6;
-  const labelW = 90;
-  const chartW = 320;
-  const svgH = activeRepos.length * (barH + barGap) + 30;
+  const maxCommits = Math.max(...activeRepos.map((r) => r.commitCount), 1);
 
-  const bars = activeRepos
-    .sort((a, b) => b.commitCount - a.commitCount)
-    .map((r, i) => {
-      const barW = Math.max(2, Math.round((r.commitCount / maxCommits) * chartW));
-      const y = i * (barH + barGap) + 20;
-      return `
-      <text x="${labelW - 4}" y="${y + barH - 4}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="11" fill="#444">${r.name}</text>
-      <rect x="${labelW}" y="${y}" width="${barW}" height="${barH}" fill="#0f0f0f"/>
-      <text x="${labelW + barW + 4}" y="${y + barH - 4}" font-family="IBM Plex Mono,monospace" font-size="11" fill="#666">${r.commitCount}</text>`;
-    })
-    .join("");
+  // ── 1. Big ticker — oversized stat blocks ─────────────────────────────────
+  const ticker = `
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink);margin-bottom:20px;">
+    ${[
+      [String(totalCommits), "commits"],
+      [String(totalMerged), "PRs merged"],
+      [String(totalReleases), "releases"],
+    ].map(([val, label], i) => `
+      <div style="padding:14px 10px 12px;${i < 2 ? "border-right:1px solid var(--ink);" : ""}text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;">${val}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">${label}</div>
+      </div>`).join("")}
+  </div>`;
+
+  // ── 2. Commit bar chart — hatched fill ────────────────────────────────────
+  const barH = 20;
+  const barGap = 5;
+  const labelW = 88;
+  const chartW = 260;
+  const numW = 36;
+  const svgW = labelW + chartW + numW;
+  const svgH = activeRepos.length * (barH + barGap) + 20;
+
+  const sortedRepos = [...activeRepos].sort((a, b) => b.commitCount - a.commitCount);
+  const bars = sortedRepos.map((r, i) => {
+    const barW = Math.max(3, Math.round((r.commitCount / maxCommits) * chartW));
+    const y = i * (barH + barGap) + 18;
+    // alternating fill: solid for top, hatched for rest
+    const fill = i === 0 ? "#0f0f0f" : "url(#hatch)";
+    const textFill = i === 0 ? "#0f0f0f" : "#333";
+    return `
+    <text x="${labelW - 6}" y="${y + barH - 5}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="${textFill}" font-weight="${i === 0 ? "700" : "400"}">${r.name}</text>
+    <rect x="${labelW}" y="${y}" width="${barW}" height="${barH}" fill="${fill}" stroke="#0f0f0f" stroke-width="${i === 0 ? 0 : 0.5}"/>
+    <text x="${labelW + barW + 5}" y="${y + barH - 5}" font-family="IBM Plex Mono,monospace" font-size="10" fill="#555" font-weight="${i === 0 ? "700" : "400"}">${r.commitCount}</text>`;
+  }).join("");
 
   const commitChart = `
-  <div class="infographic">
-    <div class="infographic-label">commits this week</div>
-    <svg width="100%" viewBox="0 0 ${labelW + chartW + 60} ${svgH}" xmlns="http://www.w3.org/2000/svg">
-      <text x="0" y="12" font-family="IBM Plex Mono,monospace" font-size="9" fill="#aaa" letter-spacing="1">REPOSITORY</text>
-      <text x="${labelW + chartW + 55}" y="12" font-family="IBM Plex Mono,monospace" font-size="9" fill="#aaa" letter-spacing="1" text-anchor="end">COMMITS</text>
+  <div style="margin-bottom:20px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">commits by repo</div>
+    <svg width="100%" viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="4" stroke="#0f0f0f" stroke-width="1.5"/>
+        </pattern>
+      </defs>
+      <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#bbb" letter-spacing="1">REPO</text>
+      <text x="${svgW}" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#bbb" text-anchor="end" letter-spacing="1">COMMITS</text>
+      <line x1="0" y1="14" x2="${svgW}" y2="14" stroke="#ddd" stroke-width="0.5"/>
       ${bars}
     </svg>
   </div>`;
 
-  // ── 2. Release timeline ───────────────────────────────────────────────────
+  // ── 3. Star leaderboard — horizontal bars ─────────────────────────────────
+  const starredRepos = [...reposData].filter((r) => r.stars > 0).sort((a, b) => b.stars - a.stars);
+  const maxStars = Math.max(...starredRepos.map((r) => r.stars), 1);
+  const starBarH = 22;
+  const starBarGap = 4;
+  const starLabelW = 88;
+  const starChartW = 220;
+  const starNumW = 48;
+  const starSvgW = starLabelW + starChartW + starNumW;
+  const starSvgH = starredRepos.length * (starBarH + starBarGap) + 20;
+
+  const starBars = starredRepos.map((r, i) => {
+    const bw = Math.max(3, Math.round((r.stars / maxStars) * starChartW));
+    const y = i * (starBarH + starBarGap) + 18;
+    return `
+    <text x="${starLabelW - 6}" y="${y + starBarH - 6}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333">
+      <a href="${r.url}" style="color:inherit;">${r.name}</a>
+    </text>
+    <rect x="${starLabelW}" y="${y}" width="${bw}" height="${starBarH}" fill="none" stroke="#0f0f0f" stroke-width="1"/>
+    <rect x="${starLabelW}" y="${y}" width="${bw}" height="${starBarH}" fill="#0f0f0f" opacity="0.08"/>
+    <text x="${starLabelW + bw + 6}" y="${y + starBarH - 6}" font-family="IBM Plex Mono,monospace" font-size="11" fill="#333" font-weight="600">&#9733; ${r.stars.toLocaleString()}</text>`;
+  }).join("");
+
+  const starLeaderboard = starredRepos.length > 0 ? `
+  <div style="margin-bottom:20px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">github stars</div>
+    <svg width="100%" viewBox="0 0 ${starSvgW} ${starSvgH}" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#bbb" letter-spacing="1">REPO</text>
+      <text x="${starSvgW}" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#bbb" text-anchor="end" letter-spacing="1">STARS</text>
+      <line x1="0" y1="14" x2="${starSvgW}" y2="14" stroke="#ddd" stroke-width="0.5"/>
+      ${starBars}
+    </svg>
+  </div>` : "";
+
+  // ── 4. Release timeline ───────────────────────────────────────────────────
   const allReleases = reposData
     .flatMap((r) => r.releases.map((rel) => ({ repo: r.name, ...rel })))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -564,92 +625,48 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
     const toMs = to.getTime();
     const rangeMs = toMs - fromMs;
     const tlW = 400;
-    const tlH = 60;
+    const tlH = allReleases.length > 3 ? 80 : 64;
+    const lineY = tlH - 22;
 
-    // day labels
-    const dayLabels = [];
+    const dayTicks = [];
     for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
       const x = Math.round(((d.getTime() - fromMs) / rangeMs) * tlW);
-      dayLabels.push(`<text x="${x}" y="${tlH - 2}" font-family="IBM Plex Mono,monospace" font-size="9" fill="#aaa" text-anchor="middle">${d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase()}</text>`);
-      dayLabels.push(`<line x1="${x}" y1="18" x2="${x}" y2="${tlH - 12}" stroke="#e0dbd4" stroke-width="1"/>`);
+      dayTicks.push(`<line x1="${x}" y1="${lineY - 4}" x2="${x}" y2="${lineY + 4}" stroke="#aaa" stroke-width="1"/>`);
+      dayTicks.push(`<text x="${x}" y="${tlH - 4}" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">${d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase()}</text>`);
     }
 
-    // release dots + labels
     const dots = allReleases.map((rel, i) => {
       const x = Math.round(((new Date(rel.date).getTime() - fromMs) / rangeMs) * tlW);
-      const y = 12 + (i % 2) * 14; // stagger to avoid overlap
+      const row = i % 2;
+      const dotY = lineY - 18 - row * 18;
       return `
-        <circle cx="${x}" cy="${y}" r="4" fill="#0f0f0f"/>
-        <text x="${x}" y="${y - 6}" font-family="IBM Plex Mono,monospace" font-size="9" fill="#333" text-anchor="middle">${rel.repo} ${rel.tag}</text>`;
+        <line x1="${x}" y1="${dotY + 6}" x2="${x}" y2="${lineY}" stroke="#aaa" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="${x}" cy="${dotY}" r="5" fill="#0f0f0f"/>
+        <text x="${x}" y="${dotY - 7}" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">${rel.repo}</text>
+        <text x="${x}" y="${dotY - 17}" font-family="IBM Plex Mono,monospace" font-size="8" fill="#555" text-anchor="middle">${rel.tag}</text>`;
     });
 
     releaseTimeline = `
-  <div class="infographic" style="margin-top:16px;">
-    <div class="infographic-label">release timeline</div>
+  <div style="margin-bottom:4px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">release timeline</div>
     <svg width="100%" viewBox="0 0 ${tlW} ${tlH}" xmlns="http://www.w3.org/2000/svg">
-      <line x1="0" y1="36" x2="${tlW}" y2="36" stroke="#0f0f0f" stroke-width="1.5"/>
-      ${dayLabels.join("")}
+      <line x1="0" y1="${lineY}" x2="${tlW}" y2="${lineY}" stroke="#0f0f0f" stroke-width="1.5"/>
+      ${dayTicks.join("")}
       ${dots.join("")}
     </svg>
   </div>`;
   }
 
-  // ── 3. PR merge rate ──────────────────────────────────────────────────────
-  const totalMerged = reposData.reduce((s, r) => s + r.mergedPRs.length, 0);
-  const totalOpen = reposData.reduce((s, r) => s + r.openPRs.length, 0);
-  const totalCommits = reposData.reduce((s, r) => s + r.commitCount, 0);
-  const totalReleases = reposData.reduce((s, r) => s + r.releases.length, 0);
-
-  const statsRow = `
-  <div class="infographic" style="margin-top:16px;">
-    <div class="infographic-label">week at a glance</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;">
-      ${[
-        ["commits", totalCommits],
-        ["releases", totalReleases],
-        ["PRs merged", totalMerged],
-        ["PRs opened", totalOpen],
-      ]
-        .map(
-          ([label, val]) => `
-        <div style="text-align:center;padding:8px 4px;border:1px solid var(--rule);">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;line-height:1;">${val}</div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:2px;">${label}</div>
-        </div>`
-        )
-        .join("")}
-    </div>
-  </div>`;
-
-  // ── 4. star leaderboard ───────────────────────────────────────────────────
-  const starRows = [...reposData]
-    .filter((r) => r.stars > 0)
-    .sort((a, b) => b.stars - a.stars)
-    .map(
-      (r) =>
-        `<tr>
-          <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 6px 3px 0;border-bottom:1px solid var(--rule);white-space:nowrap;"><a href="${r.url}" style="color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule);">${r.name}</a></td>
-          <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 0 3px 6px;border-bottom:1px solid var(--rule);text-align:right;">&#9733; ${r.stars.toLocaleString()}</td>
-        </tr>`
-    )
-    .join("");
-
-  const starLeaderboard = starRows
-    ? `<div class="infographic" style="margin-top:16px;">
-        <div class="infographic-label">stars</div>
-        <table style="width:100%;border-collapse:collapse;margin-top:8px;">
-          ${starRows}
-        </table>
-      </div>`
-    : "";
-
   return `
-<div style="padding:20px 0 0;">
-  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:12px;">stats corner</div>
-  ${statsRow}
+<div style="padding:20px 0 0;border-top:3px double var(--ink);">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+    <span>stats corner</span>
+    <span style="flex:1;border-top:1px solid var(--rule);display:inline-block;"></span>
+  </div>
+  ${ticker}
   ${commitChart}
-  ${releaseTimeline}
   ${starLeaderboard}
+  ${releaseTimeline}
 </div>`;
 }
 
