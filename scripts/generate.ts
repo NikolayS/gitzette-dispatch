@@ -545,11 +545,20 @@ function renderArticle(
       : "";
 
   const img = repoData.demoImages[imageIndex];
-  const maxHeight = level === "h1" ? "240px" : "160px";
+  // AI illustrations are 16:9 — show at natural aspect ratio, capped
+  // README screenshots are arbitrary — crop to fixed height
+  const isDataUri = img?.startsWith("data:");
+  const isAiGenerated = isDataUri && !img?.startsWith("data:image/jpeg;base64,/9j/2wBD"); // rough heuristic: sharp-processed JPEGs start with /9j/2wBD
   const imageHtml = img
-    ? `<div class="article-image" style="overflow:hidden;max-height:${maxHeight};border:1px solid var(--rule);margin:10px 0;">
-        <img src="${img}" alt="demo" style="width:100%;height:${maxHeight};object-fit:cover;object-position:top;display:block;">
-      </div>`
+    ? isDataUri && img.length > 50000
+      // AI-generated: show full 16:9, no cropping
+      ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;">
+          <img src="${img}" alt="illustration" style="width:100%;display:block;">
+        </div>`
+      // README screenshot: crop to fixed height
+      : `<div class="article-image" style="overflow:hidden;max-height:${level === "h1" ? "240px" : "180px"};border:1px solid var(--rule);margin:10px 0;">
+          <img src="${img}" alt="demo" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;">
+        </div>`
     : "";
 
   return `
@@ -558,7 +567,7 @@ function renderArticle(
       <${level}><a href="${repoData.url}" class="headline-link">${article.headline}</${level}>
       <p class="deck">${article.deck}</p>
       ${imageHtml}
-      <p class="body-text">${article.body}</p>
+      <p class="body-text">${article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '')}</p>
       ${releaseLinks ? `<div class="release-links">${releaseLinks}</div>` : ""}
       ${prLinks ? `<div class="pr-links">merged: ${prLinks}</div>` : ""}
       ${openPRNote}
@@ -673,6 +682,7 @@ async function buildHtml(
   .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; }
   .body-text a { color: var(--link); text-decoration: none; }
   .body-text a:hover { text-decoration: underline; }
+  .body-text code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 2px; }
   .release-links, .pr-links { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
   .release-link { font-weight: 600; color: var(--ink); }
   .pending-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; border-left: 2px solid var(--rule); padding-left: 8px; }
