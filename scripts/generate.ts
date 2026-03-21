@@ -591,17 +591,19 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
     const empty = STAR_COLS - filled;
     const starFill = "★".repeat(filled);
     const starEmpty = "☆".repeat(empty);
-    return `<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--rule);">
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;min-width:80px;flex-shrink:0;"><a href="${r.url}" style="color:var(--ink);text-decoration:none;">${r.name}</a></span>
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:20px;letter-spacing:2px;line-height:1;">${starFill}<span style="color:var(--rule);">${starEmpty}</span></span>
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;white-space:nowrap;">${r.stars.toLocaleString()}</span>
-    </div>`;
+    return `<tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;padding:6px 10px 6px 0;white-space:nowrap;vertical-align:middle;"><a href="${r.url}" style="color:var(--ink);text-decoration:none;">${r.name}</a></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:1px;line-height:1;vertical-align:middle;padding:6px 10px 6px 0;">${starFill}<span style="color:var(--rule);">${starEmpty}</span></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;vertical-align:middle;text-align:right;padding:6px 0;">${r.stars.toLocaleString()}</td>
+    </tr>`;
   }).join("");
 
   const starLeaderboard = starredRepos.length > 0 ? `
   <div style="margin-bottom:20px;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">github stars</div>
-    ${starRows}
+    <table style="width:100%;border-collapse:collapse;">
+      ${starRows}
+    </table>
   </div>` : "";
 
   // ── 4. Release timeline ───────────────────────────────────────────────────
@@ -614,33 +616,37 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
     const fromMs = from.getTime();
     const toMs = to.getTime();
     const rangeMs = toMs - fromMs;
+    const PAD = 30; // horizontal padding so edge labels don't clip
     const tlW = 400;
-    const tlH = allReleases.length > 3 ? 80 : 64;
+    const tlH = allReleases.length > 3 ? 100 : 80;
     const lineY = tlH - 22;
+    const drawW = tlW - PAD * 2;
 
     const dayTicks = [];
     for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
-      const x = Math.round(((d.getTime() - fromMs) / rangeMs) * tlW);
+      const x = PAD + Math.round(((d.getTime() - fromMs) / rangeMs) * drawW);
       dayTicks.push(`<line x1="${x}" y1="${lineY - 4}" x2="${x}" y2="${lineY + 4}" stroke="#aaa" stroke-width="1"/>`);
       dayTicks.push(`<text x="${x}" y="${tlH - 4}" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">${d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase()}</text>`);
     }
 
+    // group releases by day to stagger overlapping labels
     const dots = allReleases.map((rel, i) => {
-      const x = Math.round(((new Date(rel.date).getTime() - fromMs) / rangeMs) * tlW);
-      const row = i % 2;
-      const dotY = lineY - 18 - row * 18;
+      const x = PAD + Math.round(((new Date(rel.date).getTime() - fromMs) / rangeMs) * drawW);
+      const row = i % 3; // up to 3 rows to spread crowded dates
+      const dotY = lineY - 20 - row * 22;
+      // clamp label x so it never goes outside viewBox
+      const lx = Math.min(Math.max(x, PAD + 20), tlW - PAD - 20);
       return `
-        <line x1="${x}" y1="${dotY + 6}" x2="${x}" y2="${lineY}" stroke="#aaa" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <line x1="${x}" y1="${dotY + 6}" x2="${x}" y2="${lineY}" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
         <circle cx="${x}" cy="${dotY}" r="5" fill="#0f0f0f"/>
-        <text x="${x}" y="${dotY - 7}" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">${rel.repo}</text>
-        <text x="${x}" y="${dotY - 17}" font-family="IBM Plex Mono,monospace" font-size="8" fill="#555" text-anchor="middle">${rel.tag}</text>`;
+        <text x="${lx}" y="${dotY - 7}" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">${rel.repo} ${rel.tag}</text>`;
     });
 
     releaseTimeline = `
-  <div style="margin-bottom:4px;">
+  <div style="margin-bottom:4px;overflow:hidden;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">release timeline</div>
-    <svg width="100%" viewBox="0 0 ${tlW} ${tlH}" xmlns="http://www.w3.org/2000/svg">
-      <line x1="0" y1="${lineY}" x2="${tlW}" y2="${lineY}" stroke="#0f0f0f" stroke-width="1.5"/>
+    <svg width="100%" viewBox="0 0 ${tlW} ${tlH}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+      <line x1="${PAD}" y1="${lineY}" x2="${tlW - PAD}" y2="${lineY}" stroke="#0f0f0f" stroke-width="1.5"/>
       ${dayTicks.join("")}
       ${dots.join("")}
     </svg>
