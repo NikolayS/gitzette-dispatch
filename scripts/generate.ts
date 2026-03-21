@@ -813,7 +813,7 @@ async function buildHtml(
 <div class="paper">
   <div class="header">
     <div class="header-kicker">
-      <span>Open-source activity of <a href="https://github.com/NikolayS">Nikolay Samokhvalov (@NikolayS)</a> — PostgreSQL expert &amp; open-source developer</span>
+      <span>Weekly open-source digest — <a href="https://github.com/NikolayS">@NikolayS</a> (Nik Samokhvalov)</span>
       <span style="color:var(--muted);font-weight:400;">${fromLabel} – ${toLabel}</span>
     </div>
     <div class="header-meta">
