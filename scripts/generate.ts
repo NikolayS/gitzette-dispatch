@@ -115,6 +115,47 @@ interface RepoData {
   openIssues: Issue[];
   commitCount: number;
   topContributors: string[];
+  demoImages: string[]; // resolved raw URLs to screenshots/GIFs from README
+}
+
+/** Extract non-badge image URLs from a repo's README */
+async function getReadmeImages(owner: string, repo: string): Promise<string[]> {
+  try {
+    const readme = await ghGet(`/repos/${owner}/${repo}/readme`);
+    const content = Buffer.from(readme.content, "base64").toString("utf8");
+    const defaultBranch = readme.url.includes("main") ? "main" : "master";
+
+    // extract all markdown images: ![alt](url)
+    const matches = [...content.matchAll(/!\[([^\]]*)\]\(([^)]+)\)/g)];
+    const images: string[] = [];
+
+    // badge patterns to skip
+    const badgePatterns = [
+      /shields\.io/,
+      /badge/i,
+      /codecov/,
+      /github\.com\/[^/]+\/[^/]+\/actions/,
+      /githubusercontent\.com\/[^/]+\/[^/]+\/actions/,
+      /img\.shields/,
+      /badgen/,
+    ];
+
+    for (const [, alt, url] of matches) {
+      // skip badges
+      if (badgePatterns.some((p) => p.test(url) || p.test(alt))) continue;
+
+      let resolved = url;
+      // resolve relative paths to raw GitHub URLs
+      if (!url.startsWith("http")) {
+        resolved = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${url.replace(/^\.\//, "")}`;
+      }
+      images.push(resolved);
+    }
+
+    return images.slice(0, 3); // max 3 images per repo
+  } catch {
+    return [];
+  }
 }
 
 async function getRepoData(owner: string, repo: string, from: Date, to: Date): Promise<RepoData | null> {
@@ -211,6 +252,8 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
       return null;
     }
 
+    const demoImages = await getReadmeImages(owner, repo);
+
     return {
       name: repo,
       description: info.description,
@@ -221,11 +264,80 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
       openIssues,
       commitCount,
       topContributors,
+      demoImages,
     };
   } catch (err) {
     console.error(`  skipping ${repo}: ${err}`);
     return null;
   }
+}
+
+// ── image generation ──────────────────────────────────────────────────────────
+
+/** Generate an illustration via Imagen 4 (Google) or gpt-image-1 (OpenAI fallback).
+ *  Returns a data: URI string or null on failure. Never throws. */
+async function generateIllustration(subject: string): Promise<string | null> {
+  const cfg = (config as any).imageGen;
+  if (!cfg) return null;
+
+  const prompt = cfg.style + subject;
+  const googleKey = process.env.GOOGLE_AI_KEY;
+  const openaiKey = process.env.OPENAI_API_KEY;
+
+  // try Google Imagen 4 first
+  if (googleKey) {
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:predict?key=${googleKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            instances: [{ prompt }],
+            parameters: { sampleCount: 1, aspectRatio: "16:9" },
+          }),
+        }
+      );
+      const data: any = await res.json();
+      if (data.predictions?.[0]?.bytesBase64Encoded) {
+        const b64 = data.predictions[0].bytesBase64Encoded;
+        return `data:image/png;base64,${b64}`;
+      }
+      console.warn(`  Imagen 4 unavailable: ${data.error?.message?.slice(0, 80) ?? "unknown"}`);
+    } catch (e) {
+      console.warn(`  Imagen 4 error: ${e}`);
+    }
+  }
+
+  // fallback: OpenAI gpt-image-1
+  if (openaiKey) {
+    try {
+      const res = await fetch("https://api.openai.com/v1/images/generations", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${openaiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-image-1",
+          prompt,
+          n: 1,
+          size: "1536x1024",
+          output_format: "jpeg",
+          quality: "medium",
+        }),
+      });
+      const data: any = await res.json();
+      if (data.data?.[0]?.b64_json) {
+        return `data:image/jpeg;base64,${data.data[0].b64_json}`;
+      }
+      console.warn(`  gpt-image-1 error: ${JSON.stringify(data.error ?? data).slice(0, 120)}`);
+    } catch (e) {
+      console.warn(`  gpt-image-1 error: ${e}`);
+    }
+  }
+
+  return null;
 }
 
 // ── llm copy ─────────────────────────────────────────────────────────────────
@@ -247,6 +359,7 @@ async function generateCopy(
     deck: string;
     body: string;
     tag: string;
+    illustrationPrompt?: string; // subject for AI illustration (if no README screenshot)
   }>;
   closingNote: string;
 }> {
@@ -300,7 +413,8 @@ Return a JSON object with this exact structure:
       "headline": "punchy newspaper headline",
       "deck": "one-sentence italic subheading expanding on the headline",
       "body": "2-4 sentence article body. Reference specific features/PRs from the data. Mention pending work if notable.",
-      "tag": "RELEASE | FEATURE | SECURITY | PENDING | COMMUNITY"
+      "tag": "RELEASE | FEATURE | SECURITY | PENDING | COMMUNITY",
+      "illustrationPrompt": "short subject description for an editorial illustration (10-15 words). Only for stories without obvious screenshots. E.g. 'robot reading a PostgreSQL query plan with magnifying glass' or 'lock and key with database cylinder'. Skip for repos that have demo screenshots."
     }
   ],
   "closingNote": "one-line sign-off at the bottom of the paper (dry, funny)"
@@ -353,7 +467,8 @@ function formatDate(iso: string): string {
 function renderArticle(
   article: { repo: string; headline: string; deck: string; body: string; tag: string },
   repoData: RepoData,
-  level: "h1" | "h2" | "h3"
+  level: "h1" | "h2" | "h3",
+  imageIndex: number = 0 // which demo image to use (if any)
 ): string {
   const releaseLinks = repoData.releases
     .map(
@@ -375,19 +490,29 @@ function renderArticle(
           .join(", ")}</div>`
       : "";
 
+  const img = repoData.demoImages[imageIndex];
+  const isGif = img?.endsWith(".gif");
+  const imageHtml = img
+    ? `<div class="article-image">
+        <img src="${img}" alt="demo" style="width:100%;border:1px solid var(--rule);margin:10px 0;${isGif ? "" : "max-height:280px;object-fit:cover;"}">
+      </div>`
+    : "";
+
   return `
     <div class="article">
       <div class="tag">${article.tag}</div>
       <${level}><a href="${repoData.url}" class="headline-link">${article.headline}</${level}>
       <p class="deck">${article.deck}</p>
+      ${level === "h1" && imageHtml ? imageHtml : ""}
       <p class="body-text">${article.body}</p>
+      ${level !== "h1" && imageHtml ? imageHtml : ""}
       ${releaseLinks ? `<div class="release-links">${releaseLinks}</div>` : ""}
       ${prLinks ? `<div class="pr-links">merged: ${prLinks}</div>` : ""}
       ${openPRNote}
     </div>`;
 }
 
-function buildHtml(
+async function buildHtml(
   copy: Awaited<ReturnType<typeof generateCopy>>,
   reposData: RepoData[],
   from: Date,
@@ -405,12 +530,35 @@ function buildHtml(
   const fromLabel = from.toLocaleDateString("en-US", { month: "long", day: "numeric" });
   const toLabel = to.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
+  // generate AI illustrations for articles without README screenshots
+  console.log("generating illustrations...");
+  const illustrationCache: Record<string, string | null> = {};
+  for (const a of copy.articles) {
+    const repo = repoMap[a.repo];
+    if (!repo) continue;
+    const imgIdx = 0;
+    if (!repo.demoImages[imgIdx] && a.illustrationPrompt) {
+      process.stdout.write(`  illustration for ${a.repo}... `);
+      const dataUri = await generateIllustration(a.illustrationPrompt);
+      illustrationCache[a.repo] = dataUri;
+      console.log(dataUri ? "✓" : "skipped");
+    }
+  }
+
+  // track how many images we've used per repo
+  const imageUsed: Record<string, number> = {};
   const articles = copy.articles
     .map((a, i) => {
       const repo = repoMap[a.repo];
       if (!repo) return "";
       const level = i === 0 ? "h1" : i < 3 ? "h2" : "h3";
-      return renderArticle(a, repo, level as "h1" | "h2" | "h3");
+      const imgIdx = imageUsed[a.repo] ?? 0;
+      imageUsed[a.repo] = imgIdx + 1;
+      // inject AI illustration into repo if no README screenshot
+      if (!repo.demoImages[imgIdx] && illustrationCache[a.repo]) {
+        repo.demoImages[imgIdx] = illustrationCache[a.repo]!;
+      }
+      return renderArticle(a, repo, level as "h1" | "h2" | "h3", imgIdx);
     })
     .join("\n");
 
@@ -600,7 +748,7 @@ async function main() {
   const issue = Math.ceil((to.getTime() - new Date("2026-03-15").getTime()) / (7 * 86400 * 1000)) + 1;
 
   console.log(`building html...`);
-  const html = buildHtml(copy, reposData, from, to, vol, issue);
+  const html = await buildHtml(copy, reposData, from, to, vol, issue);
 
   const outPath = join(ROOT, config.output);
   writeFileSync(outPath, html, "utf8");

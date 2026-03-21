@@ -1,8 +1,13 @@
 {
   "owner": "NikolayS",
   "repos": {
-    "exclude": ["COIL", "callbot"]
+    "exclude": ["COIL", "callbot", "dispatch"]
   },
   "model": "anthropic/claude-opus-4-6",
+  "imageGen": {
+    "provider": "google",
+    "model": "imagen-4.0-fast-generate-001",
+    "style": "Black and white newspaper woodcut illustration, 1920s engraving style, stark and editorial. No color. Subject: "
+  },
   "output": "index.html"
 }
