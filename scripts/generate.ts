@@ -355,14 +355,41 @@ function illusCachePath(subject: string): string {
   return path.join(ILLUS_CACHE_DIR, `${slug}.txt`);
 }
 
+const CF_ACCOUNT = "a3265e0d0db71fdece29365819452f00";
+const CF_R2_BUCKET = "gitzette-dispatches";
+
+/** Upload a JPEG buffer to R2 at illustrations/<slug>.jpg, return public Worker URL. */
+async function uploadIllustrationToR2(slug: string, buf: Buffer): Promise<string | null> {
+  const cfToken = process.env.CF_TOKEN;
+  if (!cfToken) { console.warn("  no CF_TOKEN — can't upload illustration"); return null; }
+  const key = encodeURIComponent(`illustrations/${slug}.jpg`);
+  try {
+    const res = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/r2/buckets/${CF_R2_BUCKET}/objects/${key}`,
+      {
+        method: "PUT",
+        headers: { "Authorization": `Bearer ${cfToken}`, "Content-Type": "image/jpeg" },
+        body: buf,
+      }
+    );
+    const data: any = await res.json();
+    if (!data.success) { console.warn(`  R2 upload failed: ${JSON.stringify(data)}`); return null; }
+    return `https://gitzette.online/img/${slug}.jpg`;
+  } catch (e) {
+    console.warn(`  R2 upload error: ${e}`);
+    return null;
+  }
+}
+
 /** Generate an illustration via Google Gemini 2.5 Flash Image.
- *  Caches result to disk — on quota/error, returns cached version if available.
+ *  Uploads to R2, caches the URL to disk — on quota/error, returns cached URL if available.
  *  Never throws. */
 async function generateIllustration(subject: string): Promise<string | null> {
   const cfg = (config as any).imageGen;
   if (!cfg) return null;
 
-  const cachePath = illusCachePath(subject);
+  const slug = subject.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60);
+  const cachePath = illusCachePath(subject); // stores the URL (not data URI)
 
   const googleKey = process.env.GOOGLE_AI_KEY;
   if (!googleKey) {
@@ -388,11 +415,18 @@ async function generateIllustration(subject: string): Promise<string | null> {
     const parts = data?.candidates?.[0]?.content?.parts ?? [];
     for (const part of parts) {
       if (part.inlineData?.data) {
-        const buf = Buffer.from(part.inlineData.data, "base64");
-        const dataUri = await newspaperifyBuffer(buf);
-        // cache to disk
-        await fs.writeFile(cachePath, dataUri, "utf8");
-        return dataUri;
+        const rawBuf = Buffer.from(part.inlineData.data, "base64");
+        const processed = await sharp(rawBuf)
+          .grayscale().normalise()
+          .modulate({ brightness: 0.92, saturation: 0 })
+          .sharpen({ sigma: 0.8 })
+          .jpeg({ quality: 82, progressive: true })
+          .toBuffer();
+        const url = await uploadIllustrationToR2(slug, processed);
+        if (url) {
+          await fs.writeFile(cachePath, url, "utf8"); // cache the URL
+          return url;
+        }
       }
     }
     console.warn(`  Gemini image failed: ${JSON.stringify(data).slice(0, 200)}`);
@@ -400,10 +434,10 @@ async function generateIllustration(subject: string): Promise<string | null> {
     console.warn(`  Gemini image error: ${e}`);
   }
 
-  // fallback: return cached version if we have one
+  // fallback: return cached URL if we have one
   try {
     const cached = await fs.readFile(cachePath, "utf8");
-    console.warn(`  using cached illustration for "${subject}"`);
+    console.warn(`  using cached illustration URL for "${subject}"`);
     return cached;
   } catch {
     return null;
