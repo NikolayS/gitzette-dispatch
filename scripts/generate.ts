@@ -796,6 +796,17 @@ async function buildHtml(
   a:hover { text-decoration: underline; }
   .muted { color: var(--muted); }
   .paper { max-width: 960px; margin: 24px auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 2px 12px rgba(0,0,0,.15); }
+  /* broadsheet: two pages side by side on very wide screens */
+  .page-2 { display: none; }
+  @media (min-width: 1400px) {
+    body { background: #d8d4cc; }
+    .broadsheet-wrap { display: flex; align-items: flex-start; gap: 0; max-width: 1900px; margin: 32px auto; }
+    .broadsheet-wrap .paper { max-width: none; flex: 1; margin: 0; box-shadow: 0 4px 24px rgba(0,0,0,.2); }
+    .broadsheet-wrap .paper.page-2 { display: block; border-left: 3px double var(--rule); margin-left: -1px; }
+    /* on broadsheet, hide the sidebar from page 1 (stats move to page 2) */
+    .broadsheet-wrap .paper:first-child .grid-2-1 { grid-template-columns: 1fr; }
+    .broadsheet-wrap .paper:first-child .grid-2-1 .col:last-child { display: none; }
+  }
 
   /* header */
   .header { padding: 20px 24px 14px; border-bottom: 3px solid var(--ink); }
@@ -854,6 +865,7 @@ async function buildHtml(
 </style>
 </head>
 <body>
+<div class="broadsheet-wrap">
 <div class="paper">
   <div class="header">
     <div class="header-kicker">
@@ -904,7 +916,39 @@ async function buildHtml(
     <span>${copy.closingNote}</span>
     <span>generated ${new Date().toISOString().slice(0, 10)}</span>
   </div>
-</div>
+</div><!-- /paper page 1 -->
+
+<!-- page 2: stats + index (only visible as separate page on broadsheet layout) -->
+<div class="paper page-2">
+  <div class="header" style="border-bottom:none;">
+    <div class="header-meta" style="margin-bottom:0;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+      <span class="meta-left">the dispatch — Vol. ${vol}, No. ${issue}</span>
+      <span class="meta-right">${fromLabel} – ${toLabel}</span>
+    </div>
+  </div>
+  <div class="body">
+    ${buildDataGraphics(reposData, from, to)}
+    <div style="padding-top:24px;border-top:2px solid var(--ink);margin-top:8px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+        <span>repo index</span>
+        <span style="flex:1;border-top:1px solid var(--rule);display:inline-block;"></span>
+      </div>
+      <ul style="list-style:none;">
+        ${reposData.map((r) => `<li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="${r.url}" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">${r.name}</a>
+          ${r.description ? `<div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">${r.description}</div>` : ""}
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">${r.commitCount} commits · ${r.releases.length} release${r.releases.length !== 1 ? "s" : ""} · ★ ${r.stars}</div>
+        </li>`).join("")}
+      </ul>
+    </div>
+  </div>
+  <div class="footer">
+    <span>the dispatch is generated weekly from live GitHub data</span>
+    <span>github.com/NikolayS/dispatch</span>
+  </div>
+</div><!-- /paper page 2 -->
+
+</div><!-- /broadsheet-wrap -->
 </body>
 </html>`;
 }
