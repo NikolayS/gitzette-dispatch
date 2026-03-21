@@ -868,9 +868,8 @@ async function buildHtml(
     <div class="tagline">${copy.tagline}</div>
     <div class="edition-bar">
       <span>${totalCommits} commits</span>
-      <span>${totalReleases} release${totalReleases !== 1 ? "s" : ""}</span>
-      <span>${totalMerged} merged</span>
       <span>${totalMerged + totalOpenPRs} PRs</span>
+      <span>${totalReleases} release${totalReleases !== 1 ? "s" : ""}</span>
       <span>${reposData.length} repo${reposData.length !== 1 ? "s" : ""}</span>
     </div>
   </div>
