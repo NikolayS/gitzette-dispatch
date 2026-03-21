@@ -26,6 +26,8 @@ interface Config {
   repos: { exclude?: string[]; include?: string[] };
   model: string;
   output: string;
+  knownIncidents?: string[];
+  imageGen?: { provider: string; model: string; style: string };
 }
 
 const config: Config = JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
@@ -421,23 +423,35 @@ async function generateCopy(
 
 The newspaper covers his GitHub projects for the week of ${fromLabel} – ${toLabel}.
 
-RULES:
+RULES — STYLE:
 - Be creative with form: punchy headlines, dry wit, newspaper voice
-- Be strict with facts: never invent numbers, dates, or features not in the data
-- Write like a real tech newspaper editor, not a PR person
-- Headlines should be specific and surprising, not generic
-- Short sentences. Prefer active voice.
-- No emoji
-- Always refer to the author as "@NikolayS" (not "Samokhvalov", not "Nikolay", not "the author")
-- Repo/project names are ALWAYS lowercase, no exceptions, even at sentence start: "rpg" not "RPG" or "Rpg", "sqlever" not "Sqlever", "pg_ash" not "PG_ash"
-- When mentioning specific PRs or issues in body text, link them as HTML: <a href="URL">#NUMBER</a>
-- openPRs are PRs opened THIS WEEK only — treat them as new work, not old backlog
+- Be strict with facts: never invent numbers, dates, features, or PR titles not in the data
+- Write like a real tech newspaper editor, not a PR person or a release notes bot
+- Headlines: specific and surprising, not generic. Bad: "rpg gets new features". Good: "rpg teaches EXPLAIN to read its own X-rays"
+- Short sentences. Active voice. No hedge words.
+- No emoji anywhere
+- Sentence case for headlines (not Title Case)
+
+RULES — ATTRIBUTION:
+- Always refer to the author as "@NikolayS" — never "Samokhvalov", "Nikolay", "the developer", "the author"
+- Repo/project names are ALWAYS lowercase, no exceptions, even at sentence start: "rpg" not "RPG", "sqlever" not "Sqlever", "pg_ash" not "PG_ash", "leandex" not "Leandex"
+
+RULES — CONTENT:
+- For release articles: name specific features from the release notes. "Automatic warnings for seq scans on large tables" is better than "improved EXPLAIN". Use the actual feature names.
+- For PR articles: only reference PRs opened THIS WEEK (they are pre-filtered). Do not discuss old open PRs as if they are news.
+- When mentioning specific PRs or issues, link them inline as HTML: <a href="URL">#NUMBER title</a>
+- article body is plain text with optional inline HTML links — do NOT use markdown
+- body text must never use markdown formatting (no **bold**, no backticks) — use plain prose only
+
+RULES — STRUCTURE:
+- Order by newsworthiness: releases first, then features, security, pending, community
+- editionNote: punchy 1-sentence summary of the whole week (e.g. "Four releases, one leaked key, and a migration tool that arrived fully armed.")
+- closingNote: dry one-liner, like a newspaper colophon
 
 Here is the raw data:
 ${dataJson}
 
-KNOWN INCIDENTS THIS WEEK (confirmed by the author — include as a security article):
-- A pgMustard API key was leaked into a GitHub PR comment when an AI agent posted testing output. The key was quickly spotted and rotated. Repo: rpg (related to the new \\explain share pgmustard feature in v0.8.0). Lesson: agents posting to public PRs need credential scanning. This should appear as a short SECURITY article with a wry tone — it's a cautionary tale, not a catastrophe.
+${(config as any).knownIncidents?.length ? `KNOWN INCIDENTS THIS WEEK (confirmed by the author — must include as articles):\n${((config as any).knownIncidents as string[]).map((s: string, i: number) => `${i + 1}. ${s}`).join("\n")}` : ""}
 
 Return a JSON object with this exact structure:
 {
