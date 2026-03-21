@@ -40,6 +40,7 @@ function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean }
   let to: Date | undefined;
   let noFetch = false;
   let noLlm = false;
+  let noIllustrations = false;
   let owner: string | undefined;
   let output: string | undefined;
 
@@ -48,6 +49,7 @@ function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean }
     if (args[i] === "--to" && args[i + 1]) to = new Date(args[++i]);
     if (args[i] === "--no-fetch") noFetch = true;
     if (args[i] === "--no-llm") noLlm = true;
+    if (args[i] === "--no-illustrations") noIllustrations = true;
     if (args[i] === "--owner" && args[i + 1]) owner = args[++i];
     if (args[i] === "--output" && args[i + 1]) output = args[++i];
   }
@@ -58,7 +60,7 @@ function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean }
     from.setDate(from.getDate() - 7);
   }
 
-  return { from, to, noFetch, noLlm, owner, output };
+  return { from, to, noFetch, noLlm, noIllustrations, owner, output };
 }
 
 // ── github api ───────────────────────────────────────────────────────────────
@@ -732,7 +734,8 @@ async function buildHtml(
   to: Date,
   vol: number,
   issue: number,
-  ownerHandle: string = "NikolayS"
+  ownerHandle: string = "NikolayS",
+  skipIllustrations: boolean = false
 ): string {
   const repoMap = Object.fromEntries(reposData.map((r) => [r.name, r]));
 
@@ -745,17 +748,18 @@ async function buildHtml(
   const toLabel = to.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   // generate AI illustrations for articles without README screenshots
-  console.log("generating illustrations...");
   const illustrationCache: Record<string, string | null> = {};
-  for (const a of copy.articles) {
-    const repo = repoMap[a.repo];
-    if (!repo) continue;
-    const imgIdx = 0;
-    if (!repo.demoImages[imgIdx] && a.illustrationPrompt) {
-      process.stdout.write(`  illustration for ${a.repo}... `);
-      const dataUri = await generateIllustration(a.illustrationPrompt);
-      illustrationCache[a.repo] = dataUri;
-      console.log(dataUri ? "✓" : "skipped");
+  if (!skipIllustrations) {
+    console.log("generating illustrations...");
+    for (const a of copy.articles) {
+      const repo = repoMap[a.repo];
+      if (!repo) continue;
+      if (!repo.demoImages[0] && a.illustrationPrompt) {
+        process.stdout.write(`  illustration for ${a.repo}... `);
+        const dataUri = await generateIllustration(a.illustrationPrompt);
+        illustrationCache[a.repo] = dataUri;
+        console.log(dataUri ? "✓" : "skipped");
+      }
     }
   }
 
@@ -876,7 +880,7 @@ async function buildHtml(
 <div class="paper">
   <div class="header">
     <div class="header-kicker">
-      <span class="kicker-text"><a href="https://github.com/${ownerHandle}">@${ownerHandle}</a> — open-source digest</span>
+      <span class="kicker-text"><a href="https://github.com/${ownerHandle}" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@${ownerHandle}</a> <span style="font-weight:400;letter-spacing:.12em;">— open-source digest</span></span>
       <span class="kicker-date">${fromLabel} – ${toLabel}</span>
     </div>
     <div class="header-meta">
@@ -966,7 +970,7 @@ async function buildHtml(
 import { existsSync } from "fs";
 
 async function main() {
-  const { from, to, noFetch, noLlm, owner: ownerOverride, output: outputOverride } = parseArgs();
+  const { from, to, noFetch, noLlm, noIllustrations, owner: ownerOverride, output: outputOverride } = parseArgs();
 
   const owner = ownerOverride || config.owner;
   const outputFile = outputOverride || config.output;
@@ -1038,7 +1042,7 @@ async function main() {
   const issue = Math.ceil((to.getTime() - new Date("2026-03-15").getTime()) / (7 * 86400 * 1000)) + 1;
 
   console.log(`building html...`);
-  const html = await buildHtml(copy, reposData, from, to, vol, issue, owner);
+  const html = await buildHtml(copy, reposData, from, to, vol, issue, owner, noIllustrations);
 
   const outPath = join(ROOT, outputFile);
   writeFileSync(outPath, html, "utf8");
