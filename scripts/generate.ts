@@ -809,7 +809,7 @@ async function buildHtml(
   .header-meta .meta-right { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
   .masthead { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(32px,7vw,64px); letter-spacing: -.03em; line-height: 1; }
   .masthead span { color: var(--muted); font-weight: 400; }
-  .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .edition-bar { margin-top: 12px; padding: 6px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .05em; display: flex; flex-wrap: nowrap; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   .edition-bar::-webkit-scrollbar { display: none; }
   .edition-bar span { white-space: nowrap; padding: 0 16px 0 0; }
@@ -870,7 +870,7 @@ async function buildHtml(
       <span>${totalCommits} commits</span>
       <span>${totalReleases} release${totalReleases !== 1 ? "s" : ""}</span>
       <span>${totalMerged} merged</span>
-      <span>${totalOpenPRs} open PR${totalOpenPRs !== 1 ? "s" : ""}</span>
+      <span>${totalMerged + totalOpenPRs} PRs</span>
       <span>${reposData.length} repo${reposData.length !== 1 ? "s" : ""}</span>
     </div>
   </div>
