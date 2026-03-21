@@ -1141,8 +1141,16 @@ async function main() {
   if (isQuietWeek) {
     console.log(`\n⚠️  quiet week detected (${totalActivity} total commits/PRs/releases) — slow news week mode`);
   }
+
+  // CRITICAL: if zero repos data and quiet week, don't call LLM at all
+  // The LLM with empty data will hallucinate content from other users (e.g. from system prompt examples)
+  if (reposData.length === 0) {
+    console.error(`\n✗ No activity found for ${owner} in ${from.toISOString().slice(0,10)} – ${to.toISOString().slice(0,10)}. Aborting to prevent content bleed.`);
+    process.exit(1);
+  }
+
   const quietWeekNote = isQuietWeek
-    ? `NOTE: This was a very quiet week with minimal activity (${totalActivity} total commits/PRs/releases). Write a witty, self-aware 'slow news week' edition. Hero headline should acknowledge the quiet. Pull quote should be philosophical about rest/thinking time. Keep it short and charming, not apologetic.`
+    ? `NOTE: This was a very quiet week with minimal activity (${totalActivity} total commits/PRs/releases). Write a witty, self-aware 'slow news week' edition. Hero headline should acknowledge the quiet. Use ONLY the repos listed in the data — do NOT invent or reference any other repos or people. Pull quote should be philosophical about rest/thinking time. Keep it short and charming, not apologetic.`
     : null;
 
   // load cached copy if --no-llm
