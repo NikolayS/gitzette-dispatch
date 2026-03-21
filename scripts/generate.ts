@@ -223,17 +223,22 @@ async function getRepoData(owner: string, repo: string, from: Date, to: Date): P
         body: p.body,
       }));
 
-    // PRs — currently open
-    const openPRsRaw = await ghGet(`/repos/${owner}/${repo}/pulls?state=open&per_page=20`);
-    const openPRs: PR[] = openPRsRaw.map((p: any) => ({
-      number: p.number,
-      title: p.title,
-      state: "open" as const,
-      date: p.created_at,
-      url: p.html_url,
-      author: p.user?.login || "unknown",
-      body: p.body,
-    }));
+    // PRs — opened within this week's window (not all currently open)
+    const openPRsRaw = await ghGet(`/repos/${owner}/${repo}/pulls?state=open&per_page=50&sort=created&direction=desc`);
+    const openPRs: PR[] = openPRsRaw
+      .filter((p: any) => {
+        const d = new Date(p.created_at);
+        return d >= from && d <= to;
+      })
+      .map((p: any) => ({
+        number: p.number,
+        title: p.title,
+        state: "open" as const,
+        date: p.created_at,
+        url: p.html_url,
+        author: p.user?.login || "unknown",
+        body: p.body,
+      }));
 
     // Issues — currently open (exclude PRs)
     const openIssuesRaw = await ghGet(`/repos/${owner}/${repo}/issues?state=open&per_page=20`);
@@ -398,10 +403,10 @@ async function generateCopy(
       releases: r.releases.map((rel) => ({
         tag: rel.tag,
         date: rel.date,
-        highlights: rel.body.slice(0, 800),
+        highlights: rel.body.replace(/`/g, "'").replace(/\\/g, "/").slice(0, 2000),
       })),
-      mergedPRs: r.mergedPRs.slice(0, 10).map((p) => ({ title: p.title, author: p.author })),
-      openPRs: r.openPRs.slice(0, 5).map((p) => ({ title: p.title, author: p.author })),
+      mergedPRs: r.mergedPRs.slice(0, 10).map((p) => ({ title: p.title, author: p.author, url: p.url, number: p.number })),
+      openPRs: r.openPRs.slice(0, 5).map((p) => ({ title: p.title, author: p.author, url: p.url, number: p.number })),
       openIssues: r.openIssues.slice(0, 5).map((i) => ({ title: i.title })),
       commitCount: r.commitCount,
     })),
@@ -423,6 +428,10 @@ RULES:
 - Headlines should be specific and surprising, not generic
 - Short sentences. Prefer active voice.
 - No emoji
+- Always refer to the author as "@NikolayS" (not "Samokhvalov", not "Nikolay", not "the author")
+- Repo/project names are ALWAYS lowercase, no exceptions, even at sentence start: "rpg" not "RPG" or "Rpg", "sqlever" not "Sqlever", "pg_ash" not "PG_ash"
+- When mentioning specific PRs or issues in body text, link them as HTML: <a href="URL">#NUMBER</a>
+- openPRs are PRs opened THIS WEEK only — treat them as new work, not old backlog
 
 Here is the raw data:
 ${dataJson}
@@ -470,15 +479,18 @@ Return ONLY the JSON object, no markdown fences.`;
   }
 
   const data: any = await res.json();
-  const text = data.choices[0].message.content.trim();
+  const raw = data.choices[0].message.content.trim();
+  // strip control chars that break JSON.parse
+  const text = raw.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "");
 
   try {
     return JSON.parse(text);
   } catch {
-    // try to extract JSON if there's surrounding text
     const match = text.match(/\{[\s\S]+\}/);
-    if (match) return JSON.parse(match[0]);
-    throw new Error(`LLM returned non-JSON: ${text.slice(0, 200)}`);
+    if (match) {
+      try { return JSON.parse(match[0]); } catch {}
+    }
+    throw new Error(`LLM returned non-JSON: ${text.slice(0, 300)}`);
   }
 }
 
@@ -519,10 +531,10 @@ function renderArticle(
       : "";
 
   const img = repoData.demoImages[imageIndex];
-  const maxHeight = level === "h1" ? "320px" : "200px";
+  const maxHeight = level === "h1" ? "240px" : "160px";
   const imageHtml = img
-    ? `<div class="article-image">
-        <img src="${img}" alt="demo" style="width:100%;max-height:${maxHeight};object-fit:cover;border:1px solid var(--rule);margin:10px 0;">
+    ? `<div class="article-image" style="overflow:hidden;max-height:${maxHeight};border:1px solid var(--rule);margin:10px 0;">
+        <img src="${img}" alt="demo" style="width:100%;height:${maxHeight};object-fit:cover;object-position:top;display:block;">
       </div>`
     : "";
 
@@ -644,7 +656,9 @@ async function buildHtml(
   .headline-link { color: var(--ink); text-decoration: none; }
   .headline-link:hover { text-decoration: underline; }
   .deck { font-family: 'IBM Plex Serif', serif; font-style: italic; font-size: 14px; line-height: 1.55; color: #333; margin-bottom: 10px; }
-  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; }
+  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; }
+  .body-text a { color: var(--link); text-decoration: none; }
+  .body-text a:hover { text-decoration: underline; }
   .release-links, .pr-links { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
   .release-link { font-weight: 600; color: var(--ink); }
   .pending-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; border-left: 2px solid var(--rule); padding-left: 8px; }
