@@ -1,0 +1,16 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Thirty-three commits, zero releases, and the quiet hum of a kernel at work.",
+  "editionNote": "A workmanlike week: @torvalds pushed 33 commits to linux with no releases, no PRs, and no fanfare.",
+  "articles": [
+    {
+      "repo": "linux",
+      "headline": "33 commits land in linux as @torvalds keeps the merge window turning",
+      "deck": "A steady week of kernel commits with no tagged releases or open pull requests to show for it.",
+      "body": "@torvalds pushed 33 commits to linux between March 16 and March 22. No new releases were tagged. No pull requests were opened or merged under the @torvalds account this week. The work speaks in diffs, not announcements — a quiet stretch that suggests either a merge window cooldown or upstream integration grinding along at its usual clip.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a single penguin steadily walking across a vast empty tundra under an overcast sky"
+    }
+  ],
+  "closingNote": "No releases. No PRs. Just commits. Some weeks the kernel simply breathes."
+}

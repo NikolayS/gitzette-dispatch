@@ -36,7 +36,7 @@ const config: Config = JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
 
 // ── cli args ─────────────────────────────────────────────────────────────────
 
-function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean } {
+function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean; provider: string } {
   const args = process.argv.slice(2);
   let from: Date | undefined;
   let to: Date | undefined;
@@ -45,6 +45,7 @@ function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean }
   let noIllustrations = false;
   let owner: string | undefined;
   let output: string | undefined;
+  let provider = "github"; // default provider
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--from" && args[i + 1]) from = new Date(args[++i]);
@@ -54,6 +55,7 @@ function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean }
     if (args[i] === "--no-illustrations") noIllustrations = true;
     if (args[i] === "--owner" && args[i + 1]) owner = args[++i];
     if (args[i] === "--output" && args[i + 1]) output = args[++i];
+    if (args[i] === "--provider" && args[i + 1]) provider = args[++i];
   }
 
   if (!to) to = new Date();
@@ -62,13 +64,15 @@ function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean }
     from.setDate(from.getDate() - 7);
   }
 
-  return { from, to, noFetch, noLlm, noIllustrations, owner, output };
+  return { from, to, noFetch, noLlm, noIllustrations, owner, output, provider };
 }
 
-// ── github api ───────────────────────────────────────────────────────────────
+// ── provider tokens ───────────────────────────────────────────────────────────
 
 const GH_TOKEN = process.env.GITHUB_TOKEN;
-if (!GH_TOKEN) throw new Error("GITHUB_TOKEN not set");
+const GL_TOKEN = process.env.GITLAB_TOKEN;
+
+// github api ──────────────────────────────────────────────────────────────────
 
 async function ghGet(path: string): Promise<any> {
   const url = `https://api.github.com${path}`;
@@ -131,6 +135,7 @@ interface RepoData {
 }
 
 import sharp from "sharp";
+import { fetchGitLabData } from "./gitlab.ts";
 
 /** Fetch an image URL and convert to newspaper style:
  *  grayscale + contrast boost + slight grain. Returns data URI or null. */
@@ -457,7 +462,8 @@ async function generateCopy(
   from: Date,
   to: Date,
   owner: string = "NikolayS",
-  knownIncidents: string[] = []
+  knownIncidents: string[] = [],
+  quietWeekNote: string | null = null
 ): Promise<{
   masthead: string;
   tagline: string;
@@ -492,6 +498,8 @@ async function generateCopy(
 
   const fromLabel = from.toLocaleDateString("en-US", { month: "long", day: "numeric" });
   const toLabel = to.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+  const quietWeekBlock = quietWeekNote ? `\n${quietWeekNote}\n` : "";
 
   const prompt = `You are writing the editorial copy for a weekly engineering newspaper called "the dispatch" — a digest of GitHub activity by @${owner}.
 
@@ -531,7 +539,7 @@ Here is the raw data:
 ${dataJson}
 
 ${knownIncidents.length ? `KNOWN INCIDENTS THIS WEEK (confirmed by the author — must include as articles):\n${knownIncidents.map((s, i) => `${i + 1}. ${s}`).join("\n")}` : ""}
-
+${quietWeekBlock}
 Return a JSON object with this exact structure:
 {
   "masthead": "the dispatch",
@@ -1102,6 +1110,19 @@ async function main() {
     process.exit(0);
   }
 
+  // ── slow news week detection ───────────────────────────────────────────────
+  const totalActivity = reposData.reduce(
+    (sum, r) => sum + r.commitCount + r.mergedPRs.length + r.releases.length,
+    0
+  );
+  const isQuietWeek = totalActivity < 3;
+  if (isQuietWeek) {
+    console.log(`\n⚠️  quiet week detected (${totalActivity} total commits/PRs/releases) — slow news week mode`);
+  }
+  const quietWeekNote = isQuietWeek
+    ? `NOTE: This was a very quiet week with minimal activity (${totalActivity} total commits/PRs/releases). Write a witty, self-aware 'slow news week' edition. Hero headline should acknowledge the quiet. Pull quote should be philosophical about rest/thinking time. Keep it short and charming, not apologetic.`
+    : null;
+
   // load cached copy if --no-llm
   const copyFile = join(cacheDir, `${cacheKey}.copy.json`);
   let copy: Awaited<ReturnType<typeof generateCopy>>;
@@ -1113,7 +1134,7 @@ async function main() {
     console.log(`\ngenerating copy via LLM (${config.model})...`);
     // only inject knownIncidents for the configured owner, not arbitrary --owner overrides
     const incidents = (owner === config.owner) ? (config.knownIncidents || []) : [];
-    copy = await generateCopy(reposData, from, to, owner, incidents);
+    copy = await generateCopy(reposData, from, to, owner, incidents, quietWeekNote);
     await Bun.write(copyFile, JSON.stringify(copy, null, 2));
   }
 
@@ -1122,7 +1143,8 @@ async function main() {
   const issue = Math.ceil((to.getTime() - new Date("2026-03-15").getTime()) / (7 * 86400 * 1000)) + 1;
 
   console.log(`building html...`);
-  const html = await buildHtml(copy, reposData, from, to, vol, issue, owner, noIllustrations);
+  // skip illustration generation on quiet weeks
+  const html = await buildHtml(copy, reposData, from, to, vol, issue, owner, noIllustrations || isQuietWeek);
 
   const outPath = join(ROOT, outputFile);
   writeFileSync(outPath, html, "utf8");

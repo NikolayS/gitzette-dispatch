@@ -1,0 +1,17 @@
+[
+  {
+    "name": "linux",
+    "description": "Linux kernel source tree",
+    "url": "https://github.com/torvalds/linux",
+    "stars": 224441,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 33,
+    "topContributors": [
+      "torvalds"
+    ],
+    "demoImages": []
+  }
+]
