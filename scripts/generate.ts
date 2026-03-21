@@ -499,7 +499,8 @@ async function generateCopy(
     deck: string;
     body: string;
     tag: string;
-    illustrationPrompt?: string; // subject for AI illustration (if no README screenshot)
+    illustrationPrompt?: string; // subject for AI illustration
+    illustrate?: boolean;        // true = LLM picked this article for an illustration
   }>;
   closingNote: string;
 }> {
@@ -577,7 +578,8 @@ Return a JSON object with this exact structure:
       "deck": "one-sentence italic subheading expanding on the headline",
       "body": "2-4 sentence article body. Reference specific features/PRs from the data. Mention pending work if notable.",
       "tag": "RELEASE | FEATURE | SECURITY | PENDING | COMMUNITY",
-      "illustrationPrompt": "short subject description for a purely visual editorial illustration (10-15 words). No text, signs, labels, or readable characters in the scene. ALWAYS provide this — it is required for every article regardless of whether the repo has screenshots. E.g. 'robot peering into a glowing cylinder' or 'lock and key with database cylinders stacked behind'."
+      "illustrationPrompt": "short subject description for a purely visual editorial illustration (10-15 words). No text, signs, labels, or readable characters in the scene. ALWAYS provide this — it is required for every article. E.g. 'robot peering into a glowing cylinder' or 'lock and key with database cylinders stacked behind'.",
+      "illustrate": false
     }
   ],
   "closingNote": "one-line sign-off at the bottom of the paper (dry, funny)"
@@ -585,6 +587,7 @@ Return a JSON object with this exact structure:
 
 Order articles by newsworthiness (releases > big features > pending work).
 Maximum 8 articles total — pick the most newsworthy, drop the rest.
+For "illustrate": set true on at most 2 articles that would most benefit visually — prefer the lead story (h1) and one other with a vivid, illustrable subject. Articles that already have a README screenshot don't need it (but you don't know which ones do, so use editorial judgment: releases and security incidents tend to have good screenshots; abstract tools/pending work benefit more from illustration).
 Return ONLY the JSON object, no markdown fences.`;
 
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -841,36 +844,23 @@ async function buildHtml(
   const fromLabel = from.toLocaleDateString("en-US", { month: "long", day: "numeric" });
   const toLabel = to.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
-  // generate AI illustrations for articles without README screenshots
-  // cap: max 2 AI illustrations per dispatch
-  const MAX_ILLUSTRATIONS = 2;
+  // generate AI illustrations — only for articles LLM flagged with illustrate:true
+  // LLM picks up to 2 based on editorial judgment (most visually compelling)
   const MAX_REPO_IMAGES = 3;
   const illustrationCache: Record<string, string | null> = {};
   if (!skipIllustrations) {
-    console.log("generating illustrations...");
-    let illustrationCount = 0;
-    const repoImageUsed = new Set<string>();
-    for (const a of copy.articles) {
-      const repo = repoMap[a.repo];
-      if (!repo) continue;
-      // if repo has a README image and it hasn't been used yet, no illustration needed
-      if (repo.demoImages[0] && !repoImageUsed.has(a.repo)) {
-        repoImageUsed.add(a.repo);
-        continue;
+    const toIllustrate = copy.articles.filter((a: any) => a.illustrate === true).slice(0, 2);
+    if (toIllustrate.length > 0) {
+      console.log(`generating ${toIllustrate.length} illustration(s)...`);
+      for (const a of toIllustrate) {
+        const subject = (a as any).illustrationPrompt ?? `abstract editorial scene related to ${a.repo} software project`;
+        process.stdout.write(`  illustration for "${a.headline}"... `);
+        const url = await generateIllustration(subject);
+        illustrationCache[a.headline] = url ?? null;
+        console.log(url ? "✓" : "skipped");
       }
-      // cap: skip illustration if we've already generated the max allowed
-      if (illustrationCount >= MAX_ILLUSTRATIONS) {
-        console.log(`  illustration for "${a.headline}"... skipped (cap of ${MAX_ILLUSTRATIONS} reached)`);
-        illustrationCache[a.headline] = null;
-        continue;
-      }
-      // otherwise generate illustration keyed by article headline
-      const subject = a.illustrationPrompt ?? `abstract editorial scene related to ${a.repo} software project`;
-      process.stdout.write(`  illustration for "${a.headline}"... `);
-      const url = await generateIllustration(subject);
-      illustrationCache[a.headline] = url;
-      if (url) illustrationCount++;
-      console.log(url ? "✓" : "skipped");
+    } else {
+      console.log("no illustrations requested by LLM this week");
     }
   }
 
