@@ -582,38 +582,26 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
     </svg>
   </div>`;
 
-  // ── 3. Star leaderboard — horizontal bars ─────────────────────────────────
+  // ── 3. Star leaderboard — ★ glyph fill ───────────────────────────────────
   const starredRepos = [...reposData].filter((r) => r.stars > 0).sort((a, b) => b.stars - a.stars);
   const maxStars = Math.max(...starredRepos.map((r) => r.stars), 1);
-  const starBarH = 22;
-  const starBarGap = 4;
-  const starLabelW = 88;
-  const starChartW = 220;
-  const starNumW = 48;
-  const starSvgW = starLabelW + starChartW + starNumW;
-  const starSvgH = starredRepos.length * (starBarH + starBarGap) + 20;
-
-  const starBars = starredRepos.map((r, i) => {
-    const bw = Math.max(3, Math.round((r.stars / maxStars) * starChartW));
-    const y = i * (starBarH + starBarGap) + 18;
-    return `
-    <text x="${starLabelW - 6}" y="${y + starBarH - 6}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333">
-      <a href="${r.url}" style="color:inherit;">${r.name}</a>
-    </text>
-    <rect x="${starLabelW}" y="${y}" width="${bw}" height="${starBarH}" fill="none" stroke="#0f0f0f" stroke-width="1"/>
-    <rect x="${starLabelW}" y="${y}" width="${bw}" height="${starBarH}" fill="#0f0f0f" opacity="0.08"/>
-    <text x="${starLabelW + bw + 6}" y="${y + starBarH - 6}" font-family="IBM Plex Mono,monospace" font-size="11" fill="#333" font-weight="600">&#9733; ${r.stars.toLocaleString()}</text>`;
+  const STAR_COLS = 10; // max filled stars per row
+  const starRows = starredRepos.map((r) => {
+    const filled = Math.max(1, Math.round((r.stars / maxStars) * STAR_COLS));
+    const empty = STAR_COLS - filled;
+    const starFill = "★".repeat(filled);
+    const starEmpty = "☆".repeat(empty);
+    return `<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--rule);">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;min-width:80px;flex-shrink:0;"><a href="${r.url}" style="color:var(--ink);text-decoration:none;">${r.name}</a></span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:1px;line-height:1;">${starFill}<span style="color:var(--rule);">${starEmpty}</span></span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;white-space:nowrap;">${r.stars.toLocaleString()}</span>
+    </div>`;
   }).join("");
 
   const starLeaderboard = starredRepos.length > 0 ? `
   <div style="margin-bottom:20px;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">github stars</div>
-    <svg width="100%" viewBox="0 0 ${starSvgW} ${starSvgH}" xmlns="http://www.w3.org/2000/svg">
-      <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#bbb" letter-spacing="1">REPO</text>
-      <text x="${starSvgW}" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#bbb" text-anchor="end" letter-spacing="1">STARS</text>
-      <line x1="0" y1="14" x2="${starSvgW}" y2="14" stroke="#ddd" stroke-width="0.5"/>
-      ${starBars}
-    </svg>
+    ${starRows}
   </div>` : "";
 
   // ── 4. Release timeline ───────────────────────────────────────────────────
