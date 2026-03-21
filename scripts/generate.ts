@@ -150,14 +150,33 @@ async function newspaperifyBuffer(buf: Buffer): Promise<string | null> {
   }
 }
 
-async function newspaperify(url: string): Promise<string | null> {
+const IMAGES_CACHE_DIR = path.join(import.meta.dir, "../.cache/images");
+await fs.mkdir(IMAGES_CACHE_DIR, { recursive: true });
+const IMAGES_RAW_BASE = "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images";
+
+/** Fetch a remote image, newspaperify it, save to .cache/images/<slug>.jpg, return GitHub raw URL. */
+async function newspaperify(url: string, cacheSlug: string): Promise<string | null> {
+  const cachePath = path.join(IMAGES_CACHE_DIR, `${cacheSlug}.jpg`);
+  // return cached URL if already on disk
+  try {
+    await fs.access(cachePath);
+    return `${IMAGES_RAW_BASE}/${cacheSlug}.jpg`;
+  } catch {}
   try {
     const res = await fetch(url, {
       headers: { Authorization: `token ${GH_TOKEN}` },
     });
     if (!res.ok) return null;
     const buf = Buffer.from(await res.arrayBuffer());
-    return newspaperifyBuffer(buf);
+    const processed = await sharp(buf)
+      .grayscale()
+      .normalise()
+      .modulate({ brightness: 0.92, saturation: 0 })
+      .sharpen({ sigma: 0.8 })
+      .jpeg({ quality: 82, progressive: true })
+      .toBuffer();
+    await fs.writeFile(cachePath, processed);
+    return `${IMAGES_RAW_BASE}/${cacheSlug}.jpg`;
   } catch (e) {
     console.warn(`  failed to process image ${url}: ${e}`);
     return null;
@@ -194,9 +213,10 @@ async function getReadmeImages(owner: string, repo: string): Promise<string[]> {
       if (!url.startsWith("http")) {
         resolved = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${url.replace(/^\.\//, "")}`;
       }
-      // fetch + process to newspaper style
-      const dataUri = await newspaperify(resolved);
-      if (dataUri) images.push(dataUri);
+      // fetch + process to newspaper style, cache to git
+      const slug = `${owner}-${repo}-${images.length}`.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+      const imgUrl = await newspaperify(resolved, slug);
+      if (imgUrl) images.push(imgUrl);
     }
 
     return images.slice(0, 1); // max 1 image per repo
