@@ -1053,7 +1053,8 @@ async function main() {
   const { from, to, noFetch, noLlm, noIllustrations, owner: ownerOverride, output: outputOverride, provider } = parseArgs();
 
   const owner = ownerOverride || config.owner;
-  const outputFile = outputOverride || config.output;
+  // Use owner-specific output file to prevent cross-user content bleed via shared index.html
+  const outputFile = outputOverride || (ownerOverride ? `${ownerOverride}.html` : config.output);
 
   const cacheKey = `${provider}_${owner}_${from.toISOString().slice(0, 10)}_${to.toISOString().slice(0, 10)}`;
   const cacheDir = join(ROOT, ".cache");
