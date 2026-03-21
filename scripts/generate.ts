@@ -545,20 +545,11 @@ function renderArticle(
       : "";
 
   const img = repoData.demoImages[imageIndex];
-  // AI illustrations are 16:9 — show at natural aspect ratio, capped
-  // README screenshots are arbitrary — crop to fixed height
-  const isDataUri = img?.startsWith("data:");
-  const isAiGenerated = isDataUri && !img?.startsWith("data:image/jpeg;base64,/9j/2wBD"); // rough heuristic: sharp-processed JPEGs start with /9j/2wBD
+  // All images: natural aspect ratio, full column width, no cropping
   const imageHtml = img
-    ? isDataUri && img.length > 50000
-      // AI-generated: show full 16:9, no cropping
-      ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;">
-          <img src="${img}" alt="illustration" style="width:100%;display:block;">
-        </div>`
-      // README screenshot: crop to fixed height
-      : `<div class="article-image" style="overflow:hidden;max-height:${level === "h1" ? "240px" : "180px"};border:1px solid var(--rule);margin:10px 0;">
-          <img src="${img}" alt="demo" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;">
-        </div>`
+    ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;">
+        <img src="${img}" alt="" style="width:100%;display:block;">
+      </div>`
     : "";
 
   return `
