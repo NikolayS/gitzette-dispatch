@@ -546,7 +546,9 @@ RULES — ATTRIBUTION:
 
 RULES — CONTENT:
 - For release articles: name specific features from the release notes. "Automatic warnings for seq scans on large tables" is better than "improved EXPLAIN". Use the actual feature names.
-- For PR articles: only reference PRs opened THIS WEEK (they are pre-filtered). Do not discuss old open PRs as if they are news.
+- For PR articles: only reference PRs merged THIS WEEK by @${owner} (they are pre-filtered). Do not discuss open PRs or open issues as if they are news — they are background context only.
+- Each article covers ONE logical topic. Do NOT bundle unrelated PRs into a single article just because they landed the same week. If 5 PRs cover 3 different areas, write 3 separate articles.
+- NEVER write a PENDING article about open issues in someone else's repo. Open issues are not @${owner}'s news unless they filed them this week or are the repo owner.
 - When mentioning specific PRs or issues, link them inline as HTML: <a href="URL">#NUMBER title</a>
 - article body is plain text with optional inline HTML links — do NOT use markdown
 - body text must never use markdown formatting (no **bold**, no backticks) — use plain prose only
@@ -578,7 +580,7 @@ Return a JSON object with this exact structure:
       "deck": "one-sentence italic subheading expanding on the headline",
       "body": "2-4 sentence article body. Reference specific features/PRs from the data. Mention pending work if notable.",
       "tag": "RELEASE | FEATURE | SECURITY | PENDING | COMMUNITY",
-      "illustrationPrompt": "short subject description for a purely visual editorial illustration (10-15 words). No text, signs, labels, or readable characters in the scene. ALWAYS provide this — it is required for every article. E.g. 'robot peering into a glowing cylinder' or 'lock and key with database cylinders stacked behind'.",
+      "illustrationPrompt": "simple concrete subject for a stark black-and-white woodcut (8-12 words). ONE clear focal object or scene. Avoid tangled cables, complex networks, abstract patterns. Good examples: 'a hand turning a large gear', 'two server towers facing each other', 'a padlock resting on a stack of disks'. No text, signs, or labels.",
       "illustrate": false
     }
   ],
