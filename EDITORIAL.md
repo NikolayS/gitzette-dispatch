@@ -39,14 +39,22 @@ Every article body must answer three questions:
 2. What specifically changed?
 3. What is the effect?
 
+**Rule: never open with "@author merged #NNN —".** That's the same boilerplate every time. A reader scanning three articles sees the identical sentence structure three times. Lead with the bug, the behavior, the failure mode — then attribute mid-sentence or after. The PR link belongs in the body, not the first word.
+
+- Bad opener: "@cyberdem0n merged #3453 — patroni used to pull the failover trigger..."
+- Good opener: "Patroni used to pull the failover trigger the moment a heartbeat gap appeared, even fleeting ones. @cyberdem0n's #3453 adds the backoff it needed."
+
 **Bad** (no facts, no mechanism):
 > @owner merged #123 which fixes a race condition that caused failures.
 
 **Also bad** (accurate but flat and lifeless):
 > @owner merged #123 — patroni previously demoted the primary immediately. The new backoff waits before acting.
 
-**Good** (before + mechanism + effect + light voice):
-> @owner merged [#3453](url) — patroni used to pull the failover trigger the moment a heartbeat gap appeared, even fleeting ones. The new primary race backoff waits out the gap before acting, so a 200ms network hiccup doesn't demote your primary. The fix sits in the leader race detection path, adding delay before declaring the leader dead.
+**Also bad** (boilerplate opener, same first words in every article):
+> @owner merged #3453 — [thing]. @owner merged #3562 — [thing]. @owner merged #3563 — [thing].
+
+**Good** (before + mechanism + effect + light voice, leads with the situation):
+> Patroni used to pull the failover trigger the moment a heartbeat gap appeared, even fleeting ones. @NikolayS's [#3453](url) adds a primary race backoff — now a 200ms network hiccup doesn't demote your primary. The delay sits in the leader race detection path, buying time before declaring the leader dead.
 
 **One metaphor per article max** — grounded in the actual technical reality, not decoration.
 
@@ -112,3 +120,4 @@ What makes them work: varied structure, specific mechanism, no cute wordplay tha
 - Illustrations: Gemini 2.5 Flash Image produces psychedelic tangles if style prompt is too vague — need explicit "NO tangled cables, NO swirls"
 - LLM was bundling unrelated PRs (threading compat + test cleanup) into one article — fixed with explicit rule
 - PENDING articles about open issues in foreign repos are filler — removed
+- cyberdem0n W13 review (2026-03-22): all 3 article openers started with "@cyberdem0n merged #XXXX —" — identical boilerplate, feels like a changelog bot. Rule added: lead with the situation/bug, attribute after.
