@@ -532,30 +532,32 @@ async function generateCopy(
 The newspaper covers his GitHub projects for the week of ${fromLabel} – ${toLabel}.
 
 RULES — STYLE:
-- Be creative with form: punchy headlines, dry wit, newspaper voice
-- Be strict with facts: never invent numbers, dates, features, or PR titles not in the data
-- Write like a real tech newspaper editor, not a PR person or a release notes bot
-- Headlines: specific and surprising, not generic. Bad: "rpg gets new features". Good: "rpg teaches EXPLAIN to read its own X-rays"
-- Short sentences. Active voice. No hedge words.
+- Punchy headlines, dry wit, newspaper voice — but technically precise
+- Headlines must name the specific mechanism, not the outcome. Bad: "patroni prevents false failovers". Good: "patroni adds backoff before demoting a primary in a leader race"
+- Short sentences. Active voice. No hedge words. No drama.
 - No emoji anywhere
 - Sentence case for headlines (not Title Case)
 
 RULES — ATTRIBUTION:
 - Always refer to the author as "@${owner}" — never by full name, "the developer", "the author"
-- Repo/project names are ALWAYS lowercase, no exceptions, even at sentence start: "rpg" not "RPG", "sqlever" not "Sqlever", "pg_ash" not "PG_ash", "leandex" not "Leandex"
+- Repo/project names are ALWAYS lowercase: "rpg" not "RPG", "pg_ash" not "PG_ash"
 
-RULES — CONTENT:
-- For release articles: name specific features from the release notes. "Automatic warnings for seq scans on large tables" is better than "improved EXPLAIN". Use the actual feature names.
-- For PR articles: only reference PRs merged THIS WEEK by @${owner} (they are pre-filtered). Do not discuss open PRs or open issues as if they are news — they are background context only.
-- Each article covers ONE logical topic. Do NOT bundle unrelated PRs into a single article just because they landed the same week. If 5 PRs cover 3 different areas, write 3 separate articles.
-- NEVER write a PENDING article about open issues in someone else's repo. Open issues are not @${owner}'s news unless they filed them this week or are the repo owner.
-- When mentioning specific PRs or issues, link them inline as HTML: <a href="URL">#NUMBER title</a>
-- article body is plain text with optional inline HTML links — do NOT use markdown
-- body text must never use markdown formatting (no **bold**, no backticks) — use plain prose only
+RULES — CONTENT — THIS IS CRITICAL:
+- Body copy must explain the actual technical change: what was broken or missing before, what specifically changed, what the effect is. Not "improves reliability" — explain HOW.
+- Bad body: "@${owner} merged #123 which fixes a race condition that caused failures." 
+- Good body: "@${owner} merged <a href='URL'>#123</a> — when two nodes race for leadership, patroni previously demoted the primary immediately on any heartbeat gap. The new backoff waits N seconds before acting, preventing spurious demotions during transient network hiccups."
+- Use the PR title, commit messages, and release notes in the data to extract real details. If the data says "fix: don't reload config during custom bootstrap", explain what custom bootstrap is and why reloading config during it was harmful.
+- Never use vague dramatic language: no "haunted", "plagued", "for years", "momentarily silent". State facts.
+- Each article covers ONE logical topic. Do NOT bundle unrelated PRs. If #3526 is threading compat and #3570 is removing time.sleep() from tests — those are two different articles or #3570 is skipped as too minor.
+- NEVER write PENDING articles about open issues in someone else's repo.
+- When mentioning PRs, link inline as HTML: <a href="URL">#NUMBER short-title</a>
+- Body is plain text + optional inline HTML links. No markdown, no **bold**, no backticks.
+- If a PR title or detail seems ambiguous or inconsistent with the repo's naming conventions, describe what the data says — do not invent class names or method names not present in the data.
 
 RULES — STRUCTURE:
-- Order by newsworthiness: releases first, then features, security, pending, community
-- editionNote: punchy 1-sentence summary of the whole week (e.g. "Four releases, one leaked key, and a migration tool that arrived fully armed.")
+- Order by newsworthiness: releases first, then significant features, security, minor fixes, pending
+- Skip articles for PRs that are purely test/CI changes (removing time.sleep, fixing flaky tests) unless they're the only activity
+- editionNote: one precise sentence (e.g. "Eight PRs: one race condition fixed, four threading patches, two etcd error handlers, one config guard.")
 - closingNote: dry one-liner, like a newspaper colophon
 
 AVAILABLE REPOS (use ONLY these exact names in the "repo" field — no others):
