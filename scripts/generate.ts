@@ -12,7 +12,14 @@
  *   ANTHROPIC_API_KEY — required (copy generation)
  */
 
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "fs";
+import { join, dirname } from "path";
+
+// Load editorial style guide (EDITORIAL.md) — injected into LLM prompt at runtime
+const EDITORIAL_PATH = join(dirname(import.meta.dir), "EDITORIAL.md");
+const EDITORIAL_GUIDE = existsSync(EDITORIAL_PATH)
+  ? readFileSync(EDITORIAL_PATH, "utf8")
+  : "";
 import fs from "fs/promises";
 import { join, dirname } from "path";
 import path from "path";
@@ -527,39 +534,21 @@ async function generateCopy(
 
   const quietWeekBlock = quietWeekNote ? `\n${quietWeekNote}\n` : "";
 
+  // Read EDITORIAL.md fresh each run so edits take effect without code changes
+  const editorialGuide = existsSync(EDITORIAL_PATH)
+    ? readFileSync(EDITORIAL_PATH, "utf8")
+    : EDITORIAL_GUIDE;
+
   const prompt = `You are writing the editorial copy for a weekly engineering newspaper called "the dispatch" — a digest of GitHub activity by @${owner}.
 
 The newspaper covers his GitHub projects for the week of ${fromLabel} – ${toLabel}.
 
-RULES — STYLE:
-- Newspaper voice: sharp, dry, a little wit — but technically precise. Think a good Hacker News comment written by someone who actually read the code.
-- Headlines: specific mechanism + personality. Vary the structure — not every headline should start with "[project] [verb]s [noun]". Mix in questions, observations, consequences. Bad: "patroni prevents false failovers" (vague). Also bad: "patroni learns to count to three before pulling the failover trigger" (too cute for serious HA work — engineers will roll their eyes). Good: "a 200ms blip was enough to lose a primary — not anymore" or "the backoff patroni needed to stop over-eager failovers"
-- One good metaphor per article max — grounded in actual technical reality, not decoration.
-- Short sentences. Active voice. No hedge words. No exclamation marks. No emoji.
-- Sentence case (not Title Case)
+EDITORIAL STYLE GUIDE — follow every rule in this document strictly:
+${editorialGuide}
 
-RULES — ATTRIBUTION:
+ATTRIBUTION RULES:
 - Always refer to the author as "@${owner}" — never by full name, "the developer", "the author"
 - Repo/project names are ALWAYS lowercase: "rpg" not "RPG", "pg_ash" not "PG_ash"
-
-RULES — CONTENT — THIS IS CRITICAL:
-- Body copy must explain the actual technical change: what was broken or missing before, what specifically changed, what the effect is. Not "improves reliability" — explain HOW.
-- Bad body: "@${owner} merged #123 which fixes a race condition that caused failures." (no facts, no mechanism)
-- Also bad: "@${owner} merged #123 — patroni previously demoted the primary immediately. The new backoff waits before acting." (accurate but flat and lifeless)
-- Good body: "@${owner} merged <a href='URL'>#123</a> — patroni used to pull the failover trigger the moment a heartbeat gap appeared, even transient ones. Now it waits out the gap before acting, so a 200ms network hiccup doesn't cost you a primary. The fix sits in the leader race detection path."
-- Use PR titles, descriptions, and release notes to extract real details. Explain what was broken, what changed, what the effect is — with a light touch of voice.
-- Avoid vague dramatic filler: no "haunted", "plagued", "for years", "momentarily silent", "in the wild". Those are clichés that signal the author didn't understand the code.
-- Each article covers ONE logical topic. Do NOT bundle unrelated PRs. If #3526 is threading compat and #3570 is removing time.sleep() from tests — those are two different articles or #3570 is skipped as too minor.
-- NEVER write PENDING articles about open issues in someone else's repo.
-- When mentioning PRs, link inline as HTML: <a href="URL">#NUMBER short-title</a>
-- Body is plain text + optional inline HTML links. No markdown, no **bold**, no backticks.
-- If a PR title or detail seems ambiguous or inconsistent with the repo's naming conventions, describe what the data says — do not invent class names or method names not present in the data.
-
-RULES — STRUCTURE:
-- Order by newsworthiness: releases first, then significant features, security, minor fixes, pending
-- Skip articles for PRs that are purely test/CI changes (removing time.sleep, fixing flaky tests) unless they're the only activity
-- editionNote: one precise sentence (e.g. "Eight PRs: one race condition fixed, four threading patches, two etcd error handlers, one config guard.")
-- closingNote: dry one-liner, like a newspaper colophon
 
 AVAILABLE REPOS (use ONLY these exact names in the "repo" field — no others):
 ${reposData.map(r => `- ${r.name}${r.description ? ` (${r.description.slice(0,80)})` : ""}`).join("\n")}
