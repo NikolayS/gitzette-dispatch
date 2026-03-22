@@ -532,10 +532,10 @@ async function generateCopy(
 The newspaper covers his GitHub projects for the week of ${fromLabel} – ${toLabel}.
 
 RULES — STYLE:
-- Punchy headlines, dry wit, newspaper voice — but technically precise
-- Headlines must name the specific mechanism, not the outcome. Bad: "patroni prevents false failovers". Good: "patroni adds backoff before demoting a primary in a leader race"
-- Short sentences. Active voice. No hedge words. No drama.
-- No emoji anywhere
+- Newspaper voice: sharp, dry, a little wit — but technically precise. Think a good Hacker News comment written by someone who actually read the code.
+- Headlines must name the specific mechanism with personality. Bad: "patroni prevents false failovers". Also bad: "patroni adds backoff before demoting a primary in a leader race" (too dry). Good: "patroni learns to count to three before pulling the failover trigger"
+- Short sentences. Active voice. One good metaphor per article max — grounded in the actual technical reality, not decoration.
+- No emoji. No exclamation marks. No hedge words.
 - Sentence case for headlines (not Title Case)
 
 RULES — ATTRIBUTION:
@@ -544,10 +544,11 @@ RULES — ATTRIBUTION:
 
 RULES — CONTENT — THIS IS CRITICAL:
 - Body copy must explain the actual technical change: what was broken or missing before, what specifically changed, what the effect is. Not "improves reliability" — explain HOW.
-- Bad body: "@${owner} merged #123 which fixes a race condition that caused failures." 
-- Good body: "@${owner} merged <a href='URL'>#123</a> — when two nodes race for leadership, patroni previously demoted the primary immediately on any heartbeat gap. The new backoff waits N seconds before acting, preventing spurious demotions during transient network hiccups."
-- Use the PR title, commit messages, and release notes in the data to extract real details. If the data says "fix: don't reload config during custom bootstrap", explain what custom bootstrap is and why reloading config during it was harmful.
-- Never use vague dramatic language: no "haunted", "plagued", "for years", "momentarily silent". State facts.
+- Bad body: "@${owner} merged #123 which fixes a race condition that caused failures." (no facts, no mechanism)
+- Also bad: "@${owner} merged #123 — patroni previously demoted the primary immediately. The new backoff waits before acting." (accurate but flat and lifeless)
+- Good body: "@${owner} merged <a href='URL'>#123</a> — patroni used to pull the failover trigger the moment a heartbeat gap appeared, even transient ones. Now it waits out the gap before acting, so a 200ms network hiccup doesn't cost you a primary. The fix sits in the leader race detection path."
+- Use PR titles, descriptions, and release notes to extract real details. Explain what was broken, what changed, what the effect is — with a light touch of voice.
+- Avoid vague dramatic filler: no "haunted", "plagued", "for years", "momentarily silent", "in the wild". Those are clichés that signal the author didn't understand the code.
 - Each article covers ONE logical topic. Do NOT bundle unrelated PRs. If #3526 is threading compat and #3570 is removing time.sleep() from tests — those are two different articles or #3570 is skipped as too minor.
 - NEVER write PENDING articles about open issues in someone else's repo.
 - When mentioning PRs, link inline as HTML: <a href="URL">#NUMBER short-title</a>
