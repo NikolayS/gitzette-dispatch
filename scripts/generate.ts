@@ -495,7 +495,8 @@ async function generateCopy(
   to: Date,
   owner: string = "NikolayS",
   knownIncidents: string[] = [],
-  quietWeekNote: string | null = null
+  quietWeekNote: string | null = null,
+  correctionNote: string | null = null
 ): Promise<{
   masthead: string;
   tagline: string;
@@ -560,6 +561,7 @@ ${dataJson}
 
 ${knownIncidents.length ? `KNOWN INCIDENTS THIS WEEK (confirmed by the author — must include as articles):\n${knownIncidents.map((s, i) => `${i + 1}. ${s}`).join("\n")}` : ""}
 ${quietWeekBlock}
+${correctionNote ? `\n${correctionNote}\n` : ""}
 Return a JSON object with this exact structure:
 {
   "masthead": "the dispatch",
@@ -616,6 +618,122 @@ Return ONLY the JSON object, no markdown fences.`;
     }
     throw new Error(`LLM returned non-JSON: ${text.slice(0, 300)}`);
   }
+}
+
+// ── post-generation evals ─────────────────────────────────────────────────────
+
+type EvalResult = { pass: boolean; complaints: string[] };
+
+async function evalCopy(copy: any, evalType: "kukushkin" | "anti-boring"): Promise<EvalResult> {
+  const summary = copy.articles.map((a: any) =>
+    `HEADLINE: ${a.headline}\nDECK: ${a.deck}\nBODY (first 2 sentences): ${a.body.replace(/<[^>]+>/g, "").split(/\. /).slice(0, 2).join(". ")}.`
+  ).join("\n\n");
+
+  const prompts: Record<string, string> = {
+    kukushkin: `You are a skeptical senior engineer reviewing AI-generated engineering newsletter copy for quality and accuracy. 
+
+Evaluate this dispatch copy for ANTI-SLOP quality (the "Kukushkin test"):
+- Does each headline name the actual mechanism, not just the outcome?
+- Does each body explain what was broken BEFORE, what specifically CHANGED, and what the EFFECT is?
+- Are there any vague drama words or colloquialisms: "haunted", "plagued", "momentarily silent", "in the wild", "for years", "into the dark", "trip", "fights", "land somewhere safe"?
+- Within a single article, are unrelated PRs bundled? (Note: having multiple articles in one dispatch is correct and expected — do NOT flag this)
+- Are there any invented technical terms, class names, or method names that seem suspicious?
+- Is any article a PENDING piece about open issues in someone else's repo?
+
+Copy to evaluate:
+${summary}
+
+Respond with JSON only: {"pass": true/false, "complaints": ["specific complaint 1", "specific complaint 2"]}
+Pass if there are no serious problems. Limit to max 4 most important complaints. Be specific about which headline or sentence fails.`,
+
+    "anti-boring": `You are a sharp tech editor evaluating whether an engineering newsletter is worth reading.
+
+Evaluate this dispatch copy for ENGAGEMENT (the anti-boring test):
+- Do headlines vary in structure, or do they all follow the same "[project] [verb]s [noun]" pattern?
+- Is there at least one line a senior engineer would forward to a colleague?
+- Does it read like a person wrote it, or like a template executed?
+- Is the closing note dry and memorable, or generic?
+- Is there any voice or personality, or is it just a changelog with punctuation?
+
+Copy to evaluate:
+${summary}
+Closing note: ${copy.closingNote}
+
+Respond with JSON only: {"pass": true/false, "complaints": ["specific complaint 1", "specific complaint 2"]}
+Pass if there is genuine voice and at least some variety. Be specific.`,
+  };
+
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${OPENROUTER_KEY}`, "content-type": "application/json" },
+    body: JSON.stringify({
+      model: "anthropic/claude-haiku-4-5",
+      max_tokens: 500,
+      messages: [{ role: "user", content: prompts[evalType] }],
+    }),
+  });
+
+  if (!res.ok) return { pass: true, complaints: [] }; // don't block on eval failure
+  const data: any = await res.json();
+  const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
+  try {
+    const match = raw.match(/\{[\s\S]+\}/);
+    return match ? JSON.parse(match[0]) : { pass: true, complaints: [] };
+  } catch {
+    return { pass: true, complaints: [] };
+  }
+}
+
+async function runEvals(
+  copy: any,
+  reposData: RepoData[],
+  from: Date,
+  to: Date,
+  owner: string,
+  incidents: string[],
+  quietWeekNote?: string
+): Promise<any> {
+  if (copy.articles.length === 0) return copy; // nothing to eval on quiet weeks
+
+  console.log("running evals...");
+  const [kukushkin, antiBoring] = await Promise.all([
+    evalCopy(copy, "kukushkin"),
+    evalCopy(copy, "anti-boring"),
+  ]);
+
+  const allComplaints: string[] = [];
+  if (!kukushkin.pass) {
+    console.log(`  ✗ kukushkin test FAILED:`);
+    kukushkin.complaints.forEach(c => console.log(`    - ${c}`));
+    allComplaints.push(...kukushkin.complaints.map(c => `[SLOP] ${c}`));
+  } else {
+    console.log(`  ✓ kukushkin test passed`);
+  }
+
+  if (!antiBoring.pass) {
+    console.log(`  ✗ anti-boring test FAILED:`);
+    antiBoring.complaints.forEach(c => console.log(`    - ${c}`));
+    allComplaints.push(...antiBoring.complaints.map(c => `[BORING] ${c}`));
+  } else {
+    console.log(`  ✓ anti-boring test passed`);
+  }
+
+  if (allComplaints.length === 0) return copy; // both passed — done
+
+  // One retry with complaints injected
+  console.log(`  → retrying copy with eval feedback...`);
+  const correctionNote = `CORRECTION REQUIRED — previous attempt failed editorial review:\n${allComplaints.map((c, i) => `${i + 1}. ${c}`).join("\n")}\n\nFix ALL of the above. Do not repeat the same mistakes.`;
+  const retryCopy = await generateCopy(reposData, from, to, owner, incidents, quietWeekNote, correctionNote);
+
+  // Run evals once more — log but don't retry again
+  const [k2, ab2] = await Promise.all([
+    evalCopy(retryCopy, "kukushkin"),
+    evalCopy(retryCopy, "anti-boring"),
+  ]);
+  console.log(`  retry kukushkin: ${k2.pass ? "✓ passed" : "✗ still failing — proceeding anyway"}`);
+  console.log(`  retry anti-boring: ${ab2.pass ? "✓ passed" : "✗ still failing — proceeding anyway"}`);
+
+  return retryCopy;
 }
 
 // ── data graphics ─────────────────────────────────────────────────────────────
@@ -1195,7 +1313,8 @@ async function main() {
     console.log(`\ngenerating copy via LLM (${config.model})...`);
     // only inject knownIncidents for the configured owner, not arbitrary --owner overrides
     const incidents = (owner === config.owner) ? (config.knownIncidents || []) : [];
-    copy = await generateCopy(reposData, from, to, owner, incidents, quietWeekNote);
+    const rawCopy = await generateCopy(reposData, from, to, owner, incidents, quietWeekNote);
+    copy = await runEvals(rawCopy, reposData, from, to, owner, incidents, quietWeekNote ?? undefined);
     await Bun.write(copyFile, JSON.stringify(copy, null, 2));
   }
 
