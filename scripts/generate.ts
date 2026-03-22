@@ -674,14 +674,34 @@ Return ONLY the JSON object, no markdown fences.`;
   const text = raw.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "");
 
   try {
-    return JSON.parse(text);
+    return sanitizeCopy(JSON.parse(text));
   } catch {
     const match = text.match(/\{[\s\S]+\}/);
     if (match) {
-      try { return JSON.parse(match[0]); } catch {}
+      try { return sanitizeCopy(JSON.parse(match[0])); } catch {}
     }
     throw new Error(`LLM returned non-JSON: ${text.slice(0, 300)}`);
   }
+}
+
+// ── copy sanitizer — convert LLM markdown slip-ups to HTML ───────────────────
+
+function sanitizeCopy(copy: any): any {
+  if (!copy?.articles) return copy;
+  copy.articles = copy.articles.map((a: any) => {
+    if (a.body) {
+      // Convert markdown links [text](url) → <a href="url">text</a>
+      a.body = a.body.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2">$1</a>');
+      // Strip markdown bold **text** → text
+      a.body = a.body.replace(/\*\*([^*]+)\*\*/g, '$1');
+      // Strip markdown italic *text* (but not opening * in sentences)
+      a.body = a.body.replace(/\*([^*\n]+)\*/g, '$1');
+      // Strip backtick code that wasn't in a <code> tag already
+      a.body = a.body.replace(/`([^`]+)`/g, '<code>$1</code>');
+    }
+    return a;
+  });
+  return copy;
 }
 
 // ── post-generation evals ─────────────────────────────────────────────────────
@@ -703,6 +723,7 @@ Evaluate this dispatch copy for ANTI-SLOP quality (the "Kukushkin test"):
 - Within a single article, are unrelated PRs bundled? (Note: having multiple articles in one dispatch is correct and expected — do NOT flag this)
 - Are there any invented technical terms, class names, or method names that seem suspicious?
 - Is any article a PENDING piece about open issues in someone else's repo?
+- Does any body contain raw markdown syntax like [text](url) or **bold** instead of HTML?
 
 Copy to evaluate:
 ${summary}
@@ -1372,7 +1393,7 @@ async function main() {
 
   if (noLlm && existsSync(copyFile)) {
     console.log(`\nusing cached copy from ${copyFile}`);
-    copy = JSON.parse(readFileSync(copyFile, "utf8"));
+    copy = sanitizeCopy(JSON.parse(readFileSync(copyFile, "utf8")));
   } else {
     console.log(`\ngenerating copy via LLM (${config.model})...`);
     // only inject knownIncidents for the configured owner, not arbitrary --owner overrides
