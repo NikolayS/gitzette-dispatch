@@ -533,10 +533,10 @@ The newspaper covers his GitHub projects for the week of ${fromLabel} – ${toLa
 
 RULES — STYLE:
 - Newspaper voice: sharp, dry, a little wit — but technically precise. Think a good Hacker News comment written by someone who actually read the code.
-- Headlines must name the specific mechanism with personality. Bad: "patroni prevents false failovers". Also bad: "patroni adds backoff before demoting a primary in a leader race" (too dry). Good: "patroni learns to count to three before pulling the failover trigger"
-- Short sentences. Active voice. One good metaphor per article max — grounded in the actual technical reality, not decoration.
-- No emoji. No exclamation marks. No hedge words.
-- Sentence case for headlines (not Title Case)
+- Headlines: specific mechanism + personality. Vary the structure — not every headline should start with "[project] [verb]s [noun]". Mix in questions, observations, consequences. Bad: "patroni prevents false failovers" (vague). Also bad: "patroni learns to count to three before pulling the failover trigger" (too cute for serious HA work — engineers will roll their eyes). Good: "a 200ms blip was enough to lose a primary — not anymore" or "the backoff patroni needed to stop over-eager failovers"
+- One good metaphor per article max — grounded in actual technical reality, not decoration.
+- Short sentences. Active voice. No hedge words. No exclamation marks. No emoji.
+- Sentence case (not Title Case)
 
 RULES — ATTRIBUTION:
 - Always refer to the author as "@${owner}" — never by full name, "the developer", "the author"
