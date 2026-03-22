@@ -484,6 +484,68 @@ async function generateIllustration(subject: string): Promise<string | null> {
   }
 }
 
+// ── feedback examples ─────────────────────────────────────────────────────────
+
+type ExampleArticle = { headline: string; body: string };
+
+const EXAMPLES_CACHE_PATH = path.join(ROOT, ".cache/examples.json");
+const EXAMPLES_API_URL = "https://gitzette.online/review/examples";
+
+/**
+ * Fetch gold/bad article examples from the gitzette feedback API.
+ * Falls back to .cache/examples.json if the API is unavailable.
+ * Returns { gold: [], bad: [] } on any failure (non-blocking).
+ */
+async function fetchExamples(): Promise<{ gold: ExampleArticle[]; bad: ExampleArticle[] }> {
+  // Try local cache first (written by previous successful fetch)
+  let cached: { gold: ExampleArticle[]; bad: ExampleArticle[] } | null = null;
+  try {
+    const raw = await fs.readFile(EXAMPLES_CACHE_PATH, "utf8");
+    cached = JSON.parse(raw);
+  } catch {
+    // no cache yet
+  }
+
+  try {
+    const res = await fetch(EXAMPLES_API_URL, { signal: AbortSignal.timeout(8000) });
+    if (res.ok) {
+      const data = await res.json() as { gold: ExampleArticle[]; bad: ExampleArticle[] };
+      if (Array.isArray(data.gold) && Array.isArray(data.bad)) {
+        // Persist to cache
+        await fs.mkdir(path.dirname(EXAMPLES_CACHE_PATH), { recursive: true });
+        await fs.writeFile(EXAMPLES_CACHE_PATH, JSON.stringify(data, null, 2), "utf8");
+        return data;
+      }
+    }
+  } catch (e) {
+    console.warn(`fetchExamples: API unavailable (${e}), using cache`);
+  }
+
+  return cached ?? { gold: [], bad: [] };
+}
+
+function buildExamplesBlock(gold: ExampleArticle[], bad: ExampleArticle[]): string {
+  if (gold.length === 0 && bad.length === 0) return "";
+  const lines: string[] = [""];
+  if (gold.length > 0) {
+    lines.push("GOLD EXAMPLES (approved by humans — imitate this quality and voice):");
+    for (const a of gold) {
+      lines.push(`HEADLINE: ${a.headline}`);
+      lines.push(`BODY: ${a.body}`);
+      lines.push("");
+    }
+  }
+  if (bad.length > 0) {
+    lines.push("BAD EXAMPLES (rejected by humans — never write like this):");
+    for (const a of bad) {
+      lines.push(`HEADLINE: ${a.headline}`);
+      lines.push(`BODY: ${a.body}`);
+      lines.push("");
+    }
+  }
+  return lines.join("\n");
+}
+
 // ── llm copy ─────────────────────────────────────────────────────────────────
 
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
@@ -496,7 +558,8 @@ async function generateCopy(
   owner: string = "NikolayS",
   knownIncidents: string[] = [],
   quietWeekNote: string | null = null,
-  correctionNote: string | null = null
+  correctionNote: string | null = null,
+  examples: { gold: ExampleArticle[]; bad: ExampleArticle[] } = { gold: [], bad: [] }
 ): Promise<{
   masthead: string;
   tagline: string;
@@ -534,6 +597,7 @@ async function generateCopy(
   const toLabel = to.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   const quietWeekBlock = quietWeekNote ? `\n${quietWeekNote}\n` : "";
+  const examplesBlock = buildExamplesBlock(examples.gold, examples.bad);
 
   // Read EDITORIAL.md fresh each run so edits take effect without code changes
   const editorialGuide = existsSync(EDITORIAL_PATH)
@@ -561,7 +625,7 @@ ${dataJson}
 
 ${knownIncidents.length ? `KNOWN INCIDENTS THIS WEEK (confirmed by the author — must include as articles):\n${knownIncidents.map((s, i) => `${i + 1}. ${s}`).join("\n")}` : ""}
 ${quietWeekBlock}
-${correctionNote ? `\n${correctionNote}\n` : ""}
+${correctionNote ? `\n${correctionNote}\n` : ""}${examplesBlock}
 Return a JSON object with this exact structure:
 {
   "masthead": "the dispatch",
@@ -1313,7 +1377,12 @@ async function main() {
     console.log(`\ngenerating copy via LLM (${config.model})...`);
     // only inject knownIncidents for the configured owner, not arbitrary --owner overrides
     const incidents = (owner === config.owner) ? (config.knownIncidents || []) : [];
-    const rawCopy = await generateCopy(reposData, from, to, owner, incidents, quietWeekNote);
+    // fetch human-approved/rejected examples to guide the LLM
+    const examples = await fetchExamples();
+    if (examples.gold.length > 0 || examples.bad.length > 0) {
+      console.log(`  injecting ${examples.gold.length} gold + ${examples.bad.length} bad examples into prompt`);
+    }
+    const rawCopy = await generateCopy(reposData, from, to, owner, incidents, quietWeekNote, null, examples);
     copy = await runEvals(rawCopy, reposData, from, to, owner, incidents, quietWeekNote ?? undefined);
     await Bun.write(copyFile, JSON.stringify(copy, null, 2));
   }
