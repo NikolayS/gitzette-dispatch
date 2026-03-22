@@ -7,7 +7,7 @@
   "imageGen": {
     "provider": "google",
     "model": "imagen-4.0-fast-generate-001",
-    "style": "Black and white woodcut print, 1920s German Expressionist style. Bold stark lines, high contrast, no gray tones — only pure black and pure white. Clean geometric shapes. Minimal detail. Editorial newspaper illustration. Absolutely NO text, words, labels, letters, numbers, signs, or readable characters anywhere in the image. NO psychedelic patterns, NO tangled cables, NO decorative swirls. Simple, readable composition with clear subject. Subject: "
+    "style": "Vintage newspaper engraving illustration, 1920s editorial style. Soft ink wash with fine cross-hatching and midtones — not harsh contrast, not pure black and white. Aged newsprint feel, warm gray tones, gentle shading. Clean readable composition with one clear focal subject. NO text, words, labels, letters, numbers, or signs anywhere. NO psychedelic patterns, NO tangled cables, NO decorative swirls. Simple subject, editorial mood. Subject: "
   },
   "output": "index.html",
   "knownIncidents": [
