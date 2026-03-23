@@ -1113,8 +1113,8 @@ function renderArticle(
   const img = repoData.demoImages[imageIndex];
   // All images: natural aspect ratio, full column width, no cropping
   const imageHtml = img
-    ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:320px;">
-        <img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;max-height:320px;object-fit:cover;display:block;">
+    ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;">
+        <img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;display:block;">
       </div>`
     : "";
 
