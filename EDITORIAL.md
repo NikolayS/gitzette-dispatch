@@ -105,8 +105,13 @@ Style: vintage newspaper engraving, 1920s editorial. Soft ink wash, fine cross-h
 Subject rules:
 - ONE clear focal object or scene — simple, readable at small size
 - Good: "a hand turning a large gear", "two server towers facing each other", "a padlock on a stack of disks"
-- Bad: tangled cables, complex network diagrams, abstract patterns, psychedelic swirls
+- Bad: tangled cables, complex network diagrams, abstract patterns, psychedelic swirls, sound waves, signal icons, wifi symbols, concentric circles, dotted lines
 - No text, words, labels, signs, or numbers anywhere in the image
+- No abstract concepts — always a physical object a 1920s engraver could actually draw
+- Bad illustrationPrompt: "a wireless speaker icon with dotted signal lines splitting into two paths" — too abstract, produces wave patterns
+- Bad illustrationPrompt: "audio routing between sinks" — abstract process, not a physical object
+- Good illustrationPrompt: "a hand adjusting a rotary dial on a wooden radio cabinet" — concrete, physical, engravable
+- Good illustrationPrompt: "two mechanical switches on a control panel, one flipped" — concrete, simple focal object
 
 When to illustrate:
 - LLM picks at most 2 articles per dispatch that most benefit visually

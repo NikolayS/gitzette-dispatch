@@ -1161,6 +1161,12 @@ async function buildHtml(
     const leadArticle = copy.articles[0];
     if (leadArticle && !llmPicked.find((a: any) => a.headline === leadArticle.headline)) {
       leadArticle.illustrate = true; // force lead to be illustrated
+      // Only use LLM's illustrationPrompt if it doesn't contain abstract/signal keywords
+      const abstractKeywords = /icon|signal|wave|wireless|dotted|line|symbol|abstract|routing|flow|path|split/i;
+      if (!leadArticle.illustrationPrompt || abstractKeywords.test(leadArticle.illustrationPrompt)) {
+        // Generate a concrete fallback from the headline
+        leadArticle.illustrationPrompt = `a single mechanical object related to "${leadArticle.headline.slice(0, 40)}", drawn as a 1920s technical engraving — one clear physical object, no abstract symbols`;
+      }
     }
     const toIllustrate = copy.articles.filter((a: any) => a.illustrate === true).slice(0, 2);
     if (toIllustrate.length > 0) {
