@@ -166,54 +166,56 @@ async function fetchIssueContext(repoOwner: string, repoName: string, issueNumbe
 
 interface ArticleIssueContext {
   repo: string;        // repo short name
-  prNumber: number;
   issueContexts: string[]; // one string per linked issue
 }
 
 /**
- * After LLM picks articles, fetch PR bodies + linked issue context for each chosen PR.
- * Only fetches for the selected articles (efficiency: skip PRs that got cut).
+ * After LLM picks articles, fetch linked issue context for chosen repos.
+ * Deduplicates by repo — fetches each repo's PR bodies once regardless of
+ * how many articles reference it. Only fetches for repos that appear in
+ * the chosen article list (efficiency: skip repos that got cut entirely).
  */
 async function enrichArticlesWithIssueContext(
   articles: Array<{ repo: string; headline: string }>,
   reposData: RepoData[],
   repoOwner: string  // GitHub owner of the repos (e.g. "cyberdem0n")
 ): Promise<ArticleIssueContext[]> {
+  // Deduplicate repos — one fetch pass per repo, not per article
+  const chosenRepoNames = [...new Set(articles.map(a => a.repo))];
   const results: ArticleIssueContext[] = [];
 
-  for (const article of articles) {
-    const repoData = reposData.find(r => r.name === article.repo);
+  for (const repoName of chosenRepoNames) {
+    const repoData = reposData.find(r => r.name === repoName);
     if (!repoData) continue;
 
-    // Find which PR(s) this article is likely about — match by title similarity or just take top merged PRs
     const candidatePRs = repoData.mergedPRs.slice(0, 10);
     if (candidatePRs.length === 0) continue;
 
-    // Fetch PR bodies in parallel (they may already be in repoData if we cached them)
+    // PR bodies are already in cache from getRepoData; fetchPrBody only as fallback
     const prBodies = await Promise.all(
       candidatePRs.map(async pr => {
         const body = pr.body ?? await fetchPrBody(repoOwner, repoData.name, pr.number);
-        return { pr, body };
+        return body;
       })
     );
 
-    // Collect linked issue numbers across all candidate PRs
+    // Collect all linked issue numbers across this repo's candidate PRs
     const linkedIssueNums = new Set<number>();
-    for (const { body } of prBodies) {
+    for (const body of prBodies) {
       for (const n of parseLinkedIssues(body)) linkedIssueNums.add(n);
     }
 
     if (linkedIssueNums.size === 0) continue;
 
-    // Fetch issue context (cap at 3 issues per article to control cost)
-    const issueContexts: string[] = [];
-    for (const num of Array.from(linkedIssueNums).slice(0, 3)) {
-      const ctx = await fetchIssueContext(repoOwner, repoData.name, num);
-      if (ctx) issueContexts.push(ctx);
-    }
+    // Fetch issue context in parallel (cap at 5 issues per repo)
+    const issueContexts = (await Promise.all(
+      Array.from(linkedIssueNums).slice(0, 5).map(num =>
+        fetchIssueContext(repoOwner, repoData.name, num)
+      )
+    )).filter(Boolean);
 
     if (issueContexts.length > 0) {
-      results.push({ repo: article.repo, prNumber: candidatePRs[0].number, issueContexts });
+      results.push({ repo: repoName, issueContexts });
     }
   }
 
