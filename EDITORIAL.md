@@ -42,7 +42,12 @@ Every article body must answer three questions:
 **Rule: never open with "@author merged #NNN —".** That's the same boilerplate every time. A reader scanning three articles sees the identical sentence structure three times. Lead with the bug, the behavior, the failure mode — then attribute mid-sentence or after. The PR link belongs in the body, not the first word.
 
 - Bad opener: "@cyberdem0n merged #3453 — patroni used to pull the failover trigger..."
+- Also bad opener: "#3562 adds proper handling for..." — leading with a PR number is the same problem, just without the author name. The reader doesn't know what #3562 is.
+- Also bad opener: "#3569 reorders shutdown sequence..." — same issue.
 - Good opener: "Patroni used to pull the failover trigger the moment a heartbeat gap appeared, even fleeting ones. @cyberdem0n's #3453 adds the backoff it needed."
+- Good opener: "The Unavailable exception from etcd v3 was propagating uncaught, leaving patroni blind to cluster state. #3562 catches it now."
+
+**The test:** read the first 8 words of every article opener. If any of them start with `#`, `@`, or a PR number — rewrite. Every article must open with a situation, a behavior, or a fact about the software.
 
 **Bad** (no facts, no mechanism):
 > @owner merged #123 which fixes a race condition that caused failures.
