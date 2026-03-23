@@ -60,6 +60,18 @@ Every article body must answer three questions:
 
 ---
 
+## Finding the Angle
+
+Every article needs a hook — the thing that makes a reader pause. Ask: what's surprising, counterintuitive, or reveals something about how the software works that most users don't know?
+
+- A static library build isn't news. The fact that it unlocks embedding ghostty in other apps — that's the angle.
+- Nine AUR sync commits aren't news. Skip it or merge it into a one-liner in the closing note.
+- VT state persistence sounds dry. The angle: your terminal was silently losing track of escape sequences mid-stream. Now it doesn't.
+
+**If you can't find an angle — the article shouldn't exist.** A quiet week with nothing interesting is better covered by the closing note than by stretching bot-opened PRs into fake articles.
+
+**The entertainment test:** would a senior engineer forward this to a colleague? If the honest answer is "no, it's just a changelog", rewrite or cut.
+
 ## What to Ban
 
 - Vague drama: "haunted", "plagued", "for years", "momentarily silent", "in the wild"
@@ -67,6 +79,8 @@ Every article body must answer three questions:
 - Bundling unrelated PRs into one article because they landed the same week
 - PENDING articles about open issues in someone else's repo (those aren't the author's news)
 - Pure test/CI-only PRs as standalone articles (removing time.sleep, fixing flaky tests) — skip unless only activity that week
+- Bot-opened dependency/sync PRs as standalone articles — they're noise, not news
+- Padding a quiet week with minor activity articles — better to write fewer, better articles and let the closing note acknowledge the quiet
 - Inventing class names, method names, or configuration keys not present in the data
 
 ---
@@ -111,6 +125,11 @@ What makes them work: varied structure, specific mechanism, no cute wordplay tha
 ---
 
 ## Lessons Learned (append as we go)
+
+**2026-03-23:**
+- DHH W12 was boring: "nine commits keep the package mirror in sync" — bot PR + AUR sync, not real news. Should have been 0 articles with a quiet-week closing note.
+- mitchellh W12 was better (real VT state machine content) but still no wit — technically accurate but nobody would forward it.
+- Root cause: LLM is optimizing to fill the template rather than find the angle. Added "Finding the Angle" section — if you can't find a hook, don't write the article.
 
 **2026-03-22:**
 - First version used LLM copy that rewrote PR titles with dramatic prose ("haunted", "plagued") — no real technical content
