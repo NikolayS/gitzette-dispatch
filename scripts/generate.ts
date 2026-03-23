@@ -1156,6 +1156,12 @@ async function buildHtml(
   const MAX_REPO_IMAGES = 3;
   const illustrationCache: Record<string, string | null> = {};
   if (!skipIllustrations) {
+    // Always illustrate the lead article (first h1) — LLM picks up to 1 more
+    const llmPicked = copy.articles.filter((a: any) => a.illustrate === true);
+    const leadArticle = copy.articles[0];
+    if (leadArticle && !llmPicked.find((a: any) => a.headline === leadArticle.headline)) {
+      leadArticle.illustrate = true; // force lead to be illustrated
+    }
     const toIllustrate = copy.articles.filter((a: any) => a.illustrate === true).slice(0, 2);
     if (toIllustrate.length > 0) {
       console.log(`generating ${toIllustrate.length} illustration(s)...`);
