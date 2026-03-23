@@ -123,6 +123,105 @@ async function listContributedRepos(owner: string, from: Date, to: Date): Promis
   return Array.from(repoFullNames).slice(0, 10); // cap at 10 foreign repos
 }
 
+// ── issue context enrichment ──────────────────────────────────────────────────
+
+/** Parse "fixes #N", "closes #N", "refs #N", "resolves #N" from PR body text */
+function parseLinkedIssues(prBody: string | null): number[] {
+  if (!prBody) return [];
+  const matches = prBody.matchAll(/(?:fix(?:es|ed)?|close[sd]?|resolve[sd]?|ref(?:erences)?)\s+#(\d+)/gi);
+  const nums = new Set<number>();
+  for (const m of matches) nums.add(parseInt(m[1], 10));
+  return Array.from(nums);
+}
+
+/** Fetch PR body from GitHub API (uses cached reposData.mergedPRs body if present) */
+async function fetchPrBody(repoOwner: string, repoName: string, prNumber: number): Promise<string | null> {
+  try {
+    const data = await ghGet(`/repos/${repoOwner}/${repoName}/pulls/${prNumber}`);
+    return data.body ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Fetch issue title + body + first 3 comments */
+async function fetchIssueContext(repoOwner: string, repoName: string, issueNumber: number): Promise<string> {
+  try {
+    const [issue, comments] = await Promise.all([
+      ghGet(`/repos/${repoOwner}/${repoName}/issues/${issueNumber}`),
+      ghGet(`/repos/${repoOwner}/${repoName}/issues/${issueNumber}/comments?per_page=3`).catch(() => []),
+    ]);
+    const lines: string[] = [
+      `Issue #${issueNumber}: ${issue.title}`,
+      issue.body ? issue.body.slice(0, 800) : "(no body)",
+    ];
+    for (const c of (comments as any[]).slice(0, 3)) {
+      if (c.body) lines.push(`Comment: ${c.body.slice(0, 400)}`);
+    }
+    return lines.join("\n");
+  } catch {
+    return "";
+  }
+}
+
+interface ArticleIssueContext {
+  repo: string;        // repo short name
+  issueContexts: string[]; // one string per linked issue
+}
+
+/**
+ * After LLM picks articles, fetch linked issue context for chosen repos.
+ * Deduplicates by repo — fetches each repo's PR bodies once regardless of
+ * how many articles reference it. Only fetches for repos that appear in
+ * the chosen article list (efficiency: skip repos that got cut entirely).
+ */
+async function enrichArticlesWithIssueContext(
+  articles: Array<{ repo: string; headline: string }>,
+  reposData: RepoData[],
+  repoOwner: string  // GitHub owner of the repos (e.g. "cyberdem0n")
+): Promise<ArticleIssueContext[]> {
+  // Deduplicate repos — one fetch pass per repo, not per article
+  const chosenRepoNames = [...new Set(articles.map(a => a.repo))];
+  const results: ArticleIssueContext[] = [];
+
+  for (const repoName of chosenRepoNames) {
+    const repoData = reposData.find(r => r.name === repoName);
+    if (!repoData) continue;
+
+    const candidatePRs = repoData.mergedPRs.slice(0, 10);
+    if (candidatePRs.length === 0) continue;
+
+    // PR bodies are already in cache from getRepoData; fetchPrBody only as fallback
+    const prBodies = await Promise.all(
+      candidatePRs.map(async pr => {
+        const body = pr.body ?? await fetchPrBody(repoOwner, repoData.name, pr.number);
+        return body;
+      })
+    );
+
+    // Collect all linked issue numbers across this repo's candidate PRs
+    const linkedIssueNums = new Set<number>();
+    for (const body of prBodies) {
+      for (const n of parseLinkedIssues(body)) linkedIssueNums.add(n);
+    }
+
+    if (linkedIssueNums.size === 0) continue;
+
+    // Fetch issue context in parallel (cap at 5 issues per repo)
+    const issueContexts = (await Promise.all(
+      Array.from(linkedIssueNums).slice(0, 5).map(num =>
+        fetchIssueContext(repoOwner, repoData.name, num)
+      )
+    )).filter(Boolean);
+
+    if (issueContexts.length > 0) {
+      results.push({ repo: repoName, issueContexts });
+    }
+  }
+
+  return results;
+}
+
 interface Release {
   tag: string;
   name: string;
@@ -559,7 +658,8 @@ async function generateCopy(
   knownIncidents: string[] = [],
   quietWeekNote: string | null = null,
   correctionNote: string | null = null,
-  examples: { gold: ExampleArticle[]; bad: ExampleArticle[] } = { gold: [], bad: [] }
+  examples: { gold: ExampleArticle[]; bad: ExampleArticle[] } = { gold: [], bad: [] },
+  issueContext: ArticleIssueContext[] = []
 ): Promise<{
   masthead: string;
   tagline: string;
@@ -599,6 +699,15 @@ async function generateCopy(
   const quietWeekBlock = quietWeekNote ? `\n${quietWeekNote}\n` : "";
   const examplesBlock = buildExamplesBlock(examples.gold, examples.bad);
 
+  // Build issue context block — injected per-repo so LLM can match to articles
+  const issueContextBlock = issueContext.length > 0
+    ? `\nLINKED ISSUE CONTEXT — use this to write richer "before" descriptions for these repos:\n${
+        issueContext.map(ic =>
+          `[${ic.repo}]\n${ic.issueContexts.join("\n---\n")}`
+        ).join("\n\n")
+      }\n`
+    : "";
+
   // Read EDITORIAL.md fresh each run so edits take effect without code changes
   const editorialGuide = existsSync(EDITORIAL_PATH)
     ? readFileSync(EDITORIAL_PATH, "utf8")
@@ -625,7 +734,7 @@ ${dataJson}
 
 ${knownIncidents.length ? `KNOWN INCIDENTS THIS WEEK (confirmed by the author — must include as articles):\n${knownIncidents.map((s, i) => `${i + 1}. ${s}`).join("\n")}` : ""}
 ${quietWeekBlock}
-${correctionNote ? `\n${correctionNote}\n` : ""}${examplesBlock}
+${issueContextBlock}${correctionNote ? `\n${correctionNote}\n` : ""}${examplesBlock}
 Return a JSON object with this exact structure:
 {
   "masthead": "the dispatch",
@@ -776,7 +885,8 @@ async function runEvals(
   to: Date,
   owner: string,
   incidents: string[],
-  quietWeekNote?: string
+  quietWeekNote?: string,
+  issueCtx: ArticleIssueContext[] = []
 ): Promise<any> {
   if (copy.articles.length === 0) return copy; // nothing to eval on quiet weeks
 
@@ -808,7 +918,7 @@ async function runEvals(
   // One retry with complaints injected
   console.log(`  → retrying copy with eval feedback...`);
   const correctionNote = `CORRECTION REQUIRED — previous attempt failed editorial review:\n${allComplaints.map((c, i) => `${i + 1}. ${c}`).join("\n")}\n\nFix ALL of the above. Do not repeat the same mistakes.`;
-  const retryCopy = await generateCopy(reposData, from, to, owner, incidents, quietWeekNote, correctionNote);
+  const retryCopy = await generateCopy(reposData, from, to, owner, incidents, quietWeekNote, correctionNote, { gold: [], bad: [] }, issueCtx);
 
   // Run evals once more — log but don't retry again
   const [k2, ab2] = await Promise.all([
@@ -1403,8 +1513,23 @@ async function main() {
     if (examples.gold.length > 0 || examples.bad.length > 0) {
       console.log(`  injecting ${examples.gold.length} gold + ${examples.bad.length} bad examples into prompt`);
     }
-    const rawCopy = await generateCopy(reposData, from, to, owner, incidents, quietWeekNote, null, examples);
-    copy = await runEvals(rawCopy, reposData, from, to, owner, incidents, quietWeekNote ?? undefined);
+    // Pass 1: LLM picks articles (no issue context yet — just titles/numbers)
+    const pass1Copy = await generateCopy(reposData, from, to, owner, incidents, quietWeekNote, null, examples);
+
+    // Enrich chosen articles with linked issue context (fetched from GitHub API)
+    console.log("fetching linked issue context for chosen articles...");
+    const issueCtx = await enrichArticlesWithIssueContext(pass1Copy.articles, reposData, owner)
+      .catch(e => { console.warn(`  issue context fetch failed: ${e.message}`); return []; });
+    if (issueCtx.length > 0) {
+      console.log(`  found issue context for ${issueCtx.length} repo(s) — regenerating with enriched data`);
+    }
+
+    // Pass 2: regenerate with issue context injected (or reuse pass1 if no context found)
+    const rawCopy = issueCtx.length > 0
+      ? await generateCopy(reposData, from, to, owner, incidents, quietWeekNote, null, examples, issueCtx)
+      : pass1Copy;
+
+    copy = await runEvals(rawCopy, reposData, from, to, owner, incidents, quietWeekNote ?? undefined, issueCtx);
     await Bun.write(copyFile, JSON.stringify(copy, null, 2));
   }
 
