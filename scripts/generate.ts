@@ -144,13 +144,33 @@ async function fetchPrBody(repoOwner: string, repoName: string, prNumber: number
   }
 }
 
-/** Fetch issue title + body + first 3 comments */
-async function fetchIssueContext(repoOwner: string, repoName: string, issueNumber: number): Promise<string> {
+/** Fetch issue title + body + first 3 comments.
+ *  Date-gate: if the issue was created AND closed before `fromDate`, skip it —
+ *  it's a stale incident that pre-dates the current week and shouldn't colour
+ *  this week's copy (e.g. a security leak fixed three weeks ago). */
+async function fetchIssueContext(
+  repoOwner: string,
+  repoName: string,
+  issueNumber: number,
+  fromDate?: string   // ISO date string, e.g. "2026-03-23"
+): Promise<string> {
   try {
     const [issue, comments] = await Promise.all([
       ghGet(`/repos/${repoOwner}/${repoName}/issues/${issueNumber}`),
       ghGet(`/repos/${repoOwner}/${repoName}/issues/${issueNumber}/comments?per_page=3`).catch(() => []),
     ]);
+
+    // Date-gate: skip stale closed issues that pre-date the current week
+    if (fromDate && issue.closed_at) {
+      const closedAt = new Date(issue.closed_at);
+      const createdAt = new Date(issue.created_at);
+      const from = new Date(fromDate);
+      if (closedAt < from && createdAt < from) {
+        // Issue was opened and closed entirely before this week — skip it
+        return "";
+      }
+    }
+
     const lines: string[] = [
       `Issue #${issueNumber}: ${issue.title}`,
       issue.body ? issue.body.slice(0, 800) : "(no body)",
@@ -178,7 +198,8 @@ interface ArticleIssueContext {
 async function enrichArticlesWithIssueContext(
   articles: Array<{ repo: string; headline: string }>,
   reposData: RepoData[],
-  repoOwner: string  // GitHub owner of the repos (e.g. "cyberdem0n")
+  repoOwner: string,  // GitHub owner of the repos (e.g. "cyberdem0n")
+  fromDate?: string   // ISO date string for date-gating stale issue context
 ): Promise<ArticleIssueContext[]> {
   // Deduplicate repos — one fetch pass per repo, not per article
   const chosenRepoNames = [...new Set(articles.map(a => a.repo))];
@@ -208,9 +229,10 @@ async function enrichArticlesWithIssueContext(
     if (linkedIssueNums.size === 0) continue;
 
     // Fetch issue context in parallel (cap at 5 issues per repo)
+    // Pass fromDate so stale closed issues are excluded (date-gate)
     const issueContexts = (await Promise.all(
       Array.from(linkedIssueNums).slice(0, 5).map(num =>
-        fetchIssueContext(repoOwner, repoData.name, num)
+        fetchIssueContext(repoOwner, repoData.name, num, fromDate)
       )
     )).filter(Boolean);
 
@@ -1530,7 +1552,7 @@ async function main() {
 
     // Enrich chosen articles with linked issue context (fetched from GitHub API)
     console.log("fetching linked issue context for chosen articles...");
-    const issueCtx = await enrichArticlesWithIssueContext(pass1Copy.articles, reposData, owner)
+    const issueCtx = await enrichArticlesWithIssueContext(pass1Copy.articles, reposData, owner, from)
       .catch(e => { console.warn(`  issue context fetch failed: ${e.message}`); return []; });
     if (issueCtx.length > 0) {
       console.log(`  found issue context for ${issueCtx.length} repo(s) — regenerating with enriched data`);
