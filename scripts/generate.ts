@@ -1231,7 +1231,12 @@ async function buildHtml(
       return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0);
     });
 
-  const articles = renderedArticles.slice(0, splitAt).join("\n");
+  // Split page-1 articles into two balanced columns for broadsheet layout.
+  // Lead article (h1) always goes in col1; remaining articles split ~50/50.
+  const page1Articles = renderedArticles.slice(0, splitAt);
+  const col1Split = Math.ceil(page1Articles.length / 2);
+  const articlesCol1 = page1Articles.slice(0, col1Split).join("\n");
+  const articlesCol2 = page1Articles.slice(col1Split).join("\n");
   const articlesPage2 = renderedArticles.slice(splitAt).join("\n");
 
   return `<!DOCTYPE html>
@@ -1354,8 +1359,9 @@ async function buildHtml(
     <div class="grid grid-2-1">
       <div class="col">
         ${copy.editionNote ? `<p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">${copy.editionNote}</p>` : ""}
-        ${articles}
+        ${articlesCol1}
       </div>
+      ${articlesCol2 ? `<div class="col">${articlesCol2}</div>` : ""}
     </div>
   </div>
   <div class="footer">
