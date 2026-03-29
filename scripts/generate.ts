@@ -520,22 +520,23 @@ const CF_ACCOUNT = "a3265e0d0db71fdece29365819452f00";
 const CF_R2_BUCKET = "gitzette-dispatches";
 
 /** Upload a JPEG buffer to R2 at illustrations/<slug>.jpg, return public Worker URL. */
-async function uploadIllustrationToR2(slug: string, buf: Buffer): Promise<string | null> {
+async function uploadIllustrationToR2(slug: string, buf: Buffer, contentType = "image/jpeg"): Promise<string | null> {
   const cfToken = process.env.CF_TOKEN;
   if (!cfToken) { console.warn("  no CF_TOKEN — can't upload illustration"); return null; }
-  const key = encodeURIComponent(`illustrations/${slug}.jpg`);
+  const ext = contentType === "image/png" ? "png" : "jpg";
+  const key = encodeURIComponent(`illustrations/${slug}.${ext}`);
   try {
     const res = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/r2/buckets/${CF_R2_BUCKET}/objects/${key}`,
       {
         method: "PUT",
-        headers: { "Authorization": `Bearer ${cfToken}`, "Content-Type": "image/jpeg" },
+        headers: { "Authorization": `Bearer ${cfToken}`, "Content-Type": contentType },
         body: buf,
       }
     );
     const data: any = await res.json();
     if (!data.success) { console.warn(`  R2 upload failed: ${JSON.stringify(data)}`); return null; }
-    return `https://gitzette.online/img/${slug}.jpg`;
+    return `https://gitzette.online/img/${slug}.${ext}`;
   } catch (e) {
     console.warn(`  R2 upload error: ${e}`);
     return null;
@@ -577,13 +578,34 @@ async function generateIllustration(subject: string): Promise<string | null> {
     for (const part of parts) {
       if (part.inlineData?.data) {
         const rawBuf = Buffer.from(part.inlineData.data, "base64");
+        // Convert to grayscale engraving with transparent background.
+        // Steps: grayscale → normalise contrast → make near-white pixels transparent
+        // (threshold: pixels with luminance > 220 become alpha=0) → sharpen → PNG.
+        // This lets illustrations sit directly on the paper background like
+        // real newspaper engravings rather than rectangular photo boxes.
         const processed = await sharp(rawBuf)
-          .grayscale().normalise()
+          .grayscale()
+          .normalise()
           .modulate({ brightness: 0.92, saturation: 0 })
           .sharpen({ sigma: 0.8 })
-          .jpeg({ quality: 82, progressive: true })
-          .toBuffer();
-        const url = await uploadIllustrationToR2(slug, processed);
+          // ensureAlpha adds alpha channel; then use a raw pixel transform to
+          // make bright (near-white) pixels transparent.
+          .ensureAlpha()
+          .raw()
+          .toBuffer({ resolveWithObject: true })
+          .then(({ data, info }) => {
+            const { width, height, channels } = info; // channels = 4 (RGBA)
+            const threshold = 220; // pixels brighter than this become transparent
+            for (let i = 0; i < width * height; i++) {
+              const r = data[i * channels];
+              // if luminance > threshold, set alpha to 0 (transparent)
+              if (r > threshold) data[i * channels + 3] = 0;
+            }
+            return sharp(data, { raw: { width, height, channels } })
+              .png({ compressionLevel: 8 })
+              .toBuffer();
+          });
+        const url = await uploadIllustrationToR2(slug, processed, "image/png");
         if (url) {
           await fs.writeFile(cachePath, url, "utf8"); // cache the URL
           return url;
