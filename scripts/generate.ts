@@ -14,6 +14,21 @@
 
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
+
+// Load .env from project root — overrides placeholder env vars injected by host process
+const _envPath = join(import.meta.dir, "../.env");
+if (existsSync(_envPath)) {
+  for (const line of readFileSync(_envPath, "utf8").split("\n")) {
+    const m = line.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
+    if (m) {
+      const val = m[2].replace(/^['"]|['"]$/g, "");
+      // Always override if current value looks like a placeholder
+      if (!process.env[m[1]] || process.env[m[1]]?.includes("PLACEHOLDER")) {
+        process.env[m[1]] = val;
+      }
+    }
+  }
+}
 import { prepare, layout } from "@chenglou/pretext";
 
 // Load editorial style guide (EDITORIAL.md) — injected into LLM prompt at runtime
