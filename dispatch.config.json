@@ -1,16 +1,20 @@
 {
   "owner": "NikolayS",
   "repos": {
-    "exclude": ["COIL", "callbot", "dispatch"]
+    "exclude": [
+      "COIL",
+      "callbot",
+      "dispatch"
+    ]
   },
   "model": "anthropic/claude-haiku-4-5",
   "imageGen": {
     "provider": "google",
     "model": "imagen-4.0-fast-generate-001",
-    "style": "Vintage newspaper engraving illustration, editorial style. Single focal object drawn in fine black ink lines and cross-hatching on a TRANSPARENT background. No background fill, no white box, no color. Pure ink drawing of the subject only. The subject: "
+    "style": "Vintage newspaper engraving illustration. Single focal object drawn in fine black ink lines and cross-hatching on a PURE WHITE background. No gray fills, no gradients, no color tints \u2014 only solid black strokes on solid white. Clean linework, editorial style. The subject: "
   },
   "output": "index.html",
   "knownIncidents": [
-    "A pgMustard API key was leaked into a GitHub PR comment when an AI agent posted testing output as part of testing the new \\explain share pgmustard feature in rpg v0.8.0. The key was quickly spotted by @NikolayS and rotated. Write this as a short SECURITY article with dry wit — cautionary tale, not catastrophe."
+    "A pgMustard API key was leaked into a GitHub PR comment when an AI agent posted testing output as part of testing the new \\explain share pgmustard feature in rpg v0.8.0. The key was quickly spotted by @NikolayS and rotated. Write this as a short SECURITY article with dry wit \u2014 cautionary tale, not catastrophe."
   ]
 }

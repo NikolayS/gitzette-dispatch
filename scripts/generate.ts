@@ -592,8 +592,9 @@ async function generateIllustration(subject: string): Promise<string | null> {
       });
       const data: any = await res.json();
       if (data.data?.[0]?.b64_json) {
-        const buf = Buffer.from(data.data[0].b64_json, "base64");
-        const url = await uploadIllustrationToR2(slug, buf, "image/png");
+        const rawBuf = Buffer.from(data.data[0].b64_json, "base64");
+        // Upload raw GPT-Image-1 output directly — CSS mix-blend-mode:multiply handles background.
+        const url = await uploadIllustrationToR2(slug, rawBuf, "image/png");
         if (url) {
           await fs.writeFile(cachePath, url, "utf8");
           return url;
@@ -1269,7 +1270,7 @@ function renderArticle(
   // Repo screenshots go full-width below the deck
   const isIllustration = img?.includes("gitzette.online/img/");
   const illustrationHtml = isIllustration && img
-    ? `<img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;margin:12px 0 14px;filter:drop-shadow(2px 3px 5px rgba(0,0,0,0.18));background:none;display:block;">`
+    ? `<img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;margin:12px 0 14px;display:block;mix-blend-mode:multiply;opacity:0.88;">`
     : "";
   const repoImageHtml = !isIllustration && img
     ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
