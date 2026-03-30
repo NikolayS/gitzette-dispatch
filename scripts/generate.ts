@@ -1265,14 +1265,14 @@ function renderArticle(
       : "";
 
   const img = repoData.demoImages[imageIndex];
-  // All images: natural aspect ratio, full column width, no cropping
+  // Illustrations float left (text wraps around — newspaper style)
+  // Repo screenshots go full-width below the deck
   const isIllustration = img?.includes("gitzette.online/img/");
-  const imageHtml = img
-    ? isIllustration
-      ? `<div class="article-image illustration" style="margin:16px 0;max-width:100%;">
-          <img src="${img}" alt="" style="width:60%;max-width:400px;height:auto;display:block;margin:0 auto;filter:drop-shadow(2px 3px 5px rgba(0,0,0,0.15));background:none;">
-        </div>`
-      : `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
+  const illustrationHtml = isIllustration && img
+    ? `<img src="${img}" alt="" style="float:left;width:42%;max-width:260px;height:auto;margin:4px 20px 10px 0;filter:drop-shadow(2px 3px 5px rgba(0,0,0,0.15));background:none;">`
+    : "";
+  const repoImageHtml = !isIllustration && img
+    ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
           <img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;max-height:40vh;object-fit:cover;display:block;">
         </div>`
     : "";
@@ -1282,8 +1282,9 @@ function renderArticle(
       <div class="tag">${article.tag}</div>
       <${level}><a href="${repoData.url}" class="headline-link">${article.headline}</${level}>
       <p class="deck">${article.deck}</p>
-      ${imageHtml}
-      <p class="body-text">${article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '')}</p>
+      ${illustrationHtml}<p class="body-text">${article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '')}</p>
+      ${isIllustration && img ? '<div style="clear:both;"></div>' : ""}
+      ${repoImageHtml}
       ${releaseLinks ? `<div class="release-links">${releaseLinks}</div>` : ""}
       ${prLinks ? `<div class="pr-links">merged: ${prLinks}</div>` : ""}
       ${openPRNote}
