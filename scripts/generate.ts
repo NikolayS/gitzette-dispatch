@@ -1340,11 +1340,14 @@ async function buildHtml(
         repoImageIdx.set(a.repo, imgIdx + 1);
         repoImageCount++;
       }
-      // build a per-article demoImages array: repo screenshot (cycling) or illustration
-      const articleImages = hasRepoImg
-        ? [repo.demoImages[imgIdx]!]
-        : illustrationCache[a.headline]
-          ? [illustrationCache[a.headline]!]
+      // build a per-article demoImages array:
+      // - if LLM flagged for illustration: use GPT illustration (prefer over repo screenshot)
+      // - else if repo has a screenshot: use that
+      const illustrationUrl = illustrationCache[a.headline];
+      const articleImages = illustrationUrl
+        ? [illustrationUrl]
+        : hasRepoImg
+          ? [repo.demoImages[imgIdx]!]
           : [];
       const articleRepo = { ...repo, demoImages: articleImages };
       return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0);
