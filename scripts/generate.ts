@@ -608,8 +608,8 @@ async function generateIllustration(subject: string): Promise<string | null> {
           for (let i = 0; i < total; i++) {
             const o = i * channels;
             const lum = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
-            if (lum > 80) { data[o + 3] = 0; }
-            else { const v = Math.round(lum * 0.5); data[o] = v; data[o + 1] = v; data[o + 2] = v; data[o + 3] = 255; }
+            if (lum > 170) { data[o + 3] = 0; }
+            else { const v = Math.round(lum * 0.6); data[o] = v; data[o + 1] = v; data[o + 2] = v; data[o + 3] = 255; }
           }
           return sharp(data, { raw: { width, height, channels } }).png({ compressionLevel: 8 }).toBuffer();
         };
@@ -619,7 +619,7 @@ async function generateIllustration(subject: string): Promise<string | null> {
           // retry once with same prompt
           const retry = await fetch("https://api.openai.com/v1/images/generations", {
             method: "POST",
-            headers: { "Authorization": \`Bearer \${openaiKey}\`, "Content-Type": "application/json" },
+            headers: { "Authorization": `Bearer ${openaiKey}`, "Content-Type": "application/json" },
             body: JSON.stringify({ model: "gpt-image-1", prompt, size: "1024x1024", quality: "low", output_format: "png" }),
           });
           const r2 = await retry.json() as any;
