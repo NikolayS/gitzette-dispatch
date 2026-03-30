@@ -11,7 +11,7 @@
   "imageGen": {
     "provider": "google",
     "model": "imagen-4.0-fast-generate-001",
-    "style": "Vintage newspaper engraving illustration. Single focal object drawn in fine black ink lines and cross-hatching on a PURE WHITE background. No gray fills, no gradients, no color tints \u2014 only solid black strokes on solid white. Clean linework, editorial style. The subject: "
+    "style": "Woodblock print illustration. Pure black ink on pure white background. NO border, NO frame, NO enclosing box. The subject floats freely on white paper with white space around it. High contrast black and white only, no gray. Bold simplified forms. The subject: "
   },
   "output": "index.html",
   "knownIncidents": [
