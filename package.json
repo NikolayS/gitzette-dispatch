@@ -10,6 +10,7 @@
     "@types/bun": "latest"
   },
   "dependencies": {
+    "@chenglou/pretext": "^0.0.3",
     "sharp": "^0.34.5"
   }
 }

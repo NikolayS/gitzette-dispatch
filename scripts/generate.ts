@@ -14,6 +14,7 @@
 
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
+import { prepare, layout } from "@chenglou/pretext";
 
 // Load editorial style guide (EDITORIAL.md) — injected into LLM prompt at runtime
 const EDITORIAL_PATH = join(dirname(import.meta.dir), "EDITORIAL.md");
@@ -1128,6 +1129,64 @@ function formatDate(iso: string): string {
   });
 }
 
+// ── pretext-based column balancing ───────────────────────────────────────────
+
+// Approximate column widths in px (paper 960px, body padding 24px each side,
+// grid-2-1 splits 3fr:1fr with 20px col padding).
+const COL1_WIDTH = 660;
+const COL2_WIDTH = 200;
+
+// Body text spec used in dispatches: IBM Plex Serif 15px, line-height 1.6
+const BODY_FONT = "15px IBM Plex Serif";
+const BODY_LINE_HEIGHT = 24; // 15 * 1.6
+
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]+>/g, " ").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function measureHeight(text: string, width: number): number {
+  if (!text.trim()) return 0;
+  try {
+    const prepared = prepare(text, BODY_FONT);
+    return layout(prepared, width, BODY_LINE_HEIGHT).height;
+  } catch {
+    // Fallback: estimate ~80 chars per line, ~24px per line
+    const charsPerLine = Math.max(1, Math.floor(width / 8));
+    return Math.ceil(text.length / charsPerLine) * BODY_LINE_HEIGHT;
+  }
+}
+
+/**
+ * Greedy height-balancing: assign each article to the shorter column.
+ * Heights are measured at COL1_WIDTH for both accumulators so the greedy
+ * decision is based on text volume rather than column-width-inflated heights
+ * (col2 is 3x narrower, so measuring there would always make col1 look cheaper).
+ * The goal is to match total text volume across columns, not pixel-perfect
+ * visual height (which depends on the browser's actual rendering).
+ */
+function balanceColumns(
+  htmlArticles: string[]
+): { col1: string[]; col2: string[] } {
+  const col1: string[] = [];
+  const col2: string[] = [];
+  let h1 = 0;
+  let h2 = 0;
+
+  for (const html of htmlArticles) {
+    const text = stripHtml(html);
+    const height = measureHeight(text, COL1_WIDTH);
+    if (h1 <= h2) {
+      col1.push(html);
+      h1 += height;
+    } else {
+      col2.push(html);
+      h2 += height;
+    }
+  }
+
+  return { col1, col2 };
+}
+
 function renderArticle(
   article: { repo: string; headline: string; deck: string; body: string; tag: string },
   repoData: RepoData,
@@ -1253,12 +1312,11 @@ async function buildHtml(
       return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0);
     });
 
-  // Split page-1 articles into two balanced columns for broadsheet layout.
-  // Lead article (h1) always goes in col1; remaining articles split ~50/50.
+  // Split page-1 articles into two balanced columns using pretext height measurement.
   const page1Articles = renderedArticles.slice(0, splitAt);
-  const col1Split = Math.ceil(page1Articles.length / 2);
-  const articlesCol1 = page1Articles.slice(0, col1Split).join("\n");
-  const articlesCol2 = page1Articles.slice(col1Split).join("\n");
+  const { col1: col1Articles, col2: col2Articles } = balanceColumns(page1Articles);
+  const articlesCol1 = col1Articles.join("\n");
+  const articlesCol2 = col2Articles.join("\n");
   const articlesPage2 = renderedArticles.slice(splitAt).join("\n");
 
   return `<!DOCTYPE html>
