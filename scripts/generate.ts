@@ -1269,7 +1269,7 @@ function renderArticle(
   // Repo screenshots go full-width below the deck
   const isIllustration = img?.includes("gitzette.online/img/");
   const illustrationHtml = isIllustration && img
-    ? `<img src="${img}" alt="" style="float:left;width:42%;max-width:260px;height:auto;margin:4px 20px 10px 0;filter:drop-shadow(2px 3px 5px rgba(0,0,0,0.15));background:none;">`
+    ? `<img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;margin:12px 0 14px;filter:drop-shadow(2px 3px 5px rgba(0,0,0,0.18));background:none;display:block;">`
     : "";
   const repoImageHtml = !isIllustration && img
     ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
@@ -1283,7 +1283,7 @@ function renderArticle(
       <${level}><a href="${repoData.url}" class="headline-link">${article.headline}</${level}>
       <p class="deck">${article.deck}</p>
       ${illustrationHtml}<p class="body-text">${article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '')}</p>
-      ${isIllustration && img ? '<div style="clear:both;"></div>' : ""}
+
       ${repoImageHtml}
       ${releaseLinks ? `<div class="release-links">${releaseLinks}</div>` : ""}
       ${prLinks ? `<div class="pr-links">merged: ${prLinks}</div>` : ""}
@@ -1414,9 +1414,7 @@ async function buildHtml(
     .broadsheet-wrap .paper.page-2 { display: block; border-left: 3px double var(--rule); margin-left: -1px; }
     /* on broadsheet, hide p2 articles from page 1 (they move to page 2) */
     .broadsheet-wrap .paper:first-child .articles-p2 { display: none; }
-    /* on broadsheet, hide the sidebar from page 1 (stats + p2 articles move to page 2) */
-    .broadsheet-wrap .paper:first-child .grid-2-1 { grid-template-columns: 1fr; }
-    .broadsheet-wrap .paper:first-child .grid-2-1 .col:last-child { display: none; }
+    /* grid-2 stays two-column on broadsheet (both cols have articles) */
   }
 
   /* header */
@@ -1440,7 +1438,7 @@ async function buildHtml(
   /* body */
   .body { padding: 0 24px 32px; }
   .grid { display: grid; grid-template-columns: 1fr; gap: 0; }
-  @media (min-width: 640px) { .grid-2-1 { grid-template-columns: 3fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
+  @media (min-width: 640px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-2-1 { grid-template-columns: 3fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
   .col { padding: 20px 20px 0 0; }
   .col:last-child { padding-right: 0; }
   @media (min-width: 640px) { .col { border-right: 1px solid var(--rule); } .col:last-child { border-right: none; padding-left: 20px; } .grid-3 .col { padding: 20px 16px 0; } .grid-3 .col:first-child { padding-left: 0; } .grid-3 .col:last-child { padding-right: 0; } }
@@ -1498,12 +1496,12 @@ async function buildHtml(
     </div>
   </div>
   <div class="body">
-    <div class="grid grid-2-1">
+    <div class="grid grid-2">
       <div class="col">
         ${copy.editionNote ? `<p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">${copy.editionNote}</p>` : ""}
         ${articlesCol1}
       </div>
-      ${articlesCol2 ? `<div class="col">${articlesCol2}</div>` : ""}
+      <div class="col">${articlesCol2}</div>
     </div>
   </div>
   <div class="footer">
