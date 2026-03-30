@@ -1251,10 +1251,15 @@ function renderArticle(
 
   const img = repoData.demoImages[imageIndex];
   // All images: natural aspect ratio, full column width, no cropping
+  const isIllustration = img?.includes("gitzette.online/img/");
   const imageHtml = img
-    ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
-        <img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;max-height:40vh;object-fit:cover;display:block;">
-      </div>`
+    ? isIllustration
+      ? `<div class="article-image illustration" style="margin:16px 0;max-width:100%;">
+          <img src="${img}" alt="" style="width:60%;max-width:400px;height:auto;display:block;margin:0 auto;filter:drop-shadow(2px 3px 5px rgba(0,0,0,0.15));background:none;">
+        </div>`
+      : `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
+          <img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;max-height:40vh;object-fit:cover;display:block;">
+        </div>`
     : "";
 
   return `
