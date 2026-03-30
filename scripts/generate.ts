@@ -593,26 +593,42 @@ async function generateIllustration(subject: string): Promise<string | null> {
       const data: any = await res.json();
       if (data.data?.[0]?.b64_json) {
         const rawBuf = Buffer.from(data.data[0].b64_json, "base64");
-        // Post-process: keep only dark ink pixels (lum < 80), make everything else transparent.
-        // This gives real shape-based transparency — no rectangular box, pure ink on paper.
-        const processed = await sharp(rawBuf)
-          .ensureAlpha()
-          .raw()
-          .toBuffer({ resolveWithObject: true })
-          .then(({ data, info }) => {
-            const { width, height, channels } = info;
-            for (let i = 0; i < width * height; i++) {
-              const o = i * channels;
-              const lum = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
-              if (lum > 80) {
-                data[o + 3] = 0; // transparent
-              } else {
-                const v = Math.round(lum * 0.5); // darken ink
-                data[o] = v; data[o + 1] = v; data[o + 2] = v; data[o + 3] = 255;
-              }
-            }
-            return sharp(data, { raw: { width, height, channels } }).png({ compressionLevel: 8 }).toBuffer();
+        // Post-process: keep only dark ink pixels (lum < 80), transparent everywhere else.
+        // Validate: if >50% of pixels are very dark (lum<30), GPT generated a dark-bg failure — skip.
+        const threshold = async (buf: Buffer): Promise<Buffer | null> => {
+          const { data, info } = await sharp(buf).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+          const { width, height, channels } = info;
+          let darkCount = 0, total = width * height;
+          for (let i = 0; i < total; i++) {
+            const o = i * channels;
+            const lum = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
+            if (lum < 30) darkCount++;
+          }
+          if (darkCount / total > 0.50) return null; // dark-background failure, reject
+          for (let i = 0; i < total; i++) {
+            const o = i * channels;
+            const lum = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
+            if (lum > 80) { data[o + 3] = 0; }
+            else { const v = Math.round(lum * 0.5); data[o] = v; data[o + 1] = v; data[o + 2] = v; data[o + 3] = 255; }
+          }
+          return sharp(data, { raw: { width, height, channels } }).png({ compressionLevel: 8 }).toBuffer();
+        };
+        let processed = await threshold(rawBuf);
+        if (!processed) {
+          console.warn("    ⚠ dark-bg generation rejected, retrying...");
+          // retry once with same prompt
+          const retry = await fetch("https://api.openai.com/v1/images/generations", {
+            method: "POST",
+            headers: { "Authorization": \`Bearer \${openaiKey}\`, "Content-Type": "application/json" },
+            body: JSON.stringify({ model: "gpt-image-1", prompt, size: "1024x1024", quality: "low", output_format: "png" }),
           });
+          const r2 = await retry.json() as any;
+          if (r2?.data?.[0]?.b64_json) {
+            const retryBuf = Buffer.from(r2.data[0].b64_json, "base64");
+            processed = await threshold(retryBuf);
+          }
+        }
+        if (!processed) { console.warn("    ✗ illustration rejected after retry, skipping"); return null; }
         const url = await uploadIllustrationToR2(slug, processed, "image/png");
         if (url) {
           await fs.writeFile(cachePath, url, "utf8");
