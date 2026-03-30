@@ -7,7 +7,7 @@
   "imageGen": {
     "provider": "google",
     "model": "imagen-4.0-fast-generate-001",
-    "style": "Vintage newspaper engraving illustration, 1920s editorial style. Soft ink wash with fine cross-hatching and midtones — not harsh contrast, not pure black and white. Aged newsprint feel, warm gray tones, gentle shading. Clean readable composition with one clear focal subject. NO text, words, labels, letters, numbers, or signs anywhere. NO psychedelic patterns, NO tangled cables, NO decorative swirls. Simple subject, editorial mood. Subject: "
+    "style": "Vintage newspaper engraving illustration, editorial style. Single focal object drawn in fine black ink lines and cross-hatching on a TRANSPARENT background. No background fill, no white box, no color. Pure ink drawing of the subject only. The subject: "
   },
   "output": "index.html",
   "knownIncidents": [

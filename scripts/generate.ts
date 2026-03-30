@@ -376,7 +376,7 @@ async function getReadmeImages(owner: string, repo: string): Promise<string[]> {
       if (imgUrl) images.push(imgUrl);
     }
 
-    return images.slice(0, 1); // max 1 image per repo
+    return images; // no per-repo cap; MAX_REPO_IMAGES in buildHtml limits total shown
   } catch {
     return [];
   }
@@ -544,9 +544,9 @@ async function uploadIllustrationToR2(slug: string, buf: Buffer, contentType = "
   }
 }
 
-/** Generate an illustration via Google Gemini 2.5 Flash Image.
- *  Uploads to R2, caches the URL to disk — on quota/error, returns cached URL if available.
- *  Never throws. */
+/** Generate an illustration via GPT-Image-1 (preferred) or Gemini fallback.
+ *  Uses OPENAI_API_KEY if set, else falls back to GOOGLE_AI_KEY (Gemini).
+ *  Uploads transparent PNG to R2, caches the URL to disk. Never throws. */
 async function generateIllustration(subject: string): Promise<string | null> {
   const cfg = (config as any).imageGen;
   if (!cfg) return null;
@@ -554,13 +554,49 @@ async function generateIllustration(subject: string): Promise<string | null> {
   const slug = subject.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60);
   const cachePath = illusCachePath(subject); // stores the URL (not data URI)
 
-  const googleKey = process.env.GOOGLE_AI_KEY;
-  if (!googleKey) {
-    console.warn("  no GOOGLE_AI_KEY — trying cache");
-    try { return await fs.readFile(cachePath, "utf8"); } catch { return null; }
+  const prompt = cfg.style + subject;
+
+  // ── OpenAI gpt-image-1 (preferred when OPENAI_API_KEY is set) ───────────────
+  const openaiKey = process.env.OPENAI_API_KEY;
+  if (openaiKey) {
+    try {
+      const res = await fetch("https://api.openai.com/v1/images/generations", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${openaiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-image-1",
+          prompt,
+          n: 1,
+          size: "1024x1024",
+          background: "transparent",
+          output_format: "png",
+        }),
+      });
+      const data: any = await res.json();
+      if (data.data?.[0]?.b64_json) {
+        const buf = Buffer.from(data.data[0].b64_json, "base64");
+        const url = await uploadIllustrationToR2(slug, buf, "image/png");
+        if (url) {
+          await fs.writeFile(cachePath, url, "utf8");
+          return url;
+        }
+      } else {
+        console.warn(`  OpenAI image failed: ${JSON.stringify(data).slice(0, 200)}`);
+      }
+    } catch (e) {
+      console.warn(`  OpenAI image error: ${e}`);
+    }
   }
 
-  const prompt = cfg.style + subject;
+  // ── Gemini fallback (when OPENAI_API_KEY is absent or failed) ────────────────
+  const googleKey = process.env.GOOGLE_AI_KEY;
+  if (!googleKey) {
+    console.warn(`  no OPENAI_API_KEY or GOOGLE_AI_KEY — trying cache`);
+    try { return await fs.readFile(cachePath, "utf8"); } catch { return null; }
+  }
 
   try {
     const res = await fetch(
@@ -1286,9 +1322,10 @@ async function buildHtml(
     }
   }
 
-  // 1 image per project max — track which repos have had their image shown
-  // cap: max MAX_REPO_IMAGES repo (README) images per dispatch
-  const imageShown = new Set<string>();
+  // cycle through a repo's images across its articles — each article from the same
+  // repo picks the next image (index 0, 1, 2...) until images run out or the global
+  // cap of MAX_REPO_IMAGES total repo images is reached.
+  const repoImageIdx = new Map<string, number>(); // repo → next image index to use
   let repoImageCount = 0;
   const splitAt = Math.ceil(copy.articles.length / 2); // ~half on each page
 
@@ -1296,15 +1333,16 @@ async function buildHtml(
       const repo = repoMap[a.repo];
       if (!repo) return "";
       const level = i === 0 ? "h1" : i < 3 ? "h2" : "h3";
-      // allow repo image only if: repo has one, not yet shown, and under the cap
-      const hasRepoImg = repo.demoImages[0] && !imageShown.has(a.repo) && repoImageCount < MAX_REPO_IMAGES;
+      // allow repo image only if: repo has images remaining and global cap not reached
+      const imgIdx = repoImageIdx.get(a.repo) ?? 0;
+      const hasRepoImg = repo.demoImages[imgIdx] != null && repoImageCount < MAX_REPO_IMAGES;
       if (hasRepoImg) {
-        imageShown.add(a.repo);
+        repoImageIdx.set(a.repo, imgIdx + 1);
         repoImageCount++;
       }
-      // build a per-article demoImages array: repo screenshot (first use) or illustration
+      // build a per-article demoImages array: repo screenshot (cycling) or illustration
       const articleImages = hasRepoImg
-        ? repo.demoImages
+        ? [repo.demoImages[imgIdx]!]
         : illustrationCache[a.headline]
           ? [illustrationCache[a.headline]!]
           : [];
