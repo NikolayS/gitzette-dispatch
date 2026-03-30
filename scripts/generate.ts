@@ -593,8 +593,27 @@ async function generateIllustration(subject: string): Promise<string | null> {
       const data: any = await res.json();
       if (data.data?.[0]?.b64_json) {
         const rawBuf = Buffer.from(data.data[0].b64_json, "base64");
-        // Upload raw GPT-Image-1 output directly — CSS mix-blend-mode:multiply handles background.
-        const url = await uploadIllustrationToR2(slug, rawBuf, "image/png");
+        // Post-process: keep only dark ink pixels (lum < 80), make everything else transparent.
+        // This gives real shape-based transparency — no rectangular box, pure ink on paper.
+        const processed = await sharp(rawBuf)
+          .ensureAlpha()
+          .raw()
+          .toBuffer({ resolveWithObject: true })
+          .then(({ data, info }) => {
+            const { width, height, channels } = info;
+            for (let i = 0; i < width * height; i++) {
+              const o = i * channels;
+              const lum = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
+              if (lum > 80) {
+                data[o + 3] = 0; // transparent
+              } else {
+                const v = Math.round(lum * 0.5); // darken ink
+                data[o] = v; data[o + 1] = v; data[o + 2] = v; data[o + 3] = 255;
+              }
+            }
+            return sharp(data, { raw: { width, height, channels } }).png({ compressionLevel: 8 }).toBuffer();
+          });
+        const url = await uploadIllustrationToR2(slug, processed, "image/png");
         if (url) {
           await fs.writeFile(cachePath, url, "utf8");
           return url;
@@ -1270,7 +1289,7 @@ function renderArticle(
   // Repo screenshots go full-width below the deck
   const isIllustration = img?.includes("gitzette.online/img/");
   const illustrationHtml = isIllustration && img
-    ? `<img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;margin:12px 0 14px;display:block;mix-blend-mode:multiply;opacity:0.88;">`
+    ? `<img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;margin:10px 0 14px;display:block;">`
     : "";
   const repoImageHtml = !isIllustration && img
     ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
