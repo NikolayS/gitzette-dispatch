@@ -1314,7 +1314,7 @@ function renderArticle(
   // Repo screenshots go full-width below the deck
   const isIllustration = img?.includes("gitzette.online/img/");
   const illustrationHtml = isIllustration && img
-    ? `<img src="${img}" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;">`
+    ? `<img src="${img}" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;shape-outside:url(${img});shape-margin:8px;">`
     : "";
   const repoImageHtml = !isIllustration && img
     ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
