@@ -569,6 +569,15 @@ async function generateIllustration(subject: string): Promise<string | null> {
   const slug = subject.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60);
   const cachePath = illusCachePath(subject); // stores the URL (not data URI)
 
+  // Check cache first — return immediately if we have a valid URL
+  try {
+    const cached = (await fs.readFile(cachePath, "utf8")).trim();
+    if (cached.startsWith("http")) {
+      console.log(`  using cached illustration for "${subject.slice(0, 50)}..."`);
+      return cached;
+    }
+  } catch { /* cache miss, continue */ }
+
   const prompt = cfg.style + subject;
 
   // ── OpenAI gpt-image-1 (preferred when OPENAI_API_KEY is set) ───────────────
@@ -1305,7 +1314,7 @@ function renderArticle(
   // Repo screenshots go full-width below the deck
   const isIllustration = img?.includes("gitzette.online/img/");
   const illustrationHtml = isIllustration && img
-    ? `<img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;margin:10px 0 14px;display:block;">`
+    ? `<img src="${img}" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;">`
     : "";
   const repoImageHtml = !isIllustration && img
     ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
@@ -1319,7 +1328,7 @@ function renderArticle(
       <${level}><a href="${repoData.url}" class="headline-link">${article.headline}</${level}>
       <p class="deck">${article.deck}</p>
       ${illustrationHtml}<p class="body-text">${article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '')}</p>
-
+      ${illustrationHtml ? '<div style="clear:both"></div>' : ""}
       ${repoImageHtml}
       ${releaseLinks ? `<div class="release-links">${releaseLinks}</div>` : ""}
       ${prLinks ? `<div class="pr-links">merged: ${prLinks}</div>` : ""}
