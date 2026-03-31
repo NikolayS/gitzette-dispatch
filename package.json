@@ -4,7 +4,8 @@
   "description": "weekly engineering newspaper generator",
   "scripts": {
     "generate": "bun scripts/generate.ts",
-    "generate:last-week": "bun scripts/generate.ts --from $(date -d '7 days ago' +%Y-%m-%d) --to $(date +%Y-%m-%d)"
+    "generate:last-week": "bun scripts/generate.ts --from $(date -d '7 days ago' +%Y-%m-%d) --to $(date +%Y-%m-%d)",
+    "test": "bun test"
   },
   "devDependencies": {
     "@types/bun": "latest"

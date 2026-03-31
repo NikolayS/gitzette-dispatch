@@ -1324,17 +1324,17 @@ function renderArticle(
         </div>`
     : "";
 
-  // Plain text body (strip HTML tags) for the shape-wrap-block body-raw span
-  const plainBody = article.body.replace(/<[^>]+>/g, '');
+  // Shape-wrap: illustration floats left, JS progressively enhances with contour-following.
+  // Fallback: regular float layout (text always visible even if JS fails).
+  const bodyContent = article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '');
 
   const bodyHtml = isIllustration && img
     ? `<div class="shape-wrap-block" data-img="${img}">
-        <img src="${img}" class="shape-img" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;">
-        <span class="body-raw" style="display:none">${plainBody}</span>
-        <div class="body-lines"></div>
+        <img src="${img}" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">${bodyContent}</p>
         <div style="clear:both"></div>
       </div>`
-    : `<p class="body-text">${article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '')}</p>`;
+    : `<p class="body-text">${bodyContent}</p>`;
 
   return `
     <div class="article">
@@ -1532,21 +1532,79 @@ async function buildHtml(
   .footer { padding: 12px 24px; border-top: 2px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
 </style>
 <script type="module">
-import { prepareWithSegments, layoutNextLine } from 'https://esm.sh/@chenglou/pretext@latest';
+import { prepareWithSegments, layoutNextLine } from 'https://esm.sh/@chenglou/pretext@0.0.3';
+
+// ── Per-row alpha contour scan (same logic as scripts/shape-wrap.ts) ──
+function scanContourProfile(rgba, width, height, threshold) {
+  const profile = new Array(height);
+  for (let y = 0; y < height; y++) {
+    let rightmost = 0;
+    const rowOffset = y * width * 4;
+    for (let x = width - 1; x >= 0; x--) {
+      if (rgba[rowOffset + x * 4 + 3] > threshold) {
+        rightmost = x + 1;
+        break;
+      }
+    }
+    profile[y] = rightmost;
+  }
+  return profile;
+}
+
+function getOccupiedWidthForBand(profile, bandTopPx, bandBottomPx, imgDisplayW, imgDisplayH, imgNaturalW, imgNaturalH, gap) {
+  if (bandTopPx >= imgDisplayH) return 0;
+  const scale = imgNaturalH / imgDisplayH;
+  const startRow = Math.floor(bandTopPx * scale);
+  const endRow = Math.min(Math.ceil(Math.min(bandBottomPx, imgDisplayH) * scale), profile.length);
+  let maxNatural = 0;
+  for (let row = startRow; row < endRow; row++) {
+    if (profile[row] > maxNatural) maxNatural = profile[row];
+  }
+  if (maxNatural === 0) return 0;
+  return Math.round(maxNatural * (imgDisplayW / imgNaturalW) + gap);
+}
+
+// ── HTML tag/text splitting for preserving inline links ──
+function splitTextAndTags(html) {
+  if (!html) return [];
+  const segments = [];
+  const re = /<\\/?[a-zA-Z][^>]*\\/?>/g;
+  let last = 0, m;
+  while ((m = re.exec(html)) !== null) {
+    if (m.index > last) segments.push({ type: 'text', content: html.slice(last, m.index) });
+    segments.push({ type: 'tag', content: m[0] });
+    last = re.lastIndex;
+  }
+  if (last < html.length) segments.push({ type: 'text', content: html.slice(last) });
+  return segments;
+}
 
 async function shapeWrap(block) {
   const imgEl = block.querySelector('.shape-img');
-  const rawEl = block.querySelector('.body-raw');
-  const linesEl = block.querySelector('.body-lines');
-  if (!imgEl || !rawEl || !linesEl) return;
+  const fallbackEl = block.querySelector('.shape-wrap-fallback');
+  if (!imgEl || !fallbackEl) return;
 
-  const text = rawEl.textContent || '';
+  const htmlBody = fallbackEl.innerHTML;
+  const segments = splitTextAndTags(htmlBody);
+  const plainText = segments.filter(s => s.type === 'text').map(s => s.content).join('');
+  if (!plainText.trim()) return;
+
+  // Wait for font to be ready
+  await document.fonts.ready;
+
+  // Read font from CSS computed style (matches .body-text exactly)
+  const cs = getComputedStyle(fallbackEl);
+  const fontSize = parseFloat(cs.fontSize) || 14;
+  const lineHeight = parseFloat(cs.lineHeight) || fontSize * 1.65;
+  const font = fontSize + 'px "IBM Plex Serif", Georgia, serif';
+
+  // Load image into canvas for alpha scanning
   const imgSrc = block.dataset.img;
-
-  // Load image and read alpha channel per row
   const img = new Image();
   img.crossOrigin = 'anonymous';
-  await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = imgSrc; });
+  try {
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = imgSrc; });
+  } catch { return; } // CORS or network fail → keep float fallback
 
   const canvas = document.createElement('canvas');
   canvas.width = img.naturalWidth;
@@ -1554,42 +1612,102 @@ async function shapeWrap(block) {
   const ctx = canvas.getContext('2d');
   ctx.drawImage(img, 0, 0);
 
-  // Get display dimensions of the img element
+  let imageData;
+  try {
+    imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  } catch { return; } // tainted canvas → keep float fallback
+
+  // Scan alpha contour per row
+  const profile = scanContourProfile(imageData.data, canvas.width, canvas.height, 10);
+
+  // Get display dimensions
   const imgRect = imgEl.getBoundingClientRect();
   const imgDisplayW = imgRect.width;
   const imgDisplayH = imgRect.height;
   const containerW = block.parentElement.clientWidth || 600;
-  const columnW = containerW;
+  const gap = 18;
 
-  // For each text line row, compute how much width the image occupies
-  const lineHeight = 24;
-  const font = '16px "IBM Plex Serif", Georgia, serif';
-
-  const prepared = prepareWithSegments(text, font);
+  // Lay out text line by line with per-row contour widths
+  const prepared = prepareWithSegments(plainText, font);
   let cursor = { segmentIndex: 0, graphemeIndex: 0 };
   let y = 0;
-  const lineEls = [];
+  const linesContainer = document.createElement('div');
+
+  // Track character position for HTML tag reinsertion
+  let charPos = 0;
+  const lines = [];
 
   while (true) {
-    // How much does image occupy at this y?
-    const imgOccupied = y < imgDisplayH ? (imgDisplayW + 18) : 0; // 18px = margin
-    const availW = columnW - imgOccupied;
-    const line = layoutNextLine(prepared, cursor, Math.max(availW, 100));
+    const occupied = getOccupiedWidthForBand(
+      profile, y, y + lineHeight,
+      imgDisplayW, imgDisplayH,
+      canvas.width, canvas.height, gap
+    );
+    const availW = Math.max(containerW - occupied, 80);
+    const line = layoutNextLine(prepared, cursor, availW);
     if (!line) break;
 
-    const div = document.createElement('div');
-    div.textContent = line.text;
-    div.style.cssText = 'position:relative;margin-left:' + imgOccupied + 'px;line-height:' + lineHeight + 'px;font:' + font + ';';
-    linesEl.appendChild(div);
-
+    lines.push({ text: line.text, occupied, y });
     cursor = line.end;
     y += lineHeight;
+    charPos += line.text.length;
   }
+
+  // Rebuild lines with HTML tags reinserted
+  let globalCharIdx = 0;
+  let segIdx = 0;
+  let segCharIdx = 0; // position within current text segment
+
+  for (const lineInfo of lines) {
+    const div = document.createElement('div');
+    div.style.cssText = 'margin-left:' + lineInfo.occupied + 'px;line-height:' + lineHeight + 'px;font:' + font + ';';
+
+    let lineHtml = '';
+    let remaining = lineInfo.text.length;
+
+    while (remaining > 0 && segIdx < segments.length) {
+      const seg = segments[segIdx];
+      if (seg.type === 'tag') {
+        lineHtml += seg.content;
+        segIdx++;
+      } else {
+        const avail = seg.content.length - segCharIdx;
+        const take = Math.min(avail, remaining);
+        lineHtml += seg.content.slice(segCharIdx, segCharIdx + take);
+        segCharIdx += take;
+        remaining -= take;
+        if (segCharIdx >= seg.content.length) { segIdx++; segCharIdx = 0; }
+      }
+    }
+    // Flush any tags at end of text
+    while (segIdx < segments.length && segments[segIdx].type === 'tag') {
+      lineHtml += segments[segIdx].content;
+      segIdx++;
+    }
+
+    div.innerHTML = lineHtml;
+    linesContainer.appendChild(div);
+  }
+
+  // Replace fallback paragraph with positioned lines
+  fallbackEl.style.display = 'none';
+  imgEl.style.position = 'absolute';
+  imgEl.style.top = '0';
+  imgEl.style.left = '0';
+  block.style.position = 'relative';
+  block.insertBefore(linesContainer, fallbackEl);
+  // Set min-height so container fits both image and text
+  block.style.minHeight = Math.max(imgDisplayH, y) + 'px';
+  // Remove the clear:both div since we're using absolute positioning for img
+  const clearDiv = block.querySelector('[style*="clear:both"]');
+  if (clearDiv) clearDiv.remove();
 }
 
-// Run on all shape-wrap blocks
-document.querySelectorAll('.shape-wrap-block').forEach(block => {
-  shapeWrap(block).catch(console.warn);
+// Run on all shape-wrap blocks after fonts are loaded
+document.fonts.ready.then(() => {
+  document.querySelectorAll('.shape-wrap-block').forEach(block => {
+    shapeWrap(block).catch(err => console.warn('shape-wrap failed, using float fallback:', err));
+  });
 });
 </script>
 </head>
