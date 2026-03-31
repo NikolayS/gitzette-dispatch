@@ -1,0 +1,17 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Two commits walk into a bar. The bartender asks, 'What'll it be?' They say, 'Patience.'",
+  "editionNote": "A contemplative week in 1c_aux: two commits, zero releases, zero drama.",
+  "articles": [
+    {
+      "repo": "1c_aux",
+      "headline": "1c_aux logs two commits in the deep silence",
+      "deck": "Sometimes the most productive week is the one where you think.",
+      "body": "@x4m committed twice to 1c_aux this week, continuing steady work in the repo. No releases emerged. No PRs landed. Just the quiet sound of deliberate progress. In software as in life, the weeks that look empty on the surface often hide the most important work: the kind you do in your head before you push.",
+      "tag": "PENDING",
+      "illustrationPrompt": "Developer sitting at desk in dim light, staring at a single glowing screen, coffee cup cooling nearby, peaceful and focused.",
+      "illustrate": true
+    }
+  ],
+  "closingNote": "See you next week. Hopefully with more than two commits to write about."
+}

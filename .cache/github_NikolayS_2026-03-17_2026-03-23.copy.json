@@ -1,0 +1,80 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "rpg ships EXPLAIN visualization and Lua commands; sqlever hits production readiness with deep test coverage.",
+  "editionNote": "Four releases across rpg and sqlever. Ten merged PRs in gitzette's landing page overhaul. One security incident, quickly contained.",
+  "articles": [
+    {
+      "repo": "rpg",
+      "headline": "rpg v0.8.0 brings EXPLAIN visualization to the psql terminal",
+      "deck": "*Colorized plans, automatic issue detection, and one-click sharing to depesz and dalibo.*",
+      "body": "EXPLAIN output has always lived in plain text. @NikolayS's v0.8.0 transforms that into a readable terminal UI: execution time and row estimates at the top, problem nodes flagged with ⚠ warnings (seq scans on large tables, 10x row estimate misses, sorts spilling to disk), and the costliest query path bolded. Plans now share directly to explain.depesz.com, explain.dalibo.com, or pgMustard via '/explain share depesz' — no copy-paste. Lua custom commands let you write <code>/slow_mean</code> and <code>/table_info</code> scripts; tab completion works on all rpg backslash commands. The <code>\\s</code> command now shows numbered, searchable history through the pager.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a terminal window displaying a colorized EXPLAIN plan with warning symbols and bold highlighting on critical nodes",
+      "illustrate": true
+    },
+    {
+      "repo": "rpg",
+      "headline": "API key leaked during pgMustard integration testing — rotated, lesson learned",
+      "deck": "*An AI agent posted testing output with a valid credential. The fix: Claude security rules in the repo.*",
+      "body": "@NikolayS discovered a pgMustard API key in a GitHub PR comment during testing of the new <code>\\explain share pgmustard</code> feature in v0.8.0. The key was valid and live. He rotated it immediately. Root cause: an AI agent used the key during testing and included the raw output in its test log. The fix is now in the codebase — a security rule in the repo's Claude instructions explicitly prohibits API keys in comments or logs. A reminder that LLM-assisted development needs human oversight on credentials, even in test harnesses.",
+      "tag": "SECURITY",
+      "illustrationPrompt": "a padlock with a broken chain lying on scattered papers with redacted text",
+      "illustrate": true
+    },
+    {
+      "repo": "sqlever",
+      "headline": "sqlever reaches production readiness with comprehensive test suite",
+      "deck": "*Deep test coverage across Sqitch compatibility, static analysis, batch DML, AI integration, and lifecycle workflows.*",
+      "body": "@NikolayS merged seven major test PRs this week, adding over 300 test cases across all critical paths. Sqitch compatibility tests validate plan parsing and change ID computation against the real Sqitch binary (#134). Static analysis tests exercise all 22 linting rules and their suppressions (#136). Batch DML tests verify queue operations, partition rotation, and concurrent worker lifecycle (#137). AI and DBLab integration tests mock all three LLM providers and test clone provisioning (#135). Full lifecycle and edge-case tests cover deploy/revert robustness, multi-change dependencies, tags, snapshots, and all 9 exit codes (#139, #138). A fix merged this week (#145) corrects revert to respect the <code>-- sqlever:no-transaction</code> directive. Two releases — v0.1.0 (foundational) and v0.2.0 (test harness complete) — mark the end of scaffolding.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a checklist with most boxes ticked, pen resting on the final unchecked item",
+      "illustrate": false
+    },
+    {
+      "repo": "gitzette",
+      "headline": "gitzette landing page overhauled — profile explorer, share tags, font improvements",
+      "deck": "*Ten PRs ship profile pages, week navigation, OG meta tags, and visual polish.*",
+      "body": "@NikolayS merged a burst of UX improvements to gitzette's frontend. The homepage now lets you search a GitHub username and explore all their dispatches via a profile page (#48, #46). Dispatch pages gained week navigation and a regenerate button with confirmation (#48). Social sharing works now — each dispatch includes OG meta tags for preview cards (#43). Typography improved: Playfair Display logo font for readability (#42) and a sharper tagline (#46). Favicon and theme-color tags landed on all pages (#41). Legacy dispatch HTML fixes ensure proper link closing and mobile rendering (#53). The quota UX now surfaces generation limits to free users with sponsor links (#47). These changes phase in the groundwork for GitLab support and feedback systems, both in open PRs.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a hand adjusting typography sliders on a vintage print gauge",
+      "illustrate": false
+    },
+    {
+      "repo": "rpg",
+      "headline": "rpg v0.7.0 wraps '/ask' queries in read-only transactions for safety",
+      "deck": "*Write queries now blocked; LLM requests can be cancelled; timeouts configurable.*",
+      "body": "The <code>/ask</code> command runs AI-generated SQL on your database. v0.7.0 adds database-level protection: every query is wrapped in <code>START TRANSACTION READ ONLY</code>, and write queries (CREATE, DROP, INSERT, DELETE) are refused before they reach the parser (#631). Pressing Ctrl-C now cancels LLM API calls immediately (#641). New config options let you set <code>ai.timeout</code> (default 30s) and <code>ssh_tunnel.connect_timeout</code> (default 15s) to prevent hangs (#640). Built-in pagers now handle backslash commands (<code>/?</code>, <code>/h</code>, <code>/d</code>, <code>/dba</code>) — scrollable output for large result sets (#629). PG 17 compatibility fixes address renamed VACUUM progress columns (#620).",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a transaction barrier or gate blocking incoming arrows",
+      "illustrate": false
+    },
+    {
+      "repo": "rpg",
+      "headline": "rpg v0.5.0 ships multi-category syntax highlighting and auto-detect AI providers",
+      "deck": "*Keywords, strings, and operators now in distinct colors. Env var detection works across Anthropic, OpenAI, and Ollama.*",
+      "body": "v0.5.0 adds color differentiation in the SQL editor: keywords, strings, and operators now render in distinct ANSI colors. Error/warning/notice prefixes are colorized (red/yellow/cyan). The tool now auto-detects your AI provider by reading <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>, or <code>OLLAMA_API_KEY</code> from the environment — no manual config needed. Ctrl-C properly cancels <code>/fix</code> execution. The status bar now spans terminal width. <code>/version</code> displays both rpg and PostgreSQL server versions. References to an \"autonomous agent\" mode were removed — rpg is a terminal tool, not an autonomous system.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a terminal screen with colorized SQL keywords glowing in distinct hues",
+      "illustrate": false
+    },
+    {
+      "repo": "pg_ash",
+      "headline": "pg_ash documentation hardened with security policy and dependency automation",
+      "deck": "*SECURITY.md added; dependabot configured for GitHub Actions.*",
+      "body": "@NikolayS added a SECURITY.md policy (#24) and enabled dependabot (#23) to keep GitHub Actions versions up to date automatically. Badge counts and dated comparison notes were removed from docs (#26). These changes reflect a maturing maintenance posture as pg_ash sees production use.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "a shield emblem with a checkmark inside",
+      "illustrate": false
+    },
+    {
+      "repo": "gitzette-dispatch",
+      "headline": "dispatch generator hit 58 commits this week — parallel scanning pending",
+      "deck": "*Backend infrastructure work. Open issues target 40-second profile scans.*",
+      "body": "The gitzette-dispatch generator (the engine powering these newspapers) accumulated 58 commits this week as @NikolayS refined filtering and scanning logic. Two open issues target performance: pre-filtering repos via GitHub commit search API before full scan, and parallel repo scanning to reduce large profile scans from 5 minutes to ~40 seconds. These are backlog items, not shipped yet — but the groundwork is in place.",
+      "tag": "PENDING",
+      "illustrationPrompt": "gears meshing in sequence, one slightly ahead of the others",
+      "illustrate": false
+    }
+  ],
+  "closingNote": "58 commits, 10 releases, one key rotation, zero database writes via AI. See you next week."
+}

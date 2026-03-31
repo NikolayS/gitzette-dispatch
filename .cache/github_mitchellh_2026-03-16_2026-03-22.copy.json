@@ -1,0 +1,62 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "libghostty's C API gets concrete — static libs, CMake, and state machines that remember where they were.",
+  "editionNote": "92 commits to ghostty, 53 each to ghostling and ghostty-windows, no releases this week.",
+  "articles": [
+    {
+      "repo": "ghostty",
+      "headline": "libghostty now builds as a static library",
+      "deck": "*CMake and Zig tooling mature enough to ship the VT library in multiple forms.*",
+      "body": "@mitchellh merged <a href=\"https://github.com/ghostty-org/ghostty/pull/11732\">#11732</a> to add static library support alongside the existing dynamic build. This follows weeks of infrastructure work: CMake support landed in <a href=\"https://github.com/ghostty-org/ghostty/pull/11700\">#11700</a>, Zig optimization flags for release builds in <a href=\"https://github.com/ghostty-org/ghostty/pull/11707\">#11707</a>, and CI validation in <a href=\"https://github.com/ghostty-org/ghostty/pull/11703\">#11703</a>. Static linking reduces runtime dependencies for consumers of libghostty-vt, particularly useful for embedded terminal implementations like ghostling.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a hand placing a rectangular stone block into a foundation, other blocks already set.",
+      "illustrate": true
+    },
+    {
+      "repo": "ghostty",
+      "headline": "VT decoder state now persists across vt_write calls",
+      "deck": "*Streaming parsers no longer reset mid-sequence when input arrives in fragments.*",
+      "body": "The VT state machine in libghostty-vt previously lost context between separate write operations. <a href=\"https://github.com/ghostty-org/ghostty/pull/11728\">#11728</a> preserves decoder state across boundaries — critical for any consumer receiving escape sequences in chunks rather than complete messages. This is a correctness fix disguised as infrastructure work; parsers that can't hold state across I/O boundaries produce corrupted output or drop sequences entirely.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a mechanical tape spool unwinding, thread continuous without breaks.",
+      "illustrate": true
+    },
+    {
+      "repo": "ghostty",
+      "headline": "libghostty C API expands with build info and cell inspection",
+      "deck": "*Consumers can now query renderer state and terminal grid contents directly from C.*",
+      "body": "<a href=\"https://github.com/ghostty-org/ghostty/pull/11725\">#11725</a> adds a <code>ghostty_build_info</code> API for querying build configuration, while <a href=\"https://github.com/ghostty-org/ghostty/pull/11676\">#11676</a> provides grid point and cell inspection — the low-level terminal data structs that screen readers and clipboard handlers need. Together with <a href=\"https://github.com/ghostty-org/ghostty/pull/11664\">#11664</a>'s render state API, the C interface now exposes enough of the terminal's internals that alternative UIs (like ghostling) and accessibility tools can work directly with rendered output without reimplementing parsing.",
+      "tag": "FEATURE",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "ghostty",
+      "headline": "VT color cell types support palette and RGB data",
+      "deck": "*Cell-level color information now distinguishes between indexed and direct color modes.*",
+      "body": "<a href=\"https://github.com/ghostty-org/ghostty/pull/11717\">#11717</a> adds <code>color_palette</code> and <code>color_rgb</code> cell data types to the VT library. This allows consumers of libghostty-vt to preserve the semantic difference between a cell colored via a 256-color palette index versus direct 24-bit RGB — important for accurate round-tripping of terminal output and for accessibility layers that need to report actual color values.",
+      "tag": "FEATURE",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "ghostty",
+      "headline": "build system consolidates around a single configuration option",
+      "deck": "*The `-Demit-lib-vt` flag replaces a separate build step, simplifying consumer integrations.*",
+      "body": "<a href=\"https://github.com/ghostty-org/ghostty/pull/11716\">#11716</a> replaces the old <code>lib-vt</code> build step with a Zig compile option, reducing the number of build modes consumers need to maintain. A pending Meson wrapper (<a href=\"https://github.com/ghostty-org/ghostty/pull/11702\">#11702</a>) suggests the next abstraction layer — making libghostty-vt available through multiple build systems without custom glue.",
+      "tag": "FEATURE",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "ghostling",
+      "headline": "ghostling accumulates commits at steady pace",
+      "deck": "*The minimal terminal emulator built on libghostty continues development in parallel.*",
+      "body": "53 commits this week to ghostling — no merged PRs or releases, but consistent iteration. This suggests ongoing integration work against libghostty's expanding C API. The project remains a real-time stress test of whether the library bindings are sufficient for an independent UI layer.",
+      "tag": "PENDING",
+      "illustrationPrompt": null,
+      "illustrate": false
+    }
+  ],
+  "closingNote": "Next week: will ghostling ship first, or will libghostty gain a Meson build first?"
+}

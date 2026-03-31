@@ -1,0 +1,17 @@
+[
+  {
+    "name": "scroll-stress-test",
+    "description": "randomized stress tests of scrollable cursors on index scans",
+    "url": "https://github.com/tvondra/scroll-stress-test",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 6,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": []
+  }
+]

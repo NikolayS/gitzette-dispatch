@@ -1,0 +1,17 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "One commit. One PR. A week for thinking.",
+  "editionNote": "Minimal activity week: tea received a single documentation update.",
+  "articles": [
+    {
+      "repo": "tea",
+      "headline": "tea's README now documents the Greenplum-to-Iceberg path",
+      "deck": "*Documentation update clarifies how the extension fits into the data pipeline.*",
+      "body": "The tea extension bridges Greenplum and Apache Iceberg, but users had incomplete guidance on setup and usage. @x4m's #2 updates the README with clearer instructions for operators deploying the extension. This is the kind of work that doesn't show up in commit counts but determines whether someone can actually run the thing in production.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "a hand opening a leather-bound reference manual on a wooden desk",
+      "illustrate": true
+    }
+  ],
+  "closingNote": "Sometimes the work is the README. Rest well, @x4m."
+}

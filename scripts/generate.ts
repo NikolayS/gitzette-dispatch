@@ -562,12 +562,12 @@ async function uploadIllustrationToR2(slug: string, buf: Buffer, contentType = "
 /** Generate an illustration via GPT-Image-1 (preferred) or Gemini fallback.
  *  Uses OPENAI_API_KEY if set, else falls back to GOOGLE_AI_KEY (Gemini).
  *  Uploads transparent PNG to R2, caches the URL to disk. Never throws. */
-async function generateIllustration(subject: string): Promise<string | null> {
+async function generateIllustration(subject: string, cacheKey?: string): Promise<string | null> {
   const cfg = (config as any).imageGen;
   if (!cfg) return null;
 
   const slug = subject.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 60);
-  const cachePath = illusCachePath(subject); // stores the URL (not data URI)
+  const cachePath = illusCachePath(cacheKey ?? subject); // stores the URL (not data URI)
 
   // Check cache first — return immediately if we have a valid URL
   try {
@@ -607,13 +607,18 @@ async function generateIllustration(subject: string): Promise<string | null> {
         const threshold = async (buf: Buffer): Promise<Buffer | null> => {
           const { data, info } = await sharp(buf).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
           const { width, height, channels } = info;
-          let darkCount = 0, total = width * height;
-          for (let i = 0; i < total; i++) {
-            const o = i * channels;
-            const lum = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
-            if (lum < 30) darkCount++;
-          }
-          if (darkCount / total > 0.50) return null; // dark-background failure, reject
+          // Reject if corners are dark — means GPT painted a dark background
+          const cornerSamples = [
+            [20,20],[width-20,20],[20,height-20],[width-20,height-20],
+            [100,100],[width-100,100],[100,height-100],[width-100,height-100],
+          ];
+          const cornerLums = cornerSamples.map(([x,y]) => {
+            const o=(y*width+x)*channels;
+            return 0.299*data[o]+0.587*data[o+1]+0.114*data[o+2];
+          });
+          const avgCornerLum = cornerLums.reduce((a,b)=>a+b,0)/cornerLums.length;
+          if (avgCornerLum < 180) return null; // dark background — reject
+          const total = width * height;
           for (let i = 0; i < total; i++) {
             const o = i * channels;
             const lum = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
@@ -1377,9 +1382,10 @@ async function buildHtml(
     if (toIllustrate.length > 0) {
       console.log(`generating ${toIllustrate.length} illustration(s)...`);
       for (const a of toIllustrate) {
-        const subject = (a as any).illustrationPrompt ?? `abstract editorial scene related to ${a.repo} software project`;
+        const illustrationPrompt = (a as any).illustrationPrompt ?? `abstract editorial scene related to ${a.repo} software project`;
         process.stdout.write(`  illustration for "${a.headline}"... `);
-        const url = await generateIllustration(subject);
+        // Use headline as cache key so changing the prompt style clears correctly
+        const url = await generateIllustration(illustrationPrompt, a.headline);
         illustrationCache[a.headline] = url ?? null;
         console.log(url ? "✓" : "skipped");
       }

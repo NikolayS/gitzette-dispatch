@@ -1,0 +1,438 @@
+[
+  {
+    "name": "autoresearch",
+    "description": "AI agents running research on single-GPU nanochat training automatically",
+    "url": "https://github.com/karpathy/autoresearch",
+    "stars": 48252,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [
+      {
+        "number": 268,
+        "title": "feat: Turing GPU (T4/RTX) compat via capability-aware FA3 fallback, fp16+GradScaler",
+        "state": "open",
+        "date": "2026-03-14T20:59:58Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/268",
+        "author": "Nidhicodes",
+        "body": "## Summary\r\n\r\nAdds automatic compatibility for pre-Ampere GPUs (Turing and older: T4, RTX 2000 series, GTX 1600 series) with zero behavior change for Ampere+ users (H100, A100, RTX 3000/4000 series).\r\n\r\nThis makes autoresearch runnable on **free Google Colab (T4)** out of the box, which is the most accessible GPU compute available to most people wanting to try this project.\r\n\r\n## Problem\r\n\r\nThree things hard-crash on Turing GPUs:\r\n1. **Flash Attention 3** - requires Ampere+ (SM 8.0+). T4 is SM 7.5. Crashes with `RuntimeError: FlashAttention only supports Ampere GPUs or newer`\r\n2. **bfloat16** - T4 has no native bfloat16 support. PyTorch falls back to float32 emulation, causing silent OOM during `torch.compile` kernel generation\r\n3. **Batch size** - without FA3's memory efficiency, the default `DEVICE_BATCH_SIZE=128` + `seq_len=2048` allocates a `(128, 2048, 2048)` attention matrix = 1GB per layer, immediately OOM on 15GB T4\r\n\r\n## Solution\r\n\r\nAll changes are gated on `cap = torch.cuda.get_device_capability()` which is already computed at the top of the file. Ampere+ (`cap >= (8, 0)`) gets the original code path unchanged.\r\n\r\n### Changes\r\n\r\n| Location | Ampere+ (unchanged) | Pre-Ampere (new fallback) |\r\n|----------|-------------------|--------------------------|\r\n| FA3 load | `fa3 = get_kernel(repo).flash_attn_interface` | `fa3 = None` |\r\n| Attention | `fa3.flash_attn_func(...)` | `F.scaled_dot_product_attention(...)` |\r\n| Precision | `bfloat16` | `float16` + `GradScaler` |\r\n| Embeddings | cast to `bfloat16` | stay `float32` (GradScaler requires fp32 grads) |\r\n| Rotary emb | cast to `bfloat16` | stay `float32` |\r\n| Muon ortho | `g.bfloat16()` | `g.half()` |\r\n| Seq length | `MAX_SEQ_LEN` (2048) | 512 |\r\n| Batch size | 128 | 16 |\r\n| Total batch | `2**19` (~524K tokens) | `2**16` (~65K tokens) |\r\n\r\n### Why SDPA instead of FA2?\r\n\r\n`torch.nn.functional.scaled_dot_product_attention` is already available in the installed PyTorch version, requires no extra install, and automatically dispatches to the most efficient kernel available on the current hardware (Flash Attention 2 on supported GPUs, efficient attention otherwise).\r\n\r\n### Why fp32 embeddings?\r\n\r\n`GradScaler` requires fp32 gradients, it cannot unscale fp16 gradients (`ValueError: Attempting to unscale FP16 gradients`). Since embeddings are looked up and their gradients flow back directly, they must stay fp32. The forward pass still runs in fp16 via `autocast`.\r\n\r\n### Why seq_len=512 and smaller batch?\r\n\r\nWithout FA3's fused kernel, the attention matrix is materialized explicitly in memory. At seq_len=2048 with batch=128, each layer needs 1GB just for the attention matrix. Seq_len=512 reduces this 16x. The T4 has 15GB VRAM but only ~12GB is usable after CUDA context overhead.\r\n\r\n## Results\r\n\r\nTested on **Google Colab free tier (Tesla T4, SM 7.5, 15GB VRAM)**:\r\n```\r\nval_bpb:          1.333735\r\ntraining_seconds: 300.5\r\ntotal_seconds:    539.7\r\npeak_vram_mb:     2496.9\r\nmfu_percent:      1.18\r\ntotal_tokens_M:   19.0\r\nnum_steps:        290\r\nnum_params_M:     50.3\r\n```\r\n\r\nFor reference, the H100 baseline from the repo is `val_bpb ~0.998` at seq_len=2048 with ~953 steps. The T4 result is expected to be worse due to:\r\n- 4x shorter context (512 vs 2048) - less signal per step\r\n- ~35x lower throughput (1.2% vs ~40% MFU) - fewer total steps\r\n- No FA3 memory efficiency - smaller effective batch\r\n\r\n## Limitations & Future Work\r\n\r\n- `mfu_percent` is computed against `H100_BF16_PEAK_FLOPS` - on T4 this reads as ~1%, which is misleading but not wrong (it's genuinely much slower)\r\n- seq_len=512 means the T4 baseline is not directly comparable to H100 results\r\n- A future improvement would be to also adjust `H100_BF16_PEAK_FLOPS` to the actual device's peak FLOPS for accurate MFU reporting\r\n- With Colab Pro (A100), all these fallbacks are bypassed automatically and the full H100-comparable config runs as-is\r\n\r\n## Testing\r\n\r\n- [x] Runs to completion on T4 (300s budget respected)\r\n- [x] No changes to H100/A100 code path (`cap >= (8, 0)` guard)"
+      },
+      {
+        "number": 265,
+        "title": "save checkpoint before eval to survive crashes",
+        "state": "open",
+        "date": "2026-03-14T17:53:24Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/265",
+        "author": "mvanhorn",
+        "body": "if evaluate_bpb() OOMs or hits a CUDA error, the entire training run is lost. save model state_dict before eval so the agent can recover.\n\ncloses #7"
+      },
+      {
+        "number": 264,
+        "title": "fix(train): guard against zero grad_accum_steps",
+        "state": "open",
+        "date": "2026-03-14T16:12:44Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/264",
+        "author": "jluk",
+        "body": "If TOTAL_BATCH_SIZE is smaller than a single forward pass (DEVICE_BATCH_SIZE * MAX_SEQ_LEN), grad_accum_steps silently becomes 0, causing the training loop to skip all gradient accumulation. \r\n\r\nAdd an assertion to fail fast with a clear message instead."
+      },
+      {
+        "number": 263,
+        "title": "fix: define 'best' variable before use in progress plot",
+        "state": "open",
+        "date": "2026-03-14T16:01:18Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/263",
+        "author": "mango766",
+        "body": "Fixes #262. \\n\\nThe variable `best` is used to calculate the margin and set the y-axis limits in the progress plot, but it is not defined in the scope of that cell. It is defined in a later cell. I've added the definition before its use to prevent `UnboundLocalError`."
+      },
+      {
+        "number": 258,
+        "title": "docs: minimal CONTRIBUTING.md focused on research context",
+        "state": "open",
+        "date": "2026-03-14T09:53:42Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/258",
+        "author": "guoyangzhen",
+        "body": "Addresses maintainer feedback on #255.\n\nReplaces the previous generic contribution template with a minimal guide focused on:\n\n- **Prerequisites and setup** (uv, single GPU)\n- **train.py architecture context** (GPTConfig defaults, module layout, what not to change)\n- **What types of contributions are useful** (val_bpb improvements)\n- **Evaluation criteria** (val_bpb on fixed 5-min budget, results.tsv format)\n\nRemoved: generic commit conventions, PR workflow, CI/CD templates, code style guides — none of which are relevant to this research platform."
+      },
+      {
+        "number": 253,
+        "title": "Add autoresearch-webgpu to notable forks",
+        "state": "open",
+        "date": "2026-03-14T05:06:08Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/253",
+        "author": "lucasgelfond",
+        "body": "Title! Demo at [https://autoresearch.lucasgelfond.online/](https://autoresearch.lucasgelfond.online/)"
+      },
+      {
+        "number": 252,
+        "title": "Add autoresearch-mac-mini to Notable Forks",
+        "state": "open",
+        "date": "2026-03-14T04:58:46Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/252",
+        "author": "Venkateshwar-PortoAI",
+        "body": "## Summary\n\nAdds [autoresearch-mac-mini](https://github.com/Venkateshwar-PortoAI/autoresearch-mac-mini) to the Notable Forks section.\n\n**How it differs from autoresearch-macos:**\n\n| | autoresearch-macos | autoresearch-mac-mini (ours) |\n|---|---|---|\n| Platforms | macOS only (crashes on Linux/Windows) | CUDA, MPS, CPU — auto-detects |\n| CUDA support | No | Yes (FA3 + torch.compile if available) |\n| Optimizer on MPS | Moves CPU tensors to device each step | Dual path: Python scalars (MPS/CPU), compiled tensors (CUDA) |\n| Progress chart | Manual via notebook | Auto-updating `plot_progress.py` |\n\n**Key changes from upstream:**\n- FA3 → PyTorch SDPA with sliding window mask support\n- Auto device detection: CUDA → MPS → CPU\n- Smaller defaults for Mac (DEPTH=4, BATCH=8) per your README recommendations\n- `plot_progress.py` auto-generates progress.png after each experiment\n\n**Baseline result:** val_bpb 1.723 on Mac Mini M4 (MPS, float32, 11.5M params, 96 steps in 5 min)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 248,
+        "title": "feat(benchmarks): MPS vs MLX Benchmark Suite + stdio_bus Documentation",
+        "state": "open",
+        "date": "2026-03-13T21:50:38Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/248",
+        "author": "morozow",
+        "body": "## Summary\r\n\r\nBenchmarks comparing [#202](https://github.com/karpathy/autoresearch/pull/202) (MLX with CPU Muon) vs [#230](https://github.com/karpathy/autoresearch/pull/230) (PyTorch MPS with GPU Muon) for Apple Silicon training.\r\n\r\n**Result**: #230 approach is 1.75x faster. GPU Muon optimizer is 4.1x faster than CPU Muon.\r\n\r\n## Context\r\n\r\n- [#202](https://github.com/karpathy/autoresearch/pull/202) proposes MLX-based training with CPU Muon optimizer\r\n- [#230](https://github.com/karpathy/autoresearch/pull/230) implements PyTorch MPS with GPU Muon optimizer\r\n- This PR provides benchmark data to evaluate both approaches\r\n\r\n## Benchmark Results\r\n\r\n| Metric | #230 (MPS) | #202 (MLX) | Δ |\r\n|--------|------------|------------|---|\r\n| Throughput | 11,597 tok/s | 6,622 tok/s | **+75%** |\r\n| Optimizer | 52 ms | 215 ms | **4.1x faster** |\r\n| Forward | 48 ms | 38 ms | -21% |\r\n| Backward | 76 ms | 56 ms | -26% |\r\n\r\n**Conclusion**: #202 (MLX) forward/backward is marginally faster, but CPU Muon is the bottleneck. #230 (MPS with GPU Muon) is the better approach.\r\n\r\n## What's Included\r\n\r\n```\r\nbenchmarks/mps_vs_mlx/\r\n├── src/\r\n│   ├── run.py              # Benchmark runner\r\n│   ├── plot.py             # Plot generator\r\n│   └── runners/\r\n│       ├── pytorch_mps.py  # #230 approach\r\n│       └── mlx_cpu_muon.py # #202 approach\r\n├── results/benchmark.json  # Raw data\r\n├── plots/*.png             # Visualizations\r\n└── reference/\r\n    └── train_mlx_pr202.py  # #202 original code\r\n\r\nstdio_bus/\r\n├── README.md               # Worker documentation\r\n├── configs/                # stdio_bus configs\r\n└── workers/                # JSON-RPC workers\r\n```\r\n\r\n## Usage\r\n\r\n```bash\r\n# Via stdio_bus\r\n./stdio_bus -c stdio_bus/configs/benchmark.json --tcp 127.0.0.1:9000\r\necho '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"benchmark.run\",\"params\":{\"steps\":50}}' | nc localhost 9000\r\n\r\n# Standalone\r\nuv run benchmarks/mps_vs_mlx/src/run.py\r\n```\r\n\r\n## Recommendation\r\n\r\nBased on benchmark data, recommend merging #230 over #202.\r\n\r\n<img width=\"400\" height=\"300\" alt=\"optimizer\" src=\"https://github.com/user-attachments/assets/32cd46fe-b432-48dd-b433-e2a6aa240a4c\" />\r\n\r\nFig. 1. MPS/MLX latency comparison\r\n"
+      },
+      {
+        "number": 245,
+        "title": "autotrader/mar13: GBR model with val_pass=true (score 1.40)",
+        "state": "open",
+        "date": "2026-03-13T18:37:14Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/245",
+        "author": "ijpatter1",
+        "body": "## Summary\n- Replaced baseline feedforward NN with sklearn GradientBoostingRegressor (300 trees, depth 3)\n- Added extensive feature engineering: trend signals (price-rel-MA), z-scores, rolling max drawdown, HL range, DOW cyclical, momentum acceleration (21 features total)\n- Implemented long-only regime filter with crash protection (flat when 168h return < -15%)\n- Removed feature normalization (GBR is scale-invariant, avoiding train/val distribution mismatch)\n- Added 1.2x prediction scaling to generate sufficient trades on validation data\n\n## Results\n- **Train score: 1.4031** (Sharpe 1.49, max DD -18.8%, 455 trades)\n- **val_pass: true** (first model to pass validation across 42 experiments)\n- Total return: 371.6% on training period\n\n## Experiment log\n42 experiments conducted covering: feedforward NN, Ridge regression, GBR, RF ensemble, various feature sets, loss functions (MSE, Huber, squared_error), normalization strategies, regime filters, prediction scaling factors.\n\n## Test plan\n- [ ] Verify `uv run train.py` produces score > 0 and val_pass: true\n- [ ] Review results.tsv for experiment history\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 244,
+        "title": "tune: apply discussion-43 final config to master",
+        "state": "open",
+        "date": "2026-03-13T17:25:17Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/244",
+        "author": "dan-y",
+        "body": "Applies the validated final config from [Discussion #43](https://github.com/karpathy/autoresearch/discussions/43) to master. See issue #243 for full context and same-pod H100 SXM benchmark results (val_bpb 0.997591 → 0.977085, delta −0.020506).\n\n**Architecture:**\n- Depth 8 → 9, aspect ratio tuned to keep dim=512\n- Window pattern `SSSL` → `SSSSL` (4:1 short:long ratio)\n- Short window `seq_len/2` → `seq_len/8`\n- RoPE base 10K → 200K\n\n**Optimization:**\n- Batch 524K → 262K tokens (more steps per wall-clock budget)\n- Embedding LR 0.6 → 0.9 (effective with WD)\n- Unembedding LR 0.004 → 0.005\n- Warmdown ratio 0.5 → 0.75\n- Final LR fraction 0.0 → 0.05\n- Muon momentum warmup 300 → 200 steps\n\n**Init & regularization:**\n- Transformer init scale ×0.68 (narrow optimum: 0.66 and 0.70 both worse)\n- x0 skip scalar init 0.1 → 0.05\n- Weight decay added to lm_head (0.01), embeddings (0.001), value embeddings (0.003)"
+      },
+      {
+        "number": 237,
+        "title": "Harden tokenizer deserialization to prevent cache poisoning RCE",
+        "state": "open",
+        "date": "2026-03-13T12:30:27Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/237",
+        "author": "Mirza-Samad-Ahmed-Baig",
+        "body": "This PR fixes a critical unsafe deserialization issue in `prepare.py`.\r\n\r\nPreviously, tokenizer state was loaded from `~/.cache/autoresearch/tokenizer/tokenizer.pkl` using `pickle.load`, and token bytes were loaded with default `torch.load`. Both can execute attacker-controlled payloads if cache files arepoisoned.\r\n\r\nThis change:\r\n  - Replaces tokenizer serialization with a JSON format (`tokenizer.json`) using base64 for byte tokens.\r\n  - Reconstructs `tiktoken.Encoding` from JSON instead of pickle.\r\n  - Rejects legacy `tokenizer.pkl` with a clear migration error (run `prepare.py` to regenerate secure artifacts).\r\n  - Uses `torch.load(..., weights_only=True)` for `token_bytes.pt`."
+      },
+      {
+        "number": 230,
+        "title": "feat(stdio_bus): unified CUDA/MPS GPU backend support",
+        "state": "open",
+        "date": "2026-03-13T00:31:47Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/230",
+        "author": "morozow",
+        "body": "## Context\r\n\r\nThis PR extends the [stdio_bus integration (#223)](https://github.com/karpathy/autoresearch/pull/223) with cross-platform GPU support, enabling autoresearch to run on both NVIDIA GPUs (CUDA) and Apple Silicon (MPS) using a single unified codebase.\r\n\r\n### What is stdio_bus?\r\n\r\n[stdio_bus](https://stdiobus.com/) is a deterministic C runtime providing transport-level routing for agent protocols. It replaces HTTP-based coordination with high-performance local IPC using JSON-RPC 2.0 over NDJSON.\r\n\r\n- **Website & Documentation**: https://stdiobus.com/\r\n- **Core Repository**: https://github.com/stdiobus/stdiobus\r\n- **Previous PR**: [#223 - Add stdio_bus Integration for Distributed GPU Training](https://github.com/karpathy/autoresearch/pull/223)\r\n\r\n## Motivation\r\n\r\nThe original autoresearch and PR #223 were CUDA-only. This limits experimentation to NVIDIA hardware. Apple Silicon Macs with MPS backend offer a viable alternative for:\r\n\r\n- Local development and testing\r\n- Smaller-scale experiments\r\n- Environments without NVIDIA GPUs\r\n\r\n## Solution\r\n\r\nRuntime backend detection with graceful fallbacks. No separate `train_mps.py` file needed – single `train.py` works everywhere.\r\n\r\n### Backend Detection\r\n\r\n```python\r\n# train.py – single source of truth\r\nCUDA = torch.cuda.is_available()\r\nMPS = not CUDA and torch.backends.mps.is_available()\r\nDEVICE = \"cuda\" if CUDA else \"mps\" if MPS else \"cpu\"\r\nDTYPE = torch.bfloat16 if CUDA else torch.float32\r\nCOMPILE = CUDA  # torch.compile only reliable on CUDA\r\n```\r\n\r\n### Feature Matrix\r\n\r\n| Feature | CUDA | MPS | CPU |\r\n|---------|------|-----|-----|\r\n| Flash Attention | FA3 | SDPA fallback | SDPA fallback |\r\n| dtype | bfloat16 | float32 | float32 |\r\n| torch.compile | Yes | No | No |\r\n| Batch size | 128 | 8 | 8 |\r\n| Practical | Yes | Yes | No (100x slower) |\r\n\r\n## Changes\r\n\r\n### `train.py`\r\n\r\n- Backend detection block (single source of truth)\r\n- Conditional FA3 import – only on CUDA, `fa3 = None` on MPS\r\n- SDPA fallback in `CausalSelfAttention.forward()` when `fa3 is None`\r\n- Conditional `torch.compile` decorator via `_compile` wrapper\r\n- Device-specific synchronization (`_sync` function)\r\n- Fixed optimizer scalar tensors – added `.to(device)` for MPS compatibility\r\n- Dynamic `DTYPE` for embeddings and rotary precomputation\r\n\r\n### `prepare.py`\r\n\r\n- Added `DEVICE` detection for dataloader buffer allocation\r\n- Conditional `pin_memory` (CUDA only)\r\n- Device-aware `evaluate_bpb()` – uses `DEVICE` instead of hardcoded \"cuda\"\r\n\r\n### `stdio_bus/dispatcher.py`\r\n\r\n- `_detect_backend()` – returns `(\"cuda\", ids)`, `(\"mps\", [0])`, or `(\"cpu\", [0])`\r\n- MPS detection via `platform.system() == \"Darwin\"`\r\n- `PROJECT_ROOT` resolution – works both locally and in Docker\r\n- `\"backend\"` field in status/result responses\r\n- `cwd=PROJECT_ROOT` for subprocess calls\r\n- Warning on CPU fallback: `[WARNING] No GPU detected (CUDA/MPS). CPU training is 100x slower and not practical.`\r\n\r\n## Testing\r\n\r\n### Local (macOS MPS)\r\n\r\n```bash\r\n# Direct execution\r\nuv run train.py\r\n# Backend: mps | dtype: torch.float32 | compile: False\r\n# val_bpb: 2.169497\r\n\r\n# Via stdio_bus dispatcher\r\necho '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"status\",\"params\":{}}' | uv run stdio_bus/dispatcher.py\r\n# {\"backend\": \"mps\", \"gpus\": {\"ids\": [0], \"busy\": []}}\r\n\r\n# Via stdio_bus kernel\r\necho '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"status\",\"params\":{}}' | \\\r\n  stdio_bus --config stdio_bus/stdio-bus-config.json\r\n```\r\n\r\n### Docker (CUDA)\r\n\r\n```bash\r\ndocker run -d --gpus all -p 9000:9000 \\\r\n  -v $(pwd)/stdio_bus/dispatcher.py:/stdio_bus/dispatcher.py:ro \\\r\n  -v $(pwd)/stdio_bus/stdio-bus-config.json:/stdio_bus/stdio-bus-config.json:ro \\\r\n  -v $(pwd)/pyproject.toml:/stdio_bus/pyproject.toml:ro \\\r\n  -v $(pwd)/train.py:/stdio_bus/train.py:ro \\\r\n  -v $(pwd)/prepare.py:/stdio_bus/prepare.py:ro \\\r\n  -v ~/.cache/autoresearch:/root/.cache/autoresearch:ro \\\r\n  stdiobus/stdiobus:python312 \\\r\n  --config /stdio_bus/stdio-bus-config.json --tcp 0.0.0.0:9000\r\n\r\necho '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"run\",\"params\":{\"agentId\":\"test\"}}' | \\\r\n  nc -i 60 localhost 9000\r\n```\r\n\r\n## Compatibility\r\n\r\n- **CUDA path unchanged** – existing NVIDIA workflows work identically\r\n- **No new dependencies** – MPS support uses PyTorch built-ins (SDPA)\r\n- **Backward compatible** – falls back gracefully when GPU unavailable\r\n- **Minimal code changes** – conditional one-liners, preserves original structure\r\n\r\n## Files Changed\r\n\r\n```\r\ntrain.py                        | +91 -44  (unified backend)\r\nprepare.py                      | +13 -3   (device detection)\r\n                                |\r\nstdio_bus/dispatcher.py         | +42 -12  (MPS support, PROJECT_ROOT)\r\n```\r\n"
+      },
+      {
+        "number": 227,
+        "title": "Add MLX port for MacOS (optimized for 16GB RAM) to notable forks",
+        "state": "open",
+        "date": "2026-03-12T23:36:01Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/227",
+        "author": "matt-k-wong",
+        "body": "Added a native MLX port specifically re-engineered for Apple Silicon edge hardware. Unlike other 'naive' ports, this version includes O(N) Chunkwise Linear Attention, memory-safe Gradient Accumulation, and a pure MLX Muon optimizer port, making it stable on 16GB MacBook Airs."
+      },
+      {
+        "number": 223,
+        "title": "feat(stdio_bus): Add `stdio_bus` Integration for Distributed GPU Training",
+        "state": "open",
+        "date": "2026-03-12T21:21:58Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/223",
+        "author": "morozow",
+        "body": "## Summary\r\n\r\nThis PR introduces stdio_bus as the transport layer for distributing training experiments across multiple GPUs, replacing the HTTP-based agenthub approach with a high-performance local message bus.\r\n\r\n## Motivation\r\n\r\nThe `agenthub` branch implements multi-agent coordination via HTTP REST API to a central hub server. While this works for geographically distributed agents, it introduces unnecessary overhead for the common case: multiple GPUs on a single machine or local cluster.\r\n\r\n**agenthub limitations:**\r\n- Network latency on every API call (register, push, fetch, post)\r\n- Central server dependency — single point of failure\r\n- HTTP overhead for simple request/response patterns\r\n- Complex git bundle serialization for code sharing\r\n- Requires external infrastructure (hub server)\r\n\r\n## Solution: stdio_bus\r\n\r\n[stdio_bus](https://stdiobus.com/) is a deterministic C runtime providing transport-level routing for agent protocols. It acts as a process supervisor and message router using JSON-RPC 2.0 over NDJSON.\r\n\r\n**Resources:**\r\n- Website & Documentation: https://stdiobus.com/\r\n- Core Repository: https://github.com/stdiobus/stdiobus\r\n- Worker Registry: https://github.com/stdiobus/workers-registry\r\n\r\n**Architecture:**\r\n```mermaid\r\nsequenceDiagram\r\n    participant C1 as Client 1\r\n    participant C2 as Client 2\r\n    participant TCP as TCP :9000\r\n    participant Kernel as stdio_bus kernel\r\n    participant Dispatcher as dispatcher.py\r\n    participant GPU0 as GPU 0\r\n    participant GPU1 as GPU 1\r\n\r\n    C1->>TCP: run (agent-1)\r\n    TCP->>Kernel: route\r\n    Kernel->>Dispatcher: method: run\r\n    Dispatcher->>GPU0: acquire, exec train.py\r\n    \r\n    C2->>TCP: run (agent-2)\r\n    TCP->>Kernel: route\r\n    Kernel->>Dispatcher: method: run\r\n    Dispatcher->>GPU1: acquire, exec train.py\r\n    \r\n    GPU0-->>Dispatcher: val_bpb\r\n    Dispatcher-->>Kernel: response\r\n    Kernel-->>TCP: route back\r\n    TCP-->>C1: result\r\n    \r\n    GPU1-->>Dispatcher: val_bpb\r\n    Dispatcher-->>Kernel: response\r\n    Kernel-->>TCP: route back\r\n    TCP-->>C2: result\r\n```\r\n\r\n**Key advantages over agenthub:**\r\n\r\n| Aspect | agenthub | stdio_bus |\r\n|--------|----------|-----------|\r\n| Latency | HTTP round-trip (~10-100ms) | Local IPC (~0.1ms) |\r\n| Dependencies | Hub server, network | Single Docker container |\r\n| Protocol | REST + git bundles | JSON-RPC 2.0 over NDJSON |\r\n| Failure mode | Hub down = all agents blocked | Local process restart |\r\n| Scaling | Limited by hub capacity | Limited by local GPUs |\r\n\r\n\r\n**Technical benefits:**\r\n- Zero AI logic in transport — deterministic routing by session ID\r\n- Single-threaded event loop (epoll/kqueue) — minimal resource usage\r\n- Backpressure management — prevents memory exhaustion under load\r\n- Protocol agnostic — same bus can route ACP, MCP, or custom protocols\r\n\r\n## Implementation\r\n\r\n### Files Added\r\n\r\n```\r\nstdio_bus/\r\n├── dispatcher.py          # GPU pool manager (~80 lines)\r\n├── stdio-bus-config.json  # Worker pool configuration\r\n└── README.md              # Usage documentation\r\n```\r\n\r\n### dispatcher.py\r\n\r\nMinimal Python worker that:\r\n- Auto-detects available GPUs via `nvidia-smi` or `SWARM_GPU_IDS` env var\r\n- Manages GPU allocation (acquire/release)\r\n- Runs `train.py` experiments with `CUDA_VISIBLE_DEVICES` isolation\r\n- Tracks experiment results (total, active, best val_bpb)\r\n\r\n### JSON-RPC Methods\r\n\r\n| Method | Description |\r\n|--------|-------------|\r\n| `status` | GPU pool state: available/busy GPUs, experiment counts, best result |\r\n| `sync` | Full state sync with last 50 results |\r\n| `history` | Experiment history with configurable limit |\r\n| `run` | Execute experiment on available GPU (blocking or async) |\r\n\r\n### Usage\r\n\r\n```bash\r\n# Start dispatcher with NVIDIA GPUs\r\ndocker run -d --gpus all -p 9000:9000 \\\r\n  -v $(pwd)/stdio_bus/dispatcher.py:/stdio_bus/dispatcher.py:ro \\\r\n  -v $(pwd)/stdio_bus/stdio-bus-config.json:/stdio_bus/stdio-bus-config.json:ro \\\r\n  -v $(pwd)/pyproject.toml:/stdio_bus/pyproject.toml:ro \\\r\n  -v $(pwd)/train.py:/stdio_bus/train.py:ro \\\r\n  -v $(pwd)/prepare.py:/stdio_bus/prepare.py:ro \\\r\n  stdiobus/stdiobus:python312 \\\r\n  --config /stdio_bus/stdio-bus-config.json --tcp 0.0.0.0:9000\r\n\r\n# Without GPU (testing only)\r\ndocker run -d -p 9000:9000 \\\r\n  -v $(pwd)/stdio_bus/dispatcher.py:/stdio_bus/dispatcher.py:ro \\\r\n  -v $(pwd)/stdio_bus/stdio-bus-config.json:/stdio_bus/stdio-bus-config.json:ro \\\r\n  -v $(pwd)/pyproject.toml:/stdio_bus/pyproject.toml:ro \\\r\n  stdiobus/stdiobus:python312 \\\r\n  --config /stdio_bus/stdio-bus-config.json --tcp 0.0.0.0:9000\r\n\r\n# Query status\r\necho '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"status\",\"params\":{},\"sessionId\":\"s1\"}' | nc -i 1 localhost 9000\r\n\r\n# Run experiment\r\necho '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"run\",\"params\":{\"agentId\":\"agent-0\"},\"sessionId\":\"s1\"}' | nc -i 1 localhost 9000\r\n```\r\n\r\n## When to Use Each Approach\r\n\r\n**Use stdio_bus when:**\r\n- Multiple GPUs on single machine\r\n- Local cluster with shared filesystem\r\n- Low-latency experiment dispatch required\r\n- No external infrastructure available\r\n\r\n**Use agenthub when:**\r\n- Geographically distributed agents\r\n- Agents on different networks/clouds\r\n- Need persistent experiment history across restarts\r\n- Human-readable web dashboard required\r\n\r\n## Testing\r\n\r\nTested on:\r\n- Docker with `stdiobus/stdiobus:python312` image\r\n- TCP mode (`--tcp 0.0.0.0:9000`)\r\n\r\n## Future Extensions\r\n\r\nThe stdio_bus architecture enables:\r\n- **Agent routing**: Multiple AI agents sharing GPU pool via session affinity\r\n- **IDE integration**: Already available via MCP-to-ACP proxy — IDEs like JetBrains, Visual Studio Code can dispatch experiments through standard MCP protocol, which bridges to ACP agents on stdio_bus\r\n- **Hybrid mode**: Local stdio_bus for GPU dispatch, agenthub for cross-machine coordination"
+      },
+      {
+        "number": 218,
+        "title": "Add anti-overfitting policy and ideas scratchpad",
+        "state": "open",
+        "date": "2026-03-12T20:04:43Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/218",
+        "author": "tahatalib85",
+        "body": "Adds two small files to improve the autonomous research loop.\r\n\r\n overfit.md adds a simple anti-overfitting policy: do not trust a single run, rerun promising changes, prefer\r\n  simple mechanisms, and avoid benchmark-specific tricks.\r\n\r\n ideas.md adds lightweight local memory for failed directions, near misses, observations, and future ideas. This\r\n  helps the agent avoid repeating itself and change direction when progress stalls.\r\n\r\n program.md now tells the agent to actually use both files in the loop, and README.md documents the stack. ideas.md\r\n  is left untracked because it is per-run scratch space.\r\n\r\n This is necessary because the current setup has git for the best trajectory and results.tsv for numeric logging,\r\n  but no explicit policy against fake progress and no lightweight memory for research reasoning.\r\n\r\n It also promotes agentic driving: the agent can keep moving on its own, validate wins before trusting them,\r\n remember what it learned, and make better decisions without constant human steering."
+      },
+      {
+        "number": 217,
+        "title": "docs: add SECURITY.md",
+        "state": "open",
+        "date": "2026-03-12T19:35:50Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/217",
+        "author": "vincentayorinde",
+        "body": "## Summary\r\nAdds a minimal `SECURITY.md` so the repo has a clear security reporting policy.\r\n\r\n## Why\r\nGitHub currently shows no security policy for this repository. This adds a simple, standard place for responsible disclosure guidance without changing any code.\r\n\r\n## Scope\r\n- adds `SECURITY.md` only\r\n- no runtime or training changes"
+      },
+      {
+        "number": 216,
+        "title": "prepare: verify cached dataset shards before reuse",
+        "state": "open",
+        "date": "2026-03-12T19:23:19Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/216",
+        "author": "vincentayorinde",
+        "body": "Fixes #215 \r\n\r\n## Summary\r\nThis hardens the downloaded dataset shard cache in `prepare.py` with a minimal diff.\r\n\r\n## What changed\r\n- writes SHA-256 sidecars for cached downloaded shard files\r\n- verifies cached shard files before reuse\r\n- redownloads shard files if they are missing or fail integrity verification\r\n\r\n## Why\r\n`prepare.py` downloads and caches dataset shard files locally, then reuses them later. This patch adds a small integrity check around that cache boundary so corrupted or tampered shard files are not silently trusted.\r\n\r\n## Scope\r\n- no new dependencies\r\n- no `train.py` changes\r\n- no broader pipeline changes\r\n- no tokenizer cache changes"
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 367,
+        "title": "Question about reuse/adaptation of autoresearch code (no license)",
+        "state": "open",
+        "date": "2026-03-21T17:40:31Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/367",
+        "author": "heinricitorgau"
+      },
+      {
+        "number": 365,
+        "title": "Auto-Research Tracks: pluggable idle optimization across harness, skills, memory, and model selection",
+        "state": "open",
+        "date": "2026-03-21T15:47:53Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/365",
+        "author": "craigm26"
+      },
+      {
+        "number": 364,
+        "title": "JudgeModel layer: snapshot-diff scoring + binary rubric verification between evaluator and promoter",
+        "state": "open",
+        "date": "2026-03-21T14:49:24Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/364",
+        "author": "craigm26"
+      },
+      {
+        "number": 363,
+        "title": "Expand harness generator to explore pattern/memory/security design space",
+        "state": "open",
+        "date": "2026-03-21T14:35:40Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/363",
+        "author": "craigm26"
+      },
+      {
+        "number": 349,
+        "title": "Proposal: data-centric autoresearch",
+        "state": "open",
+        "date": "2026-03-20T03:51:06Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/349",
+        "author": "huaiyizhao"
+      },
+      {
+        "number": 348,
+        "title": "[Bug] Tokenizer.encode: prepend_id scope issue causes NameError when prepend is string",
+        "state": "open",
+        "date": "2026-03-20T00:13:12Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/348",
+        "author": "Financier-Nuri"
+      },
+      {
+        "number": 347,
+        "title": "RTX-5090 GPU",
+        "state": "open",
+        "date": "2026-03-19T23:34:10Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/347",
+        "author": "jdnichollsc"
+      }
+    ],
+    "commitCount": 5,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/karpathy-autoresearch-0.jpg"
+    ]
+  },
+  {
+    "name": "jobs",
+    "description": "A research tool for visually exploring Bureau of Labor Statistics Occupational Outlook Handbook data. This is not a report, a paper, or a serious economic publication — it is a development tool for exploring BLS data visually.",
+    "url": "https://github.com/karpathy/jobs",
+    "stars": 1023,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 16,
+        "title": "Thank you!",
+        "state": "open",
+        "date": "2026-03-18T13:10:38Z",
+        "url": "https://github.com/karpathy/jobs/issues/16",
+        "author": "pascalandy"
+      },
+      {
+        "number": 15,
+        "title": "Visual tool is cut off on the side",
+        "state": "open",
+        "date": "2026-03-17T19:53:48Z",
+        "url": "https://github.com/karpathy/jobs/issues/15",
+        "author": "betab"
+      },
+      {
+        "number": 13,
+        "title": "3D display",
+        "state": "open",
+        "date": "2026-03-17T07:00:33Z",
+        "url": "https://github.com/karpathy/jobs/issues/13",
+        "author": "SamYuan1990"
+      },
+      {
+        "number": 12,
+        "title": "Add a search feature to website",
+        "state": "open",
+        "date": "2026-03-17T04:01:44Z",
+        "url": "https://github.com/karpathy/jobs/issues/12",
+        "author": "pisces76"
+      },
+      {
+        "number": 8,
+        "title": "Built an Indian adaptation - AI Exposure of India's Job Market using NCS Portal data",
+        "state": "open",
+        "date": "2026-03-16T09:10:12Z",
+        "url": "https://github.com/karpathy/jobs/issues/8",
+        "author": "rupeshs"
+      },
+      {
+        "number": 7,
+        "title": "интересно, последствия ИИ  для прфессий",
+        "state": "open",
+        "date": "2026-03-16T07:34:33Z",
+        "url": "https://github.com/karpathy/jobs/issues/7",
+        "author": "9427620"
+      }
+    ],
+    "commitCount": 5,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "jobs",
+    "description": "A research tool for visually exploring how AI may reshape occupations in India.",
+    "url": "https://github.com/subhajitlucky/jobs",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "subhajitlucky/jobs"
+  },
+  {
+    "name": "india-jobs-ai-exposure",
+    "description": "India-focused adaptation of karpathy/jobs using NCO occupation groups to estimate AI exposure in the Indian job market.",
+    "url": "https://github.com/Laksh-star/india-jobs-ai-exposure",
+    "stars": 1,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/laksh-star-india-jobs-ai-exposure-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "Laksh-star/india-jobs-ai-exposure"
+  },
+  {
+    "name": "jobs-uk",
+    "description": null,
+    "url": "https://github.com/iabhishektri-oss/jobs-uk",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/iabhishektri-oss-jobs-uk-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "iabhishektri-oss/jobs-uk"
+  },
+  {
+    "name": "AI-ISCO",
+    "description": "US & EU Job Market Visualizer — Karpathy-style BLS treemaps + ESCO occupations/skills/competences",
+    "url": "https://github.com/Jorisdevreede/AI-ISCO",
+    "stars": 1,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "Jorisdevreede/AI-ISCO"
+  },
+  {
+    "name": "ukjobs",
+    "description": "AI Potential Impact on UK Job Market (ONS & Nomis 2021-24 Dataset)",
+    "url": "https://github.com/PMOLDN/ukjobs",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "PMOLDN/ukjobs"
+  },
+  {
+    "name": "karpathy-jobs-archive",
+    "description": "Archive of Andrej Karpathy's AI Job Exposure Map (karpathy.ai/jobs) - fork preserved before original repo was removed",
+    "url": "https://github.com/crox777/karpathy-jobs-archive",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/crox777-karpathy-jobs-archive-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "crox777/karpathy-jobs-archive"
+  },
+  {
+    "name": "job-market-analysis",
+    "description": "AI-powered job market analysis and visualization — treemap + empowerment map",
+    "url": "https://github.com/de1zyeu123/job-market-analysis",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "de1zyeu123/job-market-analysis"
+  },
+  {
+    "name": "AI_JOBS_EXPOSURE",
+    "description": null,
+    "url": "https://github.com/untwist/AI_JOBS_EXPOSURE",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/untwist-ai-jobs-exposure-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "untwist/AI_JOBS_EXPOSURE"
+  }
+]

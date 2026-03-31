@@ -1,0 +1,80 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "eight fixes to patroni's shutdown sequence, exception handling, and thread pool lifecycle",
+  "editionNote": "Eight merged PRs across patroni this week — mostly lifecycle and compatibility work, no releases.",
+  "articles": [
+    {
+      "repo": "patroni",
+      "headline": "the backoff patroni needed to stop over-eager failovers",
+      "deck": "*A 200ms network hiccup no longer demotes your primary.*",
+      "body": "Patroni used to pull the failover trigger the moment a heartbeat gap appeared, even fleeting ones. @cyberdem0n's <a href=\"https://github.com/patroni/patroni/pull/3453\">#3453</a> adds a primary race backoff — now a brief network stutter doesn't declare the leader dead. The delay sits in the leader race detection path, buying time before the cluster panics and promotes a replica.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a pendulum swinging, frozen mid-arc between two points",
+      "illustrate": true
+    },
+    {
+      "repo": "patroni",
+      "headline": "etcd v3's Unavailable exception now lands somewhere safe",
+      "deck": "*Patroni stops going blind when the store is temporarily unreachable.*",
+      "body": "The Unavailable exception from etcd v3 was propagating uncaught, leaving patroni without cluster state visibility during transient store outages. <a href=\"https://github.com/patroni/patroni/pull/3562\">#3562</a> catches and handles it properly. Now patroni degrades gracefully when the consensus store hiccups instead of crashing blind.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a hand catching a falling object before it hits the ground",
+      "illustrate": true
+    },
+    {
+      "repo": "patroni",
+      "headline": "global thread pool now shuts down last",
+      "deck": "*The shutdown sequence was demoting threads while they were still needed.*",
+      "body": "<a href=\"https://github.com/patroni/patroni/pull/3569\">#3569</a> reorders patroni's shutdown lifecycle — the global thread pool now terminates after everything else has finished. Before, other components tried to schedule work on a pool that was already dead, causing silent failures during shutdown.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a series of gears, one grinding to a halt while others still turn",
+      "illustrate": false
+    },
+    {
+      "repo": "patroni",
+      "headline": "patroni now handles threading changes in python 3.11+",
+      "deck": "*Internal threading behavior shifted; patroni adapts.*",
+      "body": "Python 3.11+ changed how the threading module works internally, breaking some of patroni's assumptions about thread lifecycle. <a href=\"https://github.com/patroni/patroni/pull/3526\">#3526</a> adds compatibility logic to handle the new behavior. Patroni users on newer Python versions no longer encounter threading-related failures.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "two different types of locks lying on a table side by side",
+      "illustrate": false
+    },
+    {
+      "repo": "patroni",
+      "headline": "postgresql.parameters type-checked on load",
+      "deck": "*Config errors surface immediately instead of at runtime.*",
+      "body": "<a href=\"https://github.com/patroni/patroni/pull/3568\">#3568</a> adds validation that postgresql.parameters is a dictionary. Malformed configs that sneak past the parser now fail early with a clear error message instead of causing cryptic failures later.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a hand holding a structure, examining it from different angles",
+      "illustrate": false
+    },
+    {
+      "repo": "patroni",
+      "headline": "PostgreSQL config no longer reloads during custom bootstrap",
+      "deck": "*Custom bootstrap scripts now run unmolested.*",
+      "body": "Patroni was reloading the PostgreSQL configuration while a custom bootstrap was mid-flight, interfering with the bootstrap process. <a href=\"https://github.com/patroni/patroni/pull/3563\">#3563</a> defers config reload until after bootstrap completes. Custom initialization scripts now execute without interruption.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a hand pausing a clock mid-tick",
+      "illustrate": false
+    },
+    {
+      "repo": "patroni",
+      "headline": "CitusHandler.run() postponed until needed",
+      "deck": "*Lazy initialization reduces startup time.*",
+      "body": "<a href=\"https://github.com/patroni/patroni/pull/3571\">#3571</a> defers CitusHandler initialization until it's actually required. The change trims startup overhead for installations not using Citus.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a shelf of items waiting, untouched and still boxed",
+      "illustrate": false
+    },
+    {
+      "repo": "patroni",
+      "headline": "unit tests no longer block on time.sleep()",
+      "deck": "*Test suite speeds up, latency gone.*",
+      "body": "<a href=\"https://github.com/patroni/patroni/pull/3570\">#3570</a> removes direct time.sleep() calls from unit tests. Tests that were burning real wall-clock time now run instantly, making the test suite faster and less flaky.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a stopwatch face showing zero elapsed time",
+      "illustrate": false
+    }
+  ],
+  "closingNote": "@cyberdem0n put in a quiet week of maintenance — no releases, no drama, just the plumbing that keeps clusters from falling apart."
+}

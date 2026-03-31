@@ -1,0 +1,17 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "scroll-stress-test logs six commits toward randomized cursor mayhem",
+  "editionNote": "One week, one repo, six commits burning through index scan edge cases.",
+  "articles": [
+    {
+      "repo": "scroll-stress-test",
+      "headline": "scroll-stress-test advances its randomized torture chamber",
+      "deck": "@tvondra spent the week hardening tests for scrollable cursors on index scans.",
+      "body": "Six commits landed in scroll-stress-test this week, pushing forward the randomized stress testing apparatus for scrollable cursors during index scans. The work remains unpublished as a release, but the commit velocity suggests active refinement of the test harness itself. No major features or API changes announced, but the infrastructure work hints at preparation for either a release cycle or upstream integration.",
+      "tag": "PENDING",
+      "illustrationPrompt": "mechanical gears spinning at different speeds inside a glass box, sparks flying, no labels",
+      "illustrate": true
+    }
+  ],
+  "closingNote": "Six commits, zero releases, infinite patience."
+}

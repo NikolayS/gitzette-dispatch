@@ -1,0 +1,80 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "junior gets routing discipline; sentry-mcp hardens metrics; whisky releases get smarter",
+  "editionNote": "Two releases. Seven merged PRs across junior and sentry-mcp. One week of defensive fixes and capability expansion.",
+  "articles": [
+    {
+      "repo": "junior",
+      "headline": "subscribed threads now respect opt-out decisions",
+      "deck": "*Junior's routing layer stops re-engaging users who've already declined.*",
+      "body": "@dcramer's <a href=\"https://github.com/getsentry/junior/pull/107\">#107</a> adds explicit opt-out tracking to the subscribed-thread routing path. Previously, the system had no way to honor a user's decision to exit a conversation thread; it would re-route and re-engage regardless. Now opt-out decisions flow through the decision layer, and threads stay dismissed when users close them. Combined with <a href=\"https://github.com/getsentry/junior/pull/95\">#95</a> (which preserves DM and mention routing at ingress), junior's message dispatch is now more predictable.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a hand clicking a checkbox or switch to close a thread, clean geometric lines",
+      "illustrate": true
+    },
+    {
+      "repo": "sentry-mcp",
+      "headline": "cloudflare workers now emit response and rate-limit metrics",
+      "deck": "*Visibility into MCP server performance under load.*",
+      "body": "@dcramer's <a href=\"https://github.com/getsentry/sentry-mcp/pull/848\">#848</a> instruments the cloudflare workers runtime with response time and rate-limit metrics. The MCP server was previously running blind—no way to observe latency or throttling behavior in production. These metrics now flow into observability systems, making it clear when the server is under pressure or misbehaving. Version 0.30.0 ships with this in place. Separately, <a href=\"https://github.com/getsentry/sentry-mcp/pull/839\">#839</a> removes root protected resource metadata that was leaking into the API surface.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a gauge or meter needle pointing toward the upper right, simple analog style",
+      "illustrate": true
+    },
+    {
+      "repo": "sentry-mcp",
+      "headline": "test harness now runs cloudflare workers tests in workers pool",
+      "deck": "*Tests execute in the actual runtime environment instead of Node.js.*",
+      "body": "@dcramer's <a href=\"https://github.com/getsentry/sentry-mcp/pull/678\">#678</a> moves cloudflare workers tests from a generic Node.js vitest runner to vitest-pool-workers, which executes them inside the actual cloudflare workers runtime. This catches environment-specific bugs (bindings, globals, async behavior) that a Node.js simulation would miss. The test suite now reflects production reality.",
+      "tag": "FEATURE",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "peated",
+      "headline": "bottle precision now tracks whisky release dates",
+      "deck": "*Distinguishing bottlings by age and vintage expression becomes automatic.*",
+      "body": "@dcramer's <a href=\"https://github.com/dcramer/peated/pull/295\">#295</a> adds release-aware bottle precision to the whisky schema. Previously, two bottles from the same distillery at the same ABV couldn't be reliably differentiated without manual curation. Now the system tracks release date metadata and uses it to generate correct precision identifiers. The four open issues (schema revamp, distillery name mapping, batch queries, org support) represent the longer roadmap but are separate from this week's work.",
+      "tag": "FEATURE",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "junior",
+      "headline": "auth guidance now surfaces through the skill layer generically",
+      "deck": "*No more hardcoding credential messages per tool.*",
+      "body": "@dcramer's <a href=\"https://github.com/getsentry/junior/pull/106\">#106</a> lifts auth guidance out of individual skill implementations and surfaces it through a generic mechanism. When a tool needs credentials, users see consistent, standardized help text instead of whatever prose the skill author happened to write. This pairs with <a href=\"https://github.com/getsentry/junior/pull/93\">#93</a>, which adds plugin-scoped MCP tool support—skills can now declare tools that are only available within their own scope, reducing namespace collisions and permission complexity.",
+      "tag": "FEATURE",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "junior",
+      "headline": "queue diagnostics now track silent thread pool drops",
+      "deck": "*When messages disappear without error, you'll know why.*",
+      "body": "@dcramer's <a href=\"https://github.com/getsentry/junior/pull/92\">#92</a> adds diagnostic logging to the message queue and thread pool shutdown path. Junior was silently dropping queued messages when threads exited, with no trace in logs. Now the system records what was discarded and where in the shutdown sequence it happened. <a href=\"https://github.com/getsentry/junior/pull/96\">#96</a> hardens the eval harness overrides and updates dependencies to prevent similar silent failures downstream.",
+      "tag": "FEATURE",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "junior",
+      "headline": "image attachments now reuse generated images across tool invocations",
+      "deck": "*File attachment dedupe cuts redundant I/O and storage.*",
+      "body": "@dcramer's <a href=\"https://github.com/getsentry/junior/pull/91\">#91</a> caches generated images and reuses them when the same visual is needed across multiple tool calls in a single message thread. Previously, each tool invocation would regenerate and re-upload the same image. Now the cache key is checked first, saving bandwidth and storage quota during longer interactions.",
+      "tag": "FEATURE",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "skills",
+      "headline": "skill-writer path guidance now portable across platforms",
+      "deck": "*Platform-specific path logic moves out of hardcoded strings.*",
+      "body": "@dcramer's <a href=\"https://github.com/getsentry/skills/pull/103\">#103</a> refactors how the skill-writer communicates filesystem paths to agents. Instead of baking platform assumptions into guidance text, path handling is now portable and abstracted. <a href=\"https://github.com/getsentry/skills/pull/104\">#104</a> simplifies the create-branch workflow, reducing cognitive load on the skill layer. Both are cleanup work that makes the skill framework easier to extend.",
+      "tag": "FEATURE",
+      "illustrationPrompt": null,
+      "illustrate": false
+    }
+  ],
+  "closingNote": "@dcramer shipped 7 PRs and 2 releases across 5 active repos. Quiet by Sentry standards; intentional by everyone else's."
+}

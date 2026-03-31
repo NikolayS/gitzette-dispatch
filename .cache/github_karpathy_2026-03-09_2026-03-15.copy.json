@@ -1,0 +1,44 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "autoresearch collects five PRs while the job market visualizer empire sprawls across continents",
+  "editionNote": "Five pending PRs on autoresearch, five repos quietly accumulating commits, and a licensing question that nobody answered.",
+  "articles": [
+    {
+      "repo": "autoresearch",
+      "headline": "autoresearch patches GPU compatibility gap with Turing fallback",
+      "deck": "A contributor adds capability-aware flash attention switching to run training on cheaper cards.",
+      "body": "<a href=\"https://github.com/karpathy/autoresearch/pull/268\">#268</a> from Nidhicodes adds Turing GPU (T4/RTX) compatibility via capability-aware FA3 fallback with fp16 and GradScaler support. The change addresses a real friction point: not everyone has H100s. Meanwhile, <a href=\"https://github.com/karpathy/autoresearch/pull/265\">#265</a> saves checkpoints before eval to survive crashes, and <a href=\"https://github.com/karpathy/autoresearch/pull/264\">#264</a> guards against zero grad accumulation steps.",
+      "tag": "PENDING",
+      "illustrationPrompt": "GPU chip with cascading fallback arrows, one path glowing brighter than others",
+      "illustrate": true
+    },
+    {
+      "repo": "autoresearch",
+      "headline": "autoresearch waits on docs and bug fixes in a five-PR stack",
+      "deck": "Community contributors chip at progress plots, gradients, and contribution guidelines.",
+      "body": "<a href=\"https://github.com/karpathy/autoresearch/pull/263\">#263</a> fixes undefined 'best' variable in progress plots. <a href=\"https://github.com/karpathy/autoresearch/pull/258\">#258</a> proposes a minimal CONTRIBUTING.md focused on research context. The PR queue suggests active tinkering but no merges this week.",
+      "tag": "PENDING",
+      "illustrationPrompt": "scattered papers with checkmarks and X marks, one highlighted in red",
+      "illustrate": false
+    },
+    {
+      "repo": "jobs",
+      "headline": "jobs repo now exists in at least five regional versions",
+      "deck": "The original BLS treemap spawned India, UK, and EU variants as the job market visualization empire quietly expands.",
+      "body": "@karpathy's jobs project has fractured into specialized regional instances: india-jobs-ai-exposure for NCO occupation groups, jobs-uk for ONS data, and AI-ISCO for EU ESCO standards. Each repo shows five commits this week. An open issue credits an Indian adaptation built on the original concept. The archive fork karpathy-jobs-archive preserves the original before deletion.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "treemap visualization splitting into multiple colored sections, each with different symbols",
+      "illustrate": true
+    },
+    {
+      "repo": "autoresearch",
+      "headline": "autoresearch wants a licensing policy and a judge layer",
+      "deck": "The open issues reveal ambitions: pluggable optimization tracks, snapshot-diff scoring, and data-centric research.",
+      "body": "Someone asked whether autoresearch code can be reused without a license and got no answer. The backlog includes Auto-Research Tracks (pluggable idle optimization), a JudgeModel layer for snapshot-diff scoring and binary rubric verification, and expanded harness generation for pattern and security exploration. No timelines yet.",
+      "tag": "PENDING",
+      "illustrationPrompt": "flowchart with multiple branching paths, some paths converging into a central node",
+      "illustrate": false
+    }
+  ],
+  "closingNote": "Five repos, five commits each, five open questions nobody asked for."
+}

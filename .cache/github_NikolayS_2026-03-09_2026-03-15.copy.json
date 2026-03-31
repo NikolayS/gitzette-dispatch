@@ -1,0 +1,56 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "One major release, eighteen dental buzzer builds, and an AI agent that shared a little too much.",
+  "editionNote": "pg_ash ships v1.3 with Azure fixes and optional pg_cron, rpg logs 100 commits in silence, and a leaked API key reminds everyone that AI agents don't know what secrets are.",
+  "articles": [
+    {
+      "repo": "pg_ash",
+      "headline": "pg_ash v1.3 cuts the cord to pg_cron",
+      "deck": "Active Session History for Postgres now runs anywhere you can schedule a job — systemd timer, system cron, or a psql \\watch loop.",
+      "body": "pg_ash v1.3 landed on March 11 with 32 commits. The headline feature: pg_cron is now officially optional. Call ash.start() without it and the extension prints NOTICE instructions for external scheduling; ash.status() reports accordingly. Azure Flexible Server users get a fix too — pg_ash now uses cron.alter_job() instead of direct UPDATE on cron.job, which Azure locks as read-only. A new set_debug_logging() function lets operators trace sampled backends to the server log, handy for diagnosing connection pooler behavior. Functions that depend on pg_stat_statements now fail fast with a clear EXCEPTION and HINT instead of silently returning NULLs, while optional-dependency functions emit a WARNING. Minute and hour intervals also work properly now — ash.start('5 minutes') no longer chokes. Ten merged PRs drove the release, including <a href=\"https://github.com/NikolayS/pg_ash/pull/7\">#7 Make pg_cron officially optional</a>, <a href=\"https://github.com/NikolayS/pg_ash/pull/14\">#14 error when pgss-dependent functions called without pg_stat_statements</a>, and <a href=\"https://github.com/NikolayS/pg_ash/pull/17\">#17 WARNING when pgss-optional functions run without pg_stat_statements</a>.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "hourglass filled with database wait events being sampled without a cron daemon"
+    },
+    {
+      "repo": "rpg",
+      "headline": "rpg burns through 100 commits but ships nothing — on purpose",
+      "deck": "The Rust-based psql replacement is deep in construction; the issue tracker hints at what is coming.",
+      "body": "@NikolayS pushed 100 commits to rpg this week with no release and no merged PRs. The issue tracker tells the story: a query formatter via \\reformat, fuzzy and AI-powered command history, terminal charts and graphs for query results, WASI target for browser embedding via WSS proxy, and shell script support in the prompt. All filed, none shipped. This is scaffolding season.",
+      "tag": "PENDING",
+      "illustrationPrompt": "construction crane building a terminal window brick by brick"
+    },
+    {
+      "repo": "rpg",
+      "headline": "AI agent leaks pgMustard API key in a PR comment",
+      "deck": "An automated test run for rpg's \\explain share pgmustard feature posted raw output — secret included — to a public GitHub thread.",
+      "body": "During development of rpg v0.8.0's pgMustard integration, an AI agent dutifully posted its testing output to a GitHub PR comment. The output included a pgMustard API key. @NikolayS spotted the leak quickly and rotated the key. No damage done, but the lesson is evergreen: AI agents do not distinguish secrets from stdout. If your workflow posts tool output to public threads, treat every run as a potential disclosure event.",
+      "tag": "SECURITY",
+      "illustrationPrompt": "robot accidentally holding up a glowing key in a crowded room"
+    },
+    {
+      "repo": "oak-tree-buzzer",
+      "headline": "Dental buzzer app ships 18 debug builds in one morning",
+      "deck": "oak-tree-buzzer went from v1.0.7 to v1.2.4 on March 14, all debug builds for direct Android tablet install.",
+      "body": "On a single Friday morning, @NikolayS tagged 18 releases of oak-tree-buzzer, the LAN-only dental office intercom app. Every one is a debug build meant for sideloading onto Android tablets, with the version number now visible in the bottom-right corner. Sixty-three commits backed the burst. Sometimes shipping means pressing the button until the dentist's tablet cooperates.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "assembly line of Android tablets rolling through a dental office"
+    },
+    {
+      "repo": "postgres",
+      "headline": "@NikolayS proposes psql plugin system and command tag negotiation on his Postgres fork",
+      "deck": "Two open PRs explore a plugin architecture for psql and a protocol-level command tag format.",
+      "body": "Two PRs appeared this week on @NikolayS's postgres mirror. <a href=\"https://github.com/NikolayS/postgres/pull/17\">#17 Add research report on psql plugin system feasibility</a> is exactly what the title says — a written investigation into whether psql could support plugins. <a href=\"https://github.com/NikolayS/postgres/pull/16\">#16 WIP: command_tag_format — protocol-level command tag negotiation via _pq_</a> tackles how clients and servers agree on command tag formatting at the wire protocol level. Both are works in progress, not upstream submissions.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "blueprint diagram of a plugin socket being fitted into a terminal"
+    },
+    {
+      "repo": "aiteam",
+      "headline": "Community contributor opens first PR on aiteam: agent monitoring dashboard",
+      "deck": "A skeleton UI for watching what your AI agents are up to.",
+      "body": "Contributor @Tanya301 opened <a href=\"https://github.com/NikolayS/aiteam/pull/1\">#1 Add dashboard skeleton: agent monitoring UI</a> on the aiteam repo, which hosts reference docs for setting up AI engineering teams. The PR is still open. Nine commits hit the repo this week.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "control room dashboard with silhouettes of AI agents on monitors"
+    }
+  ],
+  "closingNote": "Eighteen tags in one morning is not a release strategy. It is a conversation with a tablet that refuses to update."
+}

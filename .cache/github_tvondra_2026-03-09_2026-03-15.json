@@ -1,0 +1,181 @@
+[
+  {
+    "name": "fortressQL",
+    "description": "FortressQL — PostgreSQL 17 fork with built-in post-quantum cryptography. ML-KEM, ML-DSA, TDE, WAL signing, and hybrid PQC/classical TLS. FIPS 203/204/205 compliant.",
+    "url": "https://github.com/dyber-pqc/fortressQL",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 2,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "dyber-pqc/fortressQL"
+  },
+  {
+    "name": "postgresql-releases",
+    "description": "Mirror of https://git.postgresql.org/git/postgresql.git with Prebuilt Binaries on Github Releases",
+    "url": "https://github.com/bnnanet/postgresql-releases",
+    "stars": 1,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 4,
+        "title": "doc: How to statically compile PostgreSQL (for portablitiy)",
+        "state": "open",
+        "date": "2024-10-12T09:57:09Z",
+        "url": "https://github.com/bnnanet/postgresql-releases/issues/4",
+        "author": "coolaj86"
+      }
+    ],
+    "commitCount": 2,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "bnnanet/postgresql-releases"
+  },
+  {
+    "name": "qpdb",
+    "description": null,
+    "url": "https://github.com/RekGRpth/qpdb",
+    "stars": 1,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "RekGRpth/qpdb"
+  },
+  {
+    "name": "postgresql",
+    "description": null,
+    "url": "https://github.com/pjungwir/postgresql",
+    "stars": 1,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "pjungwir/postgresql"
+  },
+  {
+    "name": "postgresql",
+    "description": "Gitea Push Mirror of https://git.postgresql.org/git/postgresql.git",
+    "url": "https://github.com/therootcompany/postgresql",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "therootcompany/postgresql"
+  },
+  {
+    "name": "postgres-dev",
+    "description": null,
+    "url": "https://github.com/sxd/postgres-dev",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "sxd/postgres-dev"
+  },
+  {
+    "name": "postgres",
+    "description": "Mirror of the official PostgreSQL GIT repository. Note that this is just a *mirror* - we don't work with pull requests on github. To contribute, please see https://wiki.postgresql.org/wiki/Submitting_a_Patch",
+    "url": "https://github.com/postgres/postgres",
+    "stars": 20368,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "postgres/postgres"
+  },
+  {
+    "name": "postgresql",
+    "description": "Robert Haas development repository",
+    "url": "https://github.com/robertmhaas/postgresql",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "robertmhaas/postgresql"
+  },
+  {
+    "name": "postgres",
+    "description": "Private development repository of PostgreSQL.  Contents come and go depending on my own needs.",
+    "url": "https://github.com/michaelpq/postgres",
+    "stars": 10,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "michaelpq/postgres"
+  },
+  {
+    "name": "postgres",
+    "description": "a fork",
+    "url": "https://github.com/amitlan/postgres",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 5,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "amitlan/postgres"
+  }
+]

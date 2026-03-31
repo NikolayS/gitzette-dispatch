@@ -1,0 +1,1054 @@
+[
+  {
+    "name": "gitzette",
+    "description": "Turn your GitHub activity into a weekly newspaper — AI-generated headlines, styled HTML output",
+    "url": "https://github.com/NikolayS/gitzette",
+    "stars": 3,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 58,
+        "title": "feat: use pretext for deterministic broadsheet column layout",
+        "state": "open",
+        "date": "2026-03-29T13:55:28Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/58",
+        "author": "NikolayS"
+      },
+      {
+        "number": 56,
+        "title": "feat: editorial feedback system — human+model grading loop",
+        "state": "open",
+        "date": "2026-03-22T21:46:29Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/56",
+        "author": "NikolayS"
+      },
+      {
+        "number": 52,
+        "title": "Dispatch footer share links are right-aligned, creating small touch targets on mobile",
+        "state": "open",
+        "date": "2026-03-21T22:58:27Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/52",
+        "author": "NikolayS"
+      },
+      {
+        "number": 51,
+        "title": "Homepage hero has excessive top margin on mobile (64px wasted above the fold)",
+        "state": "open",
+        "date": "2026-03-21T22:58:19Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/51",
+        "author": "NikolayS"
+      },
+      {
+        "number": 50,
+        "title": "Legacy dispatch CSS defines --link: #1a1a8c (blue), violating ink-only link rule",
+        "state": "open",
+        "date": "2026-03-21T22:58:12Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/50",
+        "author": "NikolayS"
+      },
+      {
+        "number": 45,
+        "title": "GitLab support: Phase 1 — generator script with --provider gitlab flag",
+        "state": "open",
+        "date": "2026-03-21T20:45:37Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/45",
+        "author": "NikolayS"
+      },
+      {
+        "number": 44,
+        "title": "Special edition: PostgreSQL community dispatch (pgsql-hackers + commitfest + git)",
+        "state": "open",
+        "date": "2026-03-21T20:45:23Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/44",
+        "author": "NikolayS"
+      },
+      {
+        "number": 37,
+        "title": "Graceful 'slow news week' fallback for users with zero activity",
+        "state": "open",
+        "date": "2026-03-21T19:27:24Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/37",
+        "author": "NikolayS"
+      },
+      {
+        "number": 31,
+        "title": "X/Twitter follower-to-GitHub mapper: pregenerate dispatches for @samokhvalov followers",
+        "state": "open",
+        "date": "2026-03-21T19:25:34Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/31",
+        "author": "NikolayS"
+      },
+      {
+        "number": 29,
+        "title": "Weekly email delivery: send dispatch link + hero section to subscriber",
+        "state": "open",
+        "date": "2026-03-21T19:25:05Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/29",
+        "author": "NikolayS"
+      },
+      {
+        "number": 28,
+        "title": "Seed landing page with known OSS devs' dispatches",
+        "state": "open",
+        "date": "2026-03-21T19:24:55Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/28",
+        "author": "NikolayS"
+      },
+      {
+        "number": 13,
+        "title": "feat: show generated timestamp at bottom of each dispatch",
+        "state": "open",
+        "date": "2026-03-21T19:02:56Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/13",
+        "author": "NikolayS"
+      },
+      {
+        "number": 7,
+        "title": "UX/Promotion: logo, navigation, footer, share buttons",
+        "state": "open",
+        "date": "2026-03-21T18:56:47Z",
+        "url": "https://github.com/NikolayS/gitzette/issues/7",
+        "author": "NikolayS"
+      }
+    ],
+    "commitCount": 9,
+    "topContributors": [
+      "NikolayS"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "gitzette-dispatch",
+    "description": "Weekly engineering newspaper generator — dispatches for gitzette.online",
+    "url": "https://github.com/NikolayS/gitzette-dispatch",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [
+      {
+        "number": 3,
+        "title": "feat: enrich articles with linked issue context (two-pass generation)",
+        "state": "merged",
+        "date": "2026-03-23T04:25:34Z",
+        "url": "https://github.com/NikolayS/gitzette-dispatch/pull/3",
+        "author": "NikolayS",
+        "body": "## What\n\nAfter LLM picks articles in pass 1, fetch PR bodies and parse `fixes #N` / `closes #N` references. Fetch issue title + body + top 3 comments from GitHub API. Inject as `LINKED ISSUE CONTEXT` block in pass 2 prompt.\n\n## Why\n\nArticles 2+ were opening with `@author merged #NNN —` boilerplate because the LLM had no \"before\" state to write from — just a PR title. Issues contain the real failure mode: user-reported symptoms, reproduction steps, production impact.\n\n## How\n\n1. Pass 1: LLM picks articles from PR list (unchanged)\n2. For each chosen article, fetch PR body → parse `fixes/closes/resolves/refs #N`\n3. Fetch linked issue title + body + top 3 comments\n4. Pass 2: regenerate copy with `LINKED ISSUE CONTEXT` injected per repo\n\nOnly fetches for chosen articles — not all PRs. Falls back to pass-1 copy if no linked issues found. No new dependencies."
+      }
+    ],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 2,
+        "title": "perf: pre-filter repos via GitHub commit search before full scan",
+        "state": "open",
+        "date": "2026-03-21T19:05:53Z",
+        "url": "https://github.com/NikolayS/gitzette-dispatch/issues/2",
+        "author": "NikolayS"
+      },
+      {
+        "number": 1,
+        "title": "perf: parallel repo scanning — cut large profile scan from 5min to ~40s",
+        "state": "open",
+        "date": "2026-03-21T19:05:51Z",
+        "url": "https://github.com/NikolayS/gitzette-dispatch/issues/1",
+        "author": "NikolayS"
+      }
+    ],
+    "commitCount": 1,
+    "topContributors": [
+      "NikolayS"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "rpg",
+    "description": "rpg — modern Postgres terminal written in Rust. psql-compatible, with built-in DBA diagnostics and AI assistant",
+    "url": "https://github.com/NikolayS/rpg",
+    "stars": 71,
+    "releases": [
+      {
+        "tag": "v0.9.0",
+        "name": "v0.9.0",
+        "date": "2026-03-28T17:23:06Z",
+        "body": "## What's new\n\n### Active Session History — `/ash`\n\n- **Live wait event timeline** — `/ash` opens a full-screen TUI with a scrolling stacked-bar chart of active sessions grouped by wait event type\n- **Drill-down** — `↑↓` to select a wait type, `Enter` to expand to events, `Enter` again to see individual queries\n- **pg_ash history integration** — when the [pg_ash](https://github.com/NikolayS/pg_ash) extension is installed, the timeline pre-populates with historical data on startup; bars appear immediately instead of building from scratch\n- **X-axis timestamps** — `HH:MM:SS` at zoom 1–2 (1 s/15 s buckets) so labels visibly tick every second; `HH:MM` at coarser zoom levels\n- **Zoom syncs refresh rate** — `←→` changes bucket size and live sampling interval together\n- **Actual data window** — status bar shows real data span (e.g. `22s`) instead of ring-buffer capacity\n\n### AI commands\n\n- **Compact output for `/explain` and `/optimize`** — structured, terminal-friendly formatting instead of raw prose\n\n### SQL and terminal\n\n- **EXPLAIN syntax highlighting** — execution plans rendered with color\n- **Shell backtick substitution in PROMPT1/PROMPT2** — dynamic prompts via shell commands (e.g. `PROMPT1='[`git branch --show-current`] %/ # '`)\n- **Interactive history picker for `\\s`** — browse and search query history in a TUI\n- **`\\` vs `/` command convention** — backslash commands (`\\d`, `\\dt`, `\\l`, ...) are native psql meta-commands, unchanged. Slash commands (`/fix`, `/optimize`, `/explain`, `/ash`, ...) are rpg-specific — both AI and non-AI. Muscle memory for psql stays intact; rpg additions are always visually distinct. All slash commands listed in `\\?`.\n\n### Connections\n\n- **Multi-host failover** — `-h host1,host2 -p 5432,5433` tries hosts in order; first success wins. Supports per-host ports and single-port-for-all-hosts.\n\n### Demo\n\n![quickstart demo](https://raw.githubusercontent.com/NikolayS/rpg/main/demos/quickstart-demo.gif)\n\n## Changelog\n\n- feat(ash): pg_ash history integration — pre-populate /ash timeline from ash.samples ([#761](https://github.com/NikolayS/rpg/issues/761))\n- fix(ash): show HH:MM:SS on X axis at zoom 1–2 (bucket ≤ 15 s)\n- fix(ash): sync sampling rate to zoom level; show actual data window ([#763](https://github.com/NikolayS/rpg/pull/763))\n- feat(connection): multi-host failover ([#751](https://github.com/NikolayS/rpg/pull/751))\n- feat(ash): Active Session History TUI — /ash command ([#756](https://github.com/NikolayS/rpg/pull/756))\n- feat(repl): establish `\\` vs `/` command convention ([#755](https://github.com/NikolayS/rpg/pull/755))\n- feat(explain): syntax highlighting for EXPLAIN output ([#749](https://github.com/NikolayS/rpg/pull/749))\n- feat(prompt): shell backtick substitution in PROMPT1/PROMPT2 ([#748](https://github.com/NikolayS/rpg/pull/748))\n- feat(ai): compact structured output for /explain and /optimize ([#747](https://github.com/NikolayS/rpg/pull/747))\n- feat(repl): interactive history picker for \\s ([#701](https://github.com/NikolayS/rpg/issues/701))",
+        "url": "https://github.com/NikolayS/rpg/releases/tag/v0.9.0"
+      },
+      {
+        "tag": "v0.8.4",
+        "name": "v0.8.4",
+        "date": "2026-03-25T15:08:51Z",
+        "body": "## Added\n\n- **Interactive history picker (`\\s`).** Press `\\s` to open a fuzzy-searchable TUI list of recent query history. Entries can be selected and inserted into the prompt, or written to a file with `\\s filename`. (#701)\n\n## Fixed\n\n- **`sslmode=verify-ca` no longer fails with SAN-bearing certificates.** On rustls 0.23 / webpki 0.103+, servers that present certificates with Subject Alternative Names return `CertificateError::NotValidForNameContext` instead of the legacy `NotValidForName` variant. `NoCnVerifier` now catches both variants, so verify-ca correctly skips hostname validation while still verifying the certificate chain. (#738, closes #712)\n\n## Tests\n\n- Unit test coverage increased from 68% toward 75% (+107 tests, 1809 total). (#702)",
+        "url": "https://github.com/NikolayS/rpg/releases/tag/v0.8.4"
+      },
+      {
+        "tag": "v0.8.3",
+        "name": "v0.8.3",
+        "date": "2026-03-25T15:08:35Z",
+        "body": "## Fixed\n\n- **URI query-string `host=` and `port=` parameters now respected.** Previously, passing `postgres://ignored:9999/db?host=localhost&port=5433` would silently discard the query-string overrides and attempt to connect to `ignored:9999`. The internal URI parser has been replaced with delegation to `tokio_postgres::Config::from_str()`, which handles all standard libpq parameters correctly. (#731)\n- **Default socket detection now finds any `.s.PGSQL.<port>` socket**, not only port 5432. `default_host_port()` scans well-known socket directories for any PostgreSQL socket file and returns the lowest-numbered port found, with port 5432 fast-pathed for the common case. (#728)\n- **Integration tests** for the full connection path matrix (groups A-G from issue #709). (#730)",
+        "url": "https://github.com/NikolayS/rpg/releases/tag/v0.8.3"
+      },
+      {
+        "tag": "v0.8.2",
+        "name": "v0.8.2",
+        "date": "2026-03-24T06:23:03Z",
+        "body": "## Fixed\n\n- **Default host now detects an active PostgreSQL socket** instead of checking if the socket directory exists. Previously, if `/var/run/postgresql` existed but had no running Postgres, rpg would try to connect there and fail. Now it checks for the actual `.s.PGSQL.5432` socket file — same assumption libpq makes. (#725)\n- **`sslmode=prefer` now correctly establishes TLS** with self-signed certificates. Previously it fell back silently to plaintext when the server had a non-public-CA cert. Now it encrypts when possible, skipping certificate verification — matching psql/libpq semantics. (#726)",
+        "url": "https://github.com/NikolayS/rpg/releases/tag/v0.8.2"
+      },
+      {
+        "tag": "v0.8.1",
+        "name": "v0.8.1",
+        "date": "2026-03-24T03:40:38Z",
+        "body": "## Fixed\n\n- **Connection errors now show the real cause** instead of the opaque \"db error\" or \"error connecting to server\" messages. rpg walks the error source chain to surface the underlying OS/network error, e.g. \"Connection refused (os error 111)\" or \"No such host is known\" — matching psql behavior. (#708)\n- **`sslmode=require` now works correctly** with self-signed certificates and non-public-CA servers. Previously, rpg verified the server certificate even in `require` mode, causing a TLS handshake failure. `sslmode=require` means encrypt only — no certificate verification — which is the correct psql semantics. SSL error messages are also improved: \"SSL error: server does not support SSL\" when connecting with `require` to a non-TLS server. (#711)\n- Serialize env-mutating tests to prevent flaky failures in CI. (#718)\n- Added SSL mode connection tests (D1-D6) to CI. (#714)\n- Stable conninfo SQL query; SCRAM port for A7 test. (#716)\n- Security: bump rustls-webpki 0.103.9 → 0.103.10 (CVE GHSA-pwjx-qhcg-rvj4). (#719)",
+        "url": "https://github.com/NikolayS/rpg/releases/tag/v0.8.1"
+      }
+    ],
+    "mergedPRs": [
+      {
+        "number": 762,
+        "title": "feat(ash): pg_ash history integration — pre-populate /ash timeline from ash.samples (#761)",
+        "state": "merged",
+        "date": "2026-03-28T17:22:26Z",
+        "url": "https://github.com/NikolayS/rpg/pull/762",
+        "author": "NikolayS",
+        "body": "Closes #761.\n\n## What this does\n\nWhen `pg_ash` is installed on the server, `/ash` now pre-populates the timeline with historical data from `ash.wait_timeline()` before starting the live polling loop. Falls back to live-only silently when pg_ash is absent.\n\n## How it works\n\nOn `/ash` startup:\n1. `detect_pg_ash()` checks if pg_ash is installed (existing behavior)\n2. If installed: call `query_ash_history(client, 600)` — queries `ash.wait_timeline('600 seconds'::interval, '1 second'::interval)`\n3. Results (oldest-first `AshSnapshot`s) pre-fill the ring buffer\n4. Live `pg_stat_activity` polling continues as normal — new samples scroll in on the right\n\nThe left side of the timeline shows history immediately; the right side grows with live data.\n\n## Key design decisions\n\n- **Graceful degradation**: `query_ash_history()` returns empty vec on any error — no crash, no error spam\n- **`ash.wait_timeline()`**: uses the public pg_ash API rather than decoding the internal `int[]` encoding directly\n- **Wait event parsing**: `wait_timeline` returns `\"Type:Event\"` strings; parsed into `(wtype, wevent)` pairs matching live sampler format\n- **Ring buffer cap**: history respects the same 600-sample cap as live mode\n\n## Tests\n\n1905 tests passing (26 new: history parsing, ring buffer capacity, graceful degradation, wait event format parsing)\n\n## Still needed (AI test + GIF)\n\nPer our convention, a `tests/ai/slash-ash-pgash.md` file with recording instructions will be added once pg_ash is available in the test environment."
+      },
+      {
+        "number": 764,
+        "title": "docs: bump to v0.9.0, clearer demo labels, remove pspg static screenshot",
+        "state": "merged",
+        "date": "2026-03-28T18:54:37Z",
+        "url": "https://github.com/NikolayS/rpg/pull/764",
+        "author": "NikolayS",
+        "body": "- `v0.7.0` → `v0.9.0` in install instructions\n- `See demo` → `▶ Click to expand demo` (more obvious it's expandable)\n- Remove pspg static screenshot `<details>` block (static image, not needed)"
+      },
+      {
+        "number": 763,
+        "title": "fix(ash): sync sampling rate to zoom level; show actual data window (#763)",
+        "state": "merged",
+        "date": "2026-03-28T03:45:17Z",
+        "url": "https://github.com/NikolayS/rpg/pull/763",
+        "author": "NikolayS",
+        "body": "## Summary\n\nTwo UX fixes for `/ash` found during demo recording:\n\n### Fix 1: Zoom changes sampling rate\nZooming out (→) now increases `refresh_interval_secs` to match `bucket_secs` (capped at 60s). Previously zoom only changed how existing 1s samples were aggregated for display — at 5min-bucket zoom you still had 1s live samples, so the ring buffer held only ~10min of real data regardless of zoom level. Now zoom-out = coarser sampling + wider real window.\n\n### Fix 2: Window label shows actual data span  \nStatus bar `window:` now shows actual elapsed data (samples × bucket_secs) rather than ring-buffer capacity. Previously showed `10min` from the first second of launch, which was confusing. Now shows `5s`, `30s`, growing honestly as data accumulates.\n\nRemoves now-unused `window_label()` from `AshState`.\n\n## Tests\n- Added `zoom_cycle_syncs_refresh_to_bucket` unit test\n- 1865 passing, 0 failed\n- clippy clean, fmt clean\n\nFixes issue found by Nik during demo recording."
+      },
+      {
+        "number": 751,
+        "title": "feat(connection): multi-host failover",
+        "state": "merged",
+        "date": "2026-03-28T00:00:01Z",
+        "url": "https://github.com/NikolayS/rpg/pull/751",
+        "author": "NikolayS",
+        "body": "Closes #743\n\nImplements comma-separated multi-host connection with failover, matching psql/libpq semantics.\n\n- `rpg -h host1,host2 -p 5432` tries hosts in order, uses first that accepts connection\n- Per-host ports supported: `-h host1,host2 -p 5432,5433`\n- Port reuse when fewer ports than hosts: last port is reused (matching libpq)\n- URI and connstring forms already worked; CLI flags now work too\n- `-p` flag accepts comma-separated port list (single port still works — fully backward-compatible)\n- `resolve_hosts()` extended with priority 3: CLI multi-host (after URI and conninfo)\n\n## Tests\n\n5 new unit tests in `src/connection.rs`:\n- `test_resolve_params_cli_multihost_single_port` — single port applied to all hosts\n- `test_resolve_params_cli_multihost_per_host_ports` — per-host port assignment\n- `test_resolve_params_cli_multihost_port_reuse` — last port reused when fewer ports than hosts\n- `test_resolve_params_cli_multihost_positional` — positional HOST arg with commas\n- `test_resolve_params_cli_single_host_regression` — single-host path unchanged\n\n3 new integration tests in `tests/connection_paths.rs` (Group I, run via connection-tests CI):\n- `i1_multihost_first_fails_second_succeeds` — failover to second host\n- `i2_multihost_all_fail` — error message when all hosts unreachable\n- `i3_single_host_regression` — single host still connects normally\n\nExisting `f7_multihost_failover` canary test (issue #724) now exercises the same code path.\n\nAll 1814 unit tests pass."
+      },
+      {
+        "number": 748,
+        "title": "feat(prompt): shell backtick substitution in PROMPT1/PROMPT2",
+        "state": "merged",
+        "date": "2026-03-27T16:41:04Z",
+        "url": "https://github.com/NikolayS/rpg/pull/748",
+        "author": "NikolayS",
+        "body": "Closes #744\n\nImplements backtick command substitution in PROMPT1/PROMPT2, matching psql behaviour.\n\nExample: `PROMPT1='`hostname`:%n@%m:%/> '` now renders with actual hostname output.\n\nTests added for: valid command, no trailing newline, failing command (empty), no backticks, multiple substitutions."
+      },
+      {
+        "number": 718,
+        "title": "fix(test): serialize env-mutating tests to prevent flaky failures",
+        "state": "merged",
+        "date": "2026-03-24T03:37:27Z",
+        "url": "https://github.com/NikolayS/rpg/pull/718",
+        "author": "NikolayS",
+        "body": "Closes #717\n\nAdds ENV_MUTEX static to serialize all tests that call set_var/remove_var."
+      },
+      {
+        "number": 720,
+        "title": "chore: bump version to 0.8.1",
+        "state": "merged",
+        "date": "2026-03-24T03:39:53Z",
+        "url": "https://github.com/NikolayS/rpg/pull/720",
+        "author": "NikolayS",
+        "body": "Release v0.8.1 — two bug fixes merged in #708 and #711.\n\n## Changes since v0.8.0\n\n- fix(connection): surface real IO error instead of 'db error' (#708)\n- fix(ssl): sslmode=require works with self-signed/non-public-CA certs (#711)\n\nCloses #713"
+      },
+      {
+        "number": 726,
+        "title": "fix(ssl): sslmode=prefer negotiates TLS without cert verification",
+        "state": "merged",
+        "date": "2026-03-24T03:49:09Z",
+        "url": "https://github.com/NikolayS/rpg/pull/726",
+        "author": "NikolayS",
+        "body": "Closes #722\n\npsql sslmode=prefer tries TLS first and falls back to plaintext only if TLS is unavailable — it does not verify the certificate. rpg was using webpki roots for prefer, causing fallback to plaintext on self-signed certs.\n\nFix: use the no-verify TLS config (same as sslmode=require) for the prefer TLS attempt."
+      },
+      {
+        "number": 737,
+        "title": "fix(repl): redraw status bar immediately on terminal resize (SIGWINCH)",
+        "state": "merged",
+        "date": "2026-03-25T01:57:29Z",
+        "url": "https://github.com/NikolayS/rpg/pull/737",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- The status bar stayed at the wrong width/position when the terminal was resized while a query was running, because `on_resize()` was only called at the start of each prompt cycle\n- Wrap `StatusLine` in `Arc<Mutex<StatusLine>>` so it can be shared safely across threads\n- Spawn a dedicated background task in `run_readline_loop` that installs a `tokio::signal::unix::Signal` stream for `SIGWINCH` and calls `sl.on_resize()` immediately on each signal — no waiting for the next keypress\n\n## Test plan\n\n- [ ] `cargo test --bin rpg` passes (1702 tests, verified locally)\n- [ ] Manual test: open a long-running query (`select pg_sleep(10)`), resize the terminal window — status bar redraws immediately at the new width\n- [ ] Manual test: resize at the prompt — bar redraws on next prompt cycle (unchanged, `on_resize()` still called at loop top)\n- [ ] `\\set STATUSLINE off` / `on` still works correctly\n- [ ] Pager before/after still clears and restores the bar correctly\n\nFixes #568.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 756,
+        "title": "feat(ash): Active Session History TUI — /ash command",
+        "state": "merged",
+        "date": "2026-03-27T21:32:10Z",
+        "url": "https://github.com/NikolayS/rpg/pull/756",
+        "author": "NikolayS",
+        "body": "Closes #753.\n\nAdds \\`/ash\\` — live Active Session History TUI, matching PostgresAI monitoring style.\n\n## What's included\n\n- Stacked bar timeline (600-sample ring buffer, scrolls right-to-left)\n- Y-axis AAS scale (max / mid / 0 labels)\n- 6 zoom levels: 1s / 15s / 30s / 1min / 5min / 10min (←/→ to cycle)\n- CPU count reference line (─)\n- Drill-down: wait_event_type → wait_event → query_id → pid\n- Summary row: DB TIME / WALL / AAS / CPUs\n- pg_ash auto-detection (history mode stub, Layer 2)\n- 24-bit RGB color scheme matching pg_ash / PostgresAI monitoring UI\n\n## Demo\n\n![/ash demo](https://github.com/NikolayS/rpg/blob/feat/753-ash/docs/ash-demo.gif?raw=true)\n\n## Color scheme\n\n| Wait type | Color |\n|---|---|\n| CPU* (on CPU or uninstrumented) | green (80,250,123) |\n| IdleTx | light yellow (241,250,140) |\n| IO | vivid blue (30,100,255) |\n| Lock | red (255,85,85) |\n| LWLock | pink (255,121,198) |\n| IPC | cyan (0,200,255) |\n| Client | yellow (255,220,100) |\n| Timeout | orange (255,165,0) |\n| BufferPin | teal (0,210,180) |\n| Activity | purple (150,100,255) |\n| Extension | light purple (190,150,255) |\n| Other | gray (180,180,180) |\n\n## Keys\n\n| Key | Action |\n|---|---|\n| q / Esc / Ctrl-C | quit |\n| ↑ / ↓ | select row |\n| Enter | drill down |\n| b | back |\n| ← / → | cycle zoom |\n| r | cycle refresh interval (1s / 5s / 10s) |"
+      },
+      {
+        "number": 755,
+        "title": "feat(repl): establish /cmd convention for rpg-specific commands",
+        "state": "merged",
+        "date": "2026-03-27T17:40:42Z",
+        "url": "https://github.com/NikolayS/rpg/pull/755",
+        "author": "NikolayS",
+        "body": "Closes #754. Moves rpg-specific commands to / namespace, keeps psql-compatible commands as \\. See issue for details."
+      },
+      {
+        "number": 749,
+        "title": "feat(explain): syntax highlighting for EXPLAIN output",
+        "state": "merged",
+        "date": "2026-03-27T17:07:07Z",
+        "url": "https://github.com/NikolayS/rpg/pull/749",
+        "author": "NikolayS",
+        "body": "Closes #745\n\nAdds terminal ANSI color highlighting to EXPLAIN/EXPLAIN ANALYZE output.\n\nColors applied:\n- Node types (Seq Scan, Hash Join, etc.) — bold cyan\n- Actual time — green (<10ms), yellow (10-100ms), red (>100ms)\n- Filter/Index Cond lines — yellow (potential optimization targets)\n- Planning Time / Execution Time — bold\n\nColoring disabled with --no-highlight or when stdout is not a TTY.\nInspired by Pygments PostgreSQL EXPLAIN lexer token patterns."
+      },
+      {
+        "number": 747,
+        "title": "feat(ai): compact structured output for /explain and /optimize",
+        "state": "merged",
+        "date": "2026-03-26T22:17:12Z",
+        "url": "https://github.com/NikolayS/rpg/pull/747",
+        "author": "NikolayS",
+        "body": "Closes #742\n\nReplaces verbose prose AI output with compact structured format for terminal use. All findings preserved.\n\n/explain output format:\n```\nBottleneck: Seq Scan on orders (cost=0..4821, 98K rows)\nFilters: orders.status -- consider index\nTime: planning 2ms, execution 847ms\n```\n\n/optimize output format:\n```\n1. CREATE INDEX CONCURRENTLY orders_status_idx ON orders(status); -- seq scan → index scan, ~10x speedup\n2. Rewrite subquery as JOIN -- eliminates nested loop\n```"
+      },
+      {
+        "number": 740,
+        "title": "docs: add missing CHANGELOG entries for v0.8.2 and v0.8.4",
+        "state": "merged",
+        "date": "2026-03-25T15:08:06Z",
+        "url": "https://github.com/NikolayS/rpg/pull/740",
+        "author": "NikolayS",
+        "body": "Fills in the two missing release note sections.\n\n## v0.8.4\n- `sslmode=verify-ca` fix for SAN-bearing certificates (rustls 0.23 / webpki 0.103+ regression, #738, closes #712)\n- Interactive history picker `\\s` (#701)\n- Test coverage boost (+107 tests, 1809 total, #702)\n\n## v0.8.2\n- `sslmode=prefer` no-verify TLS config fix (#726)\n- `default_host()` checks socket file existence not just directory (#725)"
+      },
+      {
+        "number": 738,
+        "title": "fix(ssl): NoCnVerifier catches all InvalidCertificate variants for verify-ca",
+        "state": "merged",
+        "date": "2026-03-25T07:06:55Z",
+        "url": "https://github.com/NikolayS/rpg/pull/738",
+        "author": "NikolayS",
+        "body": "## Problem\n\n`sslmode=verify-ca` connections fail with:\n\n```\nSSL error: certificate verification failed: invalid peer certificate: certificate not valid for name \"dummy.invalid\"; certificate is only valid for DnsName(\"localhost\") or IpAddress(127.0.0.1)\n```\n\n## Root Cause\n\n`NoCnVerifier::verify_chain()` calls `WebPkiServerVerifier::verify_server_cert()` with a dummy hostname (`dummy.invalid`) specifically to trigger a hostname-mismatch error that can be safely ignored — because for `verify-ca` we only care about the certificate chain, not the hostname.\n\nThe match arm caught `CertificateError::NotValidForName` (the legacy rustls variant). However, rustls 0.23 introduced a second variant `CertificateError::NotValidForNameContext { expected, presented }` that includes the expected name and presented SANs for richer error messages. **webpki 0.103+ always returns the context variant** — so the legacy `NotValidForName` arm never fires, and the error propagates as a real failure.\n\n## Fix\n\nCatch both variants in the same match arm:\n\n```rust\nErr(RustlsError::InvalidCertificate(\n    rustls::CertificateError::NotValidForName\n    | rustls::CertificateError::NotValidForNameContext { .. },\n)) => Ok(ServerCertVerified::assertion()),\n```\n\n## Testing\n\n- `verify-ca`: connects successfully ✓\n- `verify-full`: still works correctly ✓\n- All 1809 unit tests pass ✓\n- `cargo clippy` with `RUSTFLAGS=-D warnings` clean ✓"
+      },
+      {
+        "number": 701,
+        "title": "feat(repl): interactive history picker for \\s",
+        "state": "merged",
+        "date": "2026-03-25T03:56:28Z",
+        "url": "https://github.com/NikolayS/rpg/pull/701",
+        "author": "NikolayS",
+        "body": "Closes #693\n\n## What\n\nWhen `\\s` is called with no arguments, opens an interactive TUI picker instead of dumping all history through the pager.\n\n## UX\n\n```\n┌─ History ────────────────────────────── 247 entries ─┐\n│ > orders                                              │\n├───────────────────────────────────────────────────────┤\n│   select o.id, c.name from orders o join …           │\n│   select * from orders where status = 'pending' …    │\n│ ▶ select count(*) from orders join order_items …     │\n└─ ↑↓ navigate · Enter select · Esc cancel ────────────┘\n```\n\n- Type to filter (case-insensitive substring)\n- Up/Down or Ctrl-P/Ctrl-N to navigate\n- Enter — pre-fills selected query in readline prompt (editable before execute)\n- Esc or Ctrl-C — cancel\n- Entry count in title bar, updates to \"N matches\" while filtering\n- Reverse chronological order (most recent first)\n- Long queries truncated with … to terminal width\n\n## Backwards compatibility\n\n- `\\s pattern` — still works (non-interactive filter → pager)\n- `\\s filename` — save to file, unchanged\n\n## Implementation\n\nNew file `src/history_picker.rs` (276 lines): ratatui-based modal, reads from `read_history_entries()`, returns `Option<String>`.\n\n`dispatch_history()` in `src/repl/mod.rs`: when `arg.is_none()`, calls picker instead of pager dump. Uses `readline_with_initial` to pre-fill the selected entry.\n\nGated with `#[cfg(not(feature = \"wasi\"))]`.\n\n## Out of scope (follow-up issues)\n\n- Ctrl-R binding (#693)\n- AI-powered recall (`/recall`)\n- Frecency sorting\n- Per-database history"
+      },
+      {
+        "number": 702,
+        "title": "test: boost unit test coverage from 68% toward 75%",
+        "state": "merged",
+        "date": "2026-03-25T03:46:44Z",
+        "url": "https://github.com/NikolayS/rpg/pull/702",
+        "author": "NikolayS",
+        "body": "## Summary\n\nAdds 101 new pure unit tests across six files that previously had 0% (or near-0%) coverage, targeting pure functions that need no database connection or network calls.\n\n### Files with new tests\n\n| File | Tests added | Functions covered |\n|------|-------------|-------------------|\n| `src/explain/share.rs` | 14 | `extract_depesz_url()`, `share_explain_plan()` error paths |\n| `src/large_object.rs` | 21 | `hex_encode()`, `hex_digit()`, `decode_bytea_hex()`, roundtrip |\n| `src/statusline.rs` | 20 | `format_status()` — all tx states, exec/input modes, AI tokens, truncation/padding |\n| `src/main.rs` | 26 | `apply_cli_pset()` (all options), `version_string()` |\n| `src/repl/execute.rs` | 20 | `is_explain_statement()`, `strip_psql_table_format()` |\n| `src/lua_commands.rs` | — | Suppress pre-existing `unused_self` clippy lint on no-lua stub |\n\n### Before/after line coverage for targeted files\n\n- `src/explain/share.rs`: 0% → ~43% regions covered\n- `src/large_object.rs`: 0% → ~38% lines covered\n- `src/statusline.rs`: 0% → ~70% regions covered\n- `src/main.rs`: 0% → ~35% lines covered\n- `src/repl/execute.rs`: 19% → improved with 20 additional tests\n\n### Quality checks\n\n- `cargo test`: 1802 tests pass (up from ~1700)\n- `cargo fmt`: clean\n- `cargo clippy -- -D warnings`: clean\n\n## Test plan\n\n- [x] `cargo test` — all 1802 tests pass\n- [x] `cargo fmt` — no formatting changes needed\n- [x] `cargo clippy -- -D warnings` — no warnings\n- [x] All new tests are pure unit tests (no PG, no network, no sleeps)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 732,
+        "title": "chore: bump version to 0.8.3",
+        "state": "merged",
+        "date": "2026-03-25T03:13:01Z",
+        "url": "https://github.com/NikolayS/rpg/pull/732",
+        "author": "NikolayS",
+        "body": "Version bump for v0.8.3 release.\n\nChanges since v0.8.2:\n- #731 fix(connection): delegate URI parsing to tokio_postgres::Config (fixes C5 — host=/port= query params silently dropped)\n- #728 fix(connection): scan for any .s.PGSQL.<port> socket, not just 5432\n- #730 test(connection): 26 integration tests for connection path matrix (#709)"
+      },
+      {
+        "number": 733,
+        "title": "test(connection): fill #709 matrix gaps — B3/B4, C6-C8, E6-E9, F4-F7, G3/G4",
+        "state": "merged",
+        "date": "2026-03-25T03:04:18Z",
+        "url": "https://github.com/NikolayS/rpg/pull/733",
+        "author": "NikolayS",
+        "body": "## What\n\nAdds 15 new integration tests to `tests/connection_paths.rs` covering cases from the #709 audit matrix that were not previously in CI.\n\n## New tests\n\n| Test | Group | What it checks |\n|------|-------|----------------|\n| B3 | Socket error paths | No socket in dir — clean error, no panic |\n| B4 | Socket error paths | Socket exists, wrong user — auth error, no panic |\n| C6 | URI edge cases | Non-numeric port in URI — parse error |\n| C7 | URI edge cases | `?port=` query param regression guard (C5 fix, PR #731) |\n| C8 | URI edge cases | `?host=` query param ignores authority host |\n| E6 | Env vars | `PGSSLMODE=disable` suppresses TLS (ssl=f in pg_stat_ssl) |\n| E7 | Env vars | `PGDATABASE` from env, no `-d` flag |\n| E8 | Env vars | `PGPASSFILE` reads .pgpass file |\n| E9 | Env vars | `PGCONNECT_TIMEOUT` — elapsed documented; issue #723 noted inline |\n| F4 | Error quality | Error includes database name |\n| F5 | Error quality | Error includes user name |\n| F6 | Error quality | Error includes host on connection refused |\n| F7 | Error quality | Multi-host comma-separated — canary for #724; no-panic check |\n| G3 | Auth | Wrong SCRAM password — clear error, no panic |\n| G4 | Auth | `PGPASSWORD` takes precedence over `PGPASSFILE` |\n\n## Notes\n\n- F7 is a **canary test for issue #724** (multi-host not yet implemented). It currently only checks for no-panic; once #724 is fixed the assertion should be tightened to `assert_eq!(code, 0)`.\n- E9 documents the known issue #723 (timeout is ~2×configured). The bound is loose until #723 is fixed.\n- D5/D6 (verify-ca/verify-full) remain SKIPped pending issue #712.\n- B4, C4 (socket tests) skip cleanly when no host-mode PG socket is present in CI.\n\nCloses part of #709."
+      },
+      {
+        "number": 735,
+        "title": "fix(update): correct GitHub API URL + switch russh to ring backend",
+        "state": "merged",
+        "date": "2026-03-25T02:49:04Z",
+        "url": "https://github.com/NikolayS/rpg/pull/735",
+        "author": "NikolayS",
+        "body": "Two independent bug fixes in one PR (both tiny, both in different files).\n\n---\n\n## fix(update): `--update` returns 404 (#578)\n\n`GITHUB_API_URL` in `src/update.rs` was hardcoded to `NikolayS/project-alpha`. Every `--update` call since the repo rename has returned 404.\n\nOne-line fix: update to `NikolayS/rpg`.\n\n---\n\n## fix(deps): switch russh to ring backend (#603)\n\n### Problem\n\n`russh = \"0.57\"` with default features pulls in `aws-lc-sys` — 67 MiB of BoringSSL C/C++ compiled from scratch via cmake. This adds minutes to every clean build and requires cmake as a system dependency.\n\n### Fix\n\n`russh = { version = \"0.57\", default-features = false, features = [\"ring\", \"flate2\"] }`\n\n- `ring` crypto backend — already in the tree via `rustls-webpki`, no new C build\n- `flate2` — retained for SSH compression support\n- `rsa` removed — rpg uses key-based auth via `decode_secret_key`, which works with ring\n\n### Verification\n\nBefore: `cargo tree -i aws-lc-sys` shows russh in the chain\nAfter: russh no longer appears — `aws-lc-sys` remains only via the rustls→reqwest path (unavoidable)\n\n1702 unit tests pass."
+      },
+      {
+        "number": 734,
+        "title": "fix(ssl): verify-ca/verify-full chain completion + sslmode=prefer timeout fix",
+        "state": "merged",
+        "date": "2026-03-25T02:15:54Z",
+        "url": "https://github.com/NikolayS/rpg/pull/734",
+        "author": "NikolayS",
+        "body": "## Fixes\n\nCloses #712 and #723.\n\n---\n\n## #712 — verify-ca / verify-full fail with UnknownIssuer\n\n### Root cause\n\nrustls's `WebPkiServerVerifier` requires the full certificate chain in the TLS handshake. PostgreSQL by default sends only the leaf cert (`ssl_cert_file` contains only the server cert). OpenSSL/psql can complete the chain from the local trust store; rustls cannot.\n\n### Fix\n\n`NoCnVerifier` (verify-ca) and new `FullVerifier` (verify-full) now carry the certs parsed from `sslrootcert` as `extra_intermediates`. When initial verification fails with `UnknownIssuer`, a second attempt prepends those certs to the intermediates slice. This covers the common case — `sslrootcert` is a bundle with the CA root and any intermediates — without requiring Postgres server reconfiguration.\n\n`FullVerifier` replaces the previous `ClientConfig::with_root_certificates` approach (which had no chain completion) with a custom `ServerCertVerifier` that does full chain + hostname validation via `WebPkiServerVerifier`.\n\n**Workaround that still works:** Configure Postgres with `ssl_cert_file = server-chain.crt` (leaf + CA concatenated). Now the fix also works when you can't change the server.\n\n---\n\n## #723 — sslmode=prefer timeout ~2× configured value\n\n### Root cause\n\n`connect_timeout` is applied per attempt by tokio-postgres. For `sslmode=prefer`, rpg tries TLS (full timeout), then falls back to plain (full timeout again). Host unreachable = 2× elapsed.\n\n### Fix\n\nIn the `Prefer` match arm, detect timeout errors from the TLS probe (`ConnectionFailed` with \"timeout\" in the reason) and propagate immediately. Timeout = host unreachable = no point in falling back. Non-timeout TLS failures (server doesn't support SSL, handshake error) still trigger the plain fallback.\n\n---\n\n## Changes\n\n- `src/connection.rs`:\n  - `load_certs_as_intermediates()` — load raw DER certs from PEM file for use as intermediates\n  - `is_timeout_error()` — classify timeout errors (testable helper)\n  - `NoCnVerifier` — carries `extra_intermediates`, two-attempt chain verification\n  - `FullVerifier` — new struct, same chain completion but WITH hostname check (`verify-full`)\n  - `make_tls_config_verify_full` — uses `FullVerifier` instead of `with_root_certificates`\n  - `SslMode::Prefer` match arm — propagates timeout immediately\n\n## Test note\n\nCI's connection-tests job SKIPs D5/D6 (verify-ca/verify-full) pending #712. Once this PR merges, those SKIPs can be removed and the tests should pass with the self-signed cert bundle at `/tmp/pg-tls-certs/srv-chain.crt`."
+      },
+      {
+        "number": 728,
+        "title": "fix(connection): scan for any .s.PGSQL.<port> socket, not just 5432",
+        "state": "merged",
+        "date": "2026-03-24T23:46:30Z",
+        "url": "https://github.com/NikolayS/rpg/pull/728",
+        "author": "NikolayS",
+        "body": "## Problem\n\nB1 audit test fails: when `rpg` is invoked with no host/port and a Postgres socket exists in `/tmp` at a non-standard port (e.g. `/tmp/.s.PGSQL.5437`), `default_host()` (now `default_host_port()`) only checked for `.s.PGSQL.5432` — hardcoded — and fell back to `localhost:5432` (connection refused).\n\n## Fix\n\nReplace `default_host() -> String` with `default_host_port() -> (String, u16)`:\n\n1. **Fast path**: check for `.s.PGSQL.5432` first (libpq-compatible, O(1))\n2. **Slow path**: if not found, scan the directory for any `.s.PGSQL.<N>` socket file, excluding `.lock` files, and return the first valid one with its port number\n\nBoth `resolve_host()` and `resolve_port()` updated to use `default_host_port()` as their fallback.\n\n## Tests\n\n- 1702 unit tests pass\n- All 16 B1/connection audit tests pass locally (including B1: `rpg -c 'SHOW port'` → connects via socket at port 5437)\n- `test_defaults` updated to assert against `default_host_port()` result rather than hardcoded 5432 (environment-aware)\n\nFixes B1 audit test."
+      },
+      {
+        "number": 731,
+        "title": "refactor(connection): delegate URI parsing to tokio_postgres::Config",
+        "state": "merged",
+        "date": "2026-03-24T23:22:42Z",
+        "url": "https://github.com/NikolayS/rpg/pull/731",
+        "author": "NikolayS",
+        "body": "## Summary\n\nReplaces the hand-rolled `parse_uri()` implementation with delegation to `tokio_postgres::Config::from_str()`.\n\n## Motivation\n\nThe custom URI parser had a bug (C5 from the #709 audit): `host=` and `port=` in the URI query string fell through a `_ => {}` catch-all and were silently discarded. Rather than patch individual params, this replaces the parser wholesale with the battle-tested tokio-postgres implementation.\n\n## What changes\n\n**New helpers:**\n- `extract_ssl_file_params()` — extracts `sslcert`, `sslkey`, `sslrootcert` from URI or connstring. These are the only params tokio-postgres omits (it delegates TLS entirely to the caller).\n- `sanitize_uri_for_tokio()` — strips/rewrites params tokio-postgres doesn't recognise (`sslcert`, `sslkey`, `sslrootcert`) and maps rpg-extended `sslmode`/`target_session_attrs` values to accepted equivalents before parsing.\n\n**`parse_uri()` internals replaced:**\n- Delegates to `tokio_postgres::Config::from_str()` on the sanitized URI\n- Reconstructs `UriParams` from the parsed `Config`\n- Captures rpg-extended `sslmode` / `target_session_attrs` values from the raw URI before sanitization\n\n**UriParams struct and all `resolve_*` callers: unchanged.**\n\n## Bug fixed\n\nC5 (#709): `postgres://host/db?host=socket_dir&port=5433` — the query-string `host` and `port` params were silently dropped by the old parser. tokio-postgres handles these correctly.\n\n## Behavior change\n\nMulti-host URI port assignment now matches real libpq behavior: a host without an explicit port gets the default (5432), not the last explicitly-seen port. Verified with psql: `postgresql://localhost:5432,localhost:5433,localhost/postgres` tries the third host on port 5432. Test updated accordingly.\n\n## Tests\n\n1702/1702 unit tests pass. Existing `parse_uri` test coverage exercises the refactored path.\n\nCloses #709 (C5 item)."
+      },
+      {
+        "number": 730,
+        "title": "test(connection): add connection path integration tests (#709)",
+        "state": "merged",
+        "date": "2026-03-24T23:11:13Z",
+        "url": "https://github.com/NikolayS/rpg/pull/730",
+        "author": "NikolayS",
+        "body": "Adds `tests/connection_paths.rs` covering the full connection path matrix from issue #709. Tests use `std::process::Command` to invoke the rpg binary against local Postgres instances.\n\nCovers: TCP (A), Unix socket (B), URI/connstring (C), SSL modes (D), env vars (E), error message quality (F), auth methods (G), multiple -c/-f flags (H).\n\n## Test groups\n\n| Group | Description | Tests |\n|-------|-------------|-------|\n| A | TCP | a1 basic, a2 PGPASSWORD, a3 explicit -d |\n| B | Unix socket | b1 explicit host, b2 PGHOST env (skipped if absent) |\n| C | URI / connstring | c1 postgres://, c2 postgresql://, c3 ?sslmode=, c4 host param, c5 key=value |\n| D | SSL modes | d1 prefer self-signed, d2 require self-signed, d3 require no-TLS (fail), d4 prefer fallback |\n| E | Env vars | e1 PGHOST/PGPORT, e2 PGPASSWORD, e3 PGUSER, e4 PGAPPNAME, e5 PGSSLMODE |\n| F | Error quality | f1 wrong password, f2 connection refused, f3 unknown host |\n| G | Auth methods | g1 trust, g2 SCRAM-SHA-256 |\n| H | Multi-command | h1 multiple -c, h2 -f file |\n\n## CI integration\n\nTests are added to the existing `connection-tests` job in `checks.yml`, running after the TLS docker step from #714. Env var mapping uses `CONN_*` overrides with `TEST_PG_*` fallbacks for full CI compatibility.\n\n## Local results\n\n```\ntest result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out\n```\n\nRef #709"
+      },
+      {
+        "number": 708,
+        "title": "fix(connection): surface real IO error instead of 'db error' on connect failure",
+        "state": "merged",
+        "date": "2026-03-24T01:12:23Z",
+        "url": "https://github.com/NikolayS/rpg/pull/708",
+        "author": "NikolayS",
+        "body": "Fixes #707\n\n## Problem\n\nUsers got `connection failed: db error` with no useful information. Reported by @mlusetti on X.\n\n## Root cause\n\n`tokio_postgres::Error::to_string()` returns the opaque string `\"db error\"` / `\"error connecting to server\"` when the error is not a DB-level error. The actual IO error (TCP refused, DNS failure, etc.) is buried in the `source()` chain.\n\n## Fix\n\nWalk the `std::error::Error::source()` chain in `map_connect_error()` to find the deepest meaningful message.\n\n## Before / After\n\n```\n# Wrong port:\nBefore: connection to server at \"localhost\", port 9999 failed: db error\nAfter:  connection to server at \"localhost\", port 9999 failed: Connection refused (os error 111)\n\n# Wrong hostname:\nBefore: connection to server at \"bad.host\", port 5432 failed: db error\nAfter:  connection to server at \"bad.host\", port 5432 failed: failed to lookup address information: Name or service not known\n```"
+      },
+      {
+        "number": 725,
+        "title": "fix(connection): check socket file existence in default_host(), not directory",
+        "state": "merged",
+        "date": "2026-03-24T04:08:15Z",
+        "url": "https://github.com/NikolayS/rpg/pull/725",
+        "author": "NikolayS",
+        "body": "Closes #721\n\nPreviously checked if the candidate socket *directory* existed. Now checks if the actual socket file (.s.PGSQL.<port>) exists inside it, preventing false positives when the directory exists but no Postgres is running."
+      },
+      {
+        "number": 716,
+        "title": "fix(tests): stable conninfo query and SCRAM port for wrong-password test",
+        "state": "merged",
+        "date": "2026-03-24T03:03:43Z",
+        "url": "https://github.com/NikolayS/rpg/pull/716",
+        "author": "NikolayS",
+        "body": "## Problem\n\nFixes two failures in `tests/compat/test-connections.sh`.\n\n### A1-A5: psql 18 `\\conninfo` format change\n\npsql 18 changed the output format of `\\conninfo`. The tests do a literal string compare between psql and rpg output, so they fail on any machine with psql 18+. rpg is correct — the test was wrong.\n\n**Fix:** Replace `\\conninfo` with a stable SQL query across all A1-A5 tests:\n\n```sql\nSELECT current_database() AS db, current_user AS usr, inet_server_port() AS port\n```\n\nThis returns identical output from both psql and rpg on all versions, and proves the connection succeeded.\n\n### A7: wrong-password test against trust-auth port\n\n`test_wrong_password` connected to the trust-auth port (15433), where Postgres ignores the supplied password. The test expected non-zero exit but got 0 — always failing.\n\n**Fix:** Add `TEST_PG_SCRAM_HOST`/`TEST_PG_SCRAM_PORT`/`TEST_PG_SCRAM_USER`/`TEST_PG_SCRAM_PASSWORD`/`TEST_PG_SCRAM_DATABASE` env vars. When `TEST_PG_SCRAM_PORT` is set, A7 runs against that SCRAM-auth instance with a wrong password and asserts non-zero exit. When not set, A7 is skipped with a clear message.\n\nIn `.github/workflows/checks.yml`, a second postgres service (`postgres-scram`) is added to the `connection-tests` job on port 15433. The default `POSTGRES_PASSWORD` triggers scram-sha-256 auth. The SCRAM env vars are passed to the test step.\n\n## Testing\n\nVerified locally against trust-auth (port 15433) and SCRAM-auth (port 15434):\n\n```\nA1 PASS: TCP flags -h -p -U -d\nA2 PASS: bare positional args (dbname user)\nA3 PASS: URI connection string\nA4 PASS: conninfo keyword=value string\nA5 PASS: env vars only\nA6 PASS: -d flag overrides PGDATABASE env var\nA7 PASS: wrong password exits non-zero\nA8 PASS: .pgpass file authentication\nA9 SKIP: Unix socket (not found)\n\nResults: 8 passed, 0 failed\n```\n\nCloses #715"
+      },
+      {
+        "number": 714,
+        "title": "test(ci): add SSL mode connection tests (D1-D6)",
+        "state": "merged",
+        "date": "2026-03-24T02:34:05Z",
+        "url": "https://github.com/NikolayS/rpg/pull/714",
+        "author": "NikolayS",
+        "body": "Add Section D to `tests/compat/test-connections.sh` with six SSL/TLS sslmode tests, and update `.github/workflows/checks.yml` to spin up a TLS-enabled postgres container for the `connection-tests` job.\n\n## Motivation\n\n`sslmode=require` was broken in v0.8.0 (issue #710) and fixed in PR #711, but there were zero CI tests covering SSL — the regression went undetected until a user reported it. This PR closes that gap.\n\n## Changes\n\n### `tests/compat/test-connections.sh` — Section D\n\n| Test | sslmode | Server | Expected |\n|------|---------|--------|----------|\n| D1 | disable | TLS server | exit 0, ssl=f in pg_stat_ssl |\n| D2 | prefer | TLS server | exit 0 |\n| D3 | require | TLS server | exit 0, ssl=t (regression test for #710 / #711) |\n| D4 | require | plain server | exit non-zero, SSL/TLS error message |\n| D5 | verify-ca | TLS server | SKIP — UnknownIssuer bug, see #712 |\n| D6 | verify-full | TLS server | SKIP — same, see #712 |\n\nIf `TEST_PG_TLS_PORT` is not set, the entire section is skipped with a clear message.\n\n### `.github/workflows/checks.yml`\n\nAdded a `Start TLS postgres` step in the `connection-tests` job:\n- Generates a self-signed cert with openssl\n- Runs `postgres:17` with `ssl=on` on port 5433 via docker\n- Passes `TEST_PG_TLS_HOST/PORT/PASSWORD` to the test step\n\n## Related\n\n- Issue #710 — sslmode=require broken in v0.8.0\n- PR #711 — the fix\n- Issue #712 — verify-ca/verify-full UnknownIssuer (D5/D6 skipped until resolved)"
+      },
+      {
+        "number": 711,
+        "title": "fix(ssl): implement sslmode=require without cert verification",
+        "state": "merged",
+        "date": "2026-03-24T01:28:36Z",
+        "url": "https://github.com/NikolayS/rpg/pull/711",
+        "author": "NikolayS",
+        "body": "## Summary\n\n`sslmode=require` means encrypt-only: TLS is mandatory but the server\ncertificate is not verified (that is `verify-ca`/`verify-full`'s job).\nPreviously, the `Require` branch called `connect_tls_default()` which\nloads Mozilla webpki roots and verifies the certificate chain, causing\nconnection failures against self-signed certs that psql handles fine.\n\n## Changes\n\n- **`NoVerifier`**: new `ServerCertVerifier` that accepts any server\n  certificate without chain or hostname validation\n- **`make_tls_config_require()`**: builds a `ClientConfig` using\n  `NoVerifier`, with optional mutual TLS (client cert) support\n- **`connect_one()`**: `SslMode::Require` now calls\n  `connect_tls_with_config()` with the new config instead of\n  `connect_tls_default()`\n- **`map_connect_error()`**: walk the tokio-postgres error source chain\n  to extract the real message; introduce two new error variants:\n  - `SslNotSupported`: server returned 'N' to SSLRequest — message\n    `SSL error: server does not support SSL` (matches psql wording)\n  - `SslCertVerificationFailed`: rustls cert chain/hostname error —\n    message `SSL error: certificate verification failed: ...`\n  - `TlsError` prefix changed from `TLS error:` to `SSL error:`\n    (matches psql convention)\n- **`classify_connect_error()`**: extracted from `map_connect_error()`\n  so the classification rules are unit-testable without a live server\n- **7 unit tests** covering: SslNotSupported, SslCertVerificationFailed\n  (UnknownIssuer and NotValidForName), SslRequired (server-side),\n  generic TlsError, auth error, plain connection failure\n\n## Testing\n\nVerified against a TLS-enabled Postgres (self-signed cert, no CA) at\nlocalhost:15436 — `sslmode=require` now connects and returns `ssl=t`.\nAll 7 new unit tests pass. Full clippy (no warnings) and rustfmt clean.\n\nCloses #710"
+      }
+    ],
+    "openPRs": [
+      {
+        "number": 759,
+        "title": "feat(wasm): compile rpg to wasm32-unknown-unknown for browser use",
+        "state": "open",
+        "date": "2026-03-27T02:13:28Z",
+        "url": "https://github.com/NikolayS/rpg/pull/759",
+        "author": "NikolayS",
+        "body": "Closes #760\n\n## What this does\n\nPorts rpg to compile as `wasm32-unknown-unknown` WASM, enabling it to run in a browser and connect to Postgres via a WebSocket proxy.\n\n## Architecture\n\n```\nBrowser\n  └── rpg.wasm (wasm32-unknown-unknown)\n        └── WasmConnector (ws_stream_wasm AsyncRead/Write)\n              └── WebSocket → wasm/ws-proxy.js (Node.js)\n                    └── TCP → Postgres\n```\n\n## Changes\n\n### Sprint 1 — Compilable WASM skeleton\n- **Cargo.toml**: gated 12 native-only deps; added WASM deps (ws_stream_wasm, wasm-bindgen, wasm-bindgen-futures, web-sys, getrandom/js)\n- **connection.rs**: gated all TLS code, connect_plain, std::net, cert loading\n- **rustyline/complete.rs/history_picker.rs**: gated entirely for native\n- **crossterm/ratatui**: pager, watch display, statusline gated with text fallbacks\n- **reqwest on WASM**: LlmProvider Send bounds relaxed; redirect/timeout/bytes_stream gated\n- **main.rs**: current_thread tokio runtime on WASM; rustls crypto provider init gated\n\n### Sprint 2 — WasmConnector + tooling\n- **src/wasm/connector.rs**: WasmConnector via ws_stream_wasm WsStreamIo → connect_raw(); spawn_local for !Send connection driver\n- **src/wasm/entry.rs**: #[wasm_bindgen] run_rpg() entry point\n- **wasm/ws-proxy.js**: Node.js WebSocket-to-TCP proxy (binary frames, configurable)\n- **wasm/build-rpg-wasm.sh**: wasm-pack build --target web + wasm-opt -Oz\n\n## Verification\n- cargo check --target wasm32-unknown-unknown: 0 errors\n- cargo check (native): clean\n- cargo clippy --all-targets --all-features -- -D warnings: clean\n\n## Still needed\n- CI workflow for WASM check\n- End-to-end browser test (xterm.js harness)\n- rustyline → WasmLineReader wiring\n- reqwest streaming on WASM\n\n## References\n- Issue #760 (https://github.com/NikolayS/rpg/issues/760)\n- PR #758 (psql WASM via Emscripten — Álvaro)"
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 769,
+        "title": "feat(ash): apply statement_timeout to live pg_stat_activity queries",
+        "state": "open",
+        "date": "2026-03-29T19:00:30Z",
+        "url": "https://github.com/NikolayS/rpg/issues/769",
+        "author": "NikolayS"
+      },
+      {
+        "number": 760,
+        "title": "feat(wasm): compile rpg to wasm32-unknown-unknown for browser use",
+        "state": "open",
+        "date": "2026-03-27T03:40:22Z",
+        "url": "https://github.com/NikolayS/rpg/issues/760",
+        "author": "NikolayS"
+      },
+      {
+        "number": 757,
+        "title": "test: add CI integration tests for multi-host failover (#743)",
+        "state": "open",
+        "date": "2026-03-26T03:37:08Z",
+        "url": "https://github.com/NikolayS/rpg/issues/757",
+        "author": "NikolayS"
+      },
+      {
+        "number": 752,
+        "title": "fix(wasi): add wss:// TLS support to WASI client (tungstenite rustls-tls)",
+        "state": "open",
+        "date": "2026-03-25T23:39:35Z",
+        "url": "https://github.com/NikolayS/rpg/issues/752",
+        "author": "NikolayS"
+      },
+      {
+        "number": 750,
+        "title": "feat(explain): apply syntax highlighting to plain EXPLAIN queries in REPL",
+        "state": "open",
+        "date": "2026-03-25T22:41:16Z",
+        "url": "https://github.com/NikolayS/rpg/issues/750",
+        "author": "NikolayS"
+      },
+      {
+        "number": 746,
+        "title": "feat(compat): psql compatibility test suite — automated, CI-integrated, covers all connection paths and prompt",
+        "state": "open",
+        "date": "2026-03-25T22:25:17Z",
+        "url": "https://github.com/NikolayS/rpg/issues/746",
+        "author": "NikolayS"
+      },
+      {
+        "number": 704,
+        "title": "feat(repl): query formatter (\\reformat command)",
+        "state": "open",
+        "date": "2026-03-21T10:29:13Z",
+        "url": "https://github.com/NikolayS/rpg/issues/704",
+        "author": "NikolayS"
+      },
+      {
+        "number": 699,
+        "title": "feat: WASI target for browser embedding via WSS proxy",
+        "state": "open",
+        "date": "2026-03-21T02:14:38Z",
+        "url": "https://github.com/NikolayS/rpg/issues/699",
+        "author": "NikolayS"
+      },
+      {
+        "number": 692,
+        "title": "feat(output): terminal charts and graphs for query results",
+        "state": "open",
+        "date": "2026-03-20T21:38:53Z",
+        "url": "https://github.com/NikolayS/rpg/issues/692",
+        "author": "NikolayS"
+      },
+      {
+        "number": 652,
+        "title": "docs: psql compatibility report for 0.7.0 — how safe is 'alias psql=rpg'?",
+        "state": "open",
+        "date": "2026-03-19T21:43:31Z",
+        "url": "https://github.com/NikolayS/rpg/issues/652",
+        "author": "NikolayS"
+      },
+      {
+        "number": 651,
+        "title": "feat(explain): redesign EXPLAIN plan visualization in terminal",
+        "state": "open",
+        "date": "2026-03-19T21:42:22Z",
+        "url": "https://github.com/NikolayS/rpg/issues/651",
+        "author": "NikolayS"
+      },
+      {
+        "number": 599,
+        "title": "Benchmark and compare to psql",
+        "state": "open",
+        "date": "2026-03-18T00:36:40Z",
+        "url": "https://github.com/NikolayS/rpg/issues/599",
+        "author": "NikolayS"
+      }
+    ],
+    "commitCount": 29,
+    "topContributors": [
+      "NikolayS"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/nikolays-rpg-0.jpg"
+    ]
+  },
+  {
+    "name": "sqlever",
+    "description": "Sqitch-compatible PostgreSQL migration tool with static analysis and zero-downtime migrations",
+    "url": "https://github.com/NikolayS/sqlever",
+    "stars": 2,
+    "releases": [
+      {
+        "tag": "v0.3.0",
+        "name": "v0.3.0",
+        "date": "2026-03-23T20:28:45Z",
+        "body": "## What's Changed\n* test: fill regression test gaps for 10 oracle-found bugs by @NikolayS in https://github.com/NikolayS/sqlever/pull/149\n* security: audit findings — fix SQL injection risks, validate paths by @NikolayS in https://github.com/NikolayS/sqlever/pull/150\n* refactor: extract shared command patterns (withDatabase, resolveTargetUri) by @NikolayS in https://github.com/NikolayS/sqlever/pull/151\n* refactor: rename no-transaction to auto-commit (Postgres always has transactions) by @NikolayS in https://github.com/NikolayS/sqlever/pull/152\n* refactor: standardize CLI patterns — async/await, exit codes, error messages by @NikolayS in https://github.com/NikolayS/sqlever/pull/153\n* quality: tighten TypeScript types — eliminate any, add return types by @NikolayS in https://github.com/NikolayS/sqlever/pull/154\n\n\n**Full Changelog**: https://github.com/NikolayS/sqlever/compare/v0.2.2...v0.3.0",
+        "url": "https://github.com/NikolayS/sqlever/releases/tag/v0.3.0"
+      },
+      {
+        "tag": "v0.2.2",
+        "name": "v0.2.2",
+        "date": "2026-03-23T14:45:50Z",
+        "body": "**Full Changelog**: https://github.com/NikolayS/sqlever/compare/v0.2.1...v0.2.2",
+        "url": "https://github.com/NikolayS/sqlever/releases/tag/v0.2.2"
+      },
+      {
+        "tag": "v0.2.1",
+        "name": "v0.2.1",
+        "date": "2026-03-23T05:24:26Z",
+        "body": "**Full Changelog**: https://github.com/NikolayS/sqlever/compare/v0.2.0...v0.2.1",
+        "url": "https://github.com/NikolayS/sqlever/releases/tag/v0.2.1"
+      }
+    ],
+    "mergedPRs": [
+      {
+        "number": 204,
+        "title": "fix(test): skip analysis in deploy lifecycle tests",
+        "state": "merged",
+        "date": "2026-03-25T15:12:52Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/204",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add `--skip-analysis` to all 14 deploy command invocations in `deploy-revert-lifecycle.test.ts`\n\n## Root cause\n\nPR #196 integrated static analysis into the deploy command (R4). The deploy-revert-lifecycle test fixture `create_indexes.sql` uses `CREATE INDEX CONCURRENTLY` without the `-- sqlever:auto-commit` directive. When deploy runs analysis with `isTransactional: true`, rule SA020 fires at error severity, blocking deploy with exit code 2 instead of the expected 0.\n\nThe other integration tests (customer-zero, mid-deploy-handoff, lifecycle) are unaffected because their fixture SQL does not use CONCURRENTLY.\n\n## Fix\n\nThese tests exercise deploy/revert lifecycle behavior, not static analysis. Adding `--skip-analysis` is the correct fix -- analysis-in-deploy is already covered by the dedicated `deploy-analysis.test.ts` unit tests.\n\n## Test plan\n\n- [x] All 11 deploy-revert-lifecycle tests pass locally\n- [x] All 41 integration tests pass (0 failures)\n- [x] All 3314 unit tests pass\n- [x] CI should go green across PG 14-18\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 203,
+        "title": "fix(test): git branch merge test CI compatibility",
+        "state": "merged",
+        "date": "2026-03-25T15:09:41Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/203",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Use `git init -b main` instead of `git init` in the `initGitRepo()` helper in `git-correlated-includes.test.ts`\n- Without this, CI environments where git's `init.defaultBranch` is unset default to `master`, causing the \"handles file on a branch merged back to main\" test to fail when it runs `git checkout main`\n- The test creates its own temporary git repo and later does `git checkout main` after branching, which requires the initial branch to actually be named `main`\n\n## Test plan\n\n- [x] Verified the failing test now passes locally: `bun test tests/unit/git-correlated-includes.test.ts`\n- [x] Full unit test suite passes: 3314 tests, 0 failures\n- [x] Type-check passes for the modified file (pre-existing errors in other files are unrelated)\n- [ ] CI should pass on this PR (the fix targets the CI failure root cause)\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 202,
+        "title": "test: regression tests for 10 oracle-found compat bugs",
+        "state": "merged",
+        "date": "2026-03-25T14:00:06Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/202",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add 43 regression tests covering all 10 Sqitch compatibility bugs discovered via real-project oracle testing (issue #148)\n- Each test section documents the bug number, root cause, and the fix that was applied\n- Tests use Sqitch-verified SHA-1 fixtures from `known-change-ids.json` rather than self-computed expected values, avoiding the tautological validation pattern that missed the original bugs\n\n## Bugs covered\n\n| Bug | Tests | What is verified |\n|-----|-------|-----------------|\n| 1 | 7 | `buildChangeContent`/`buildTagContent` do not end with `\\n`; SHA-1 matches Sqitch |\n| 2 | 6 | `name@tag` deps resolved in `topologicalSort`, `validateDependencies`, `detectCycles` |\n| 3 | 4 | `buildScriptNameMap` maps reworked changes to `name@tag.sql` |\n| 4 | 1 | `revert.ts` sets `singleTransaction = false` (source inspection) |\n| 5 | 1 | `handoff.test.ts` uses `chmod(dir, 0o755)` for Docker compatibility |\n| 6 | 5 | `loadConfig` joins default paths with `top_dir` |\n| 7 | 1 | `deploy.ts` does not default `singleTransaction` to `true` |\n| 8 | 3 | Parser preserves trailing whitespace in planner names |\n| 9 | 6 | Parser unescapes `\\n`, `\\t`, `\\\\` in notes; `\\\\n` handled correctly |\n| 10 | 3 | Parser preserves whitespace-only planner names |\n| 11 | 1 | `buildSqitchConf` never writes `top_dir` |\n| Cross-cutting | 5 | End-to-end plan parse produces Sqitch-compatible IDs |\n\n## Test results\n\n```\n43 pass, 0 fail, 66 expect() calls\nRan 43 tests across 1 file. [40.00ms]\n```\n\nFull unit suite: 3077 pass, 0 fail.\n\nCloses #148\n\n## Test plan\n\n- [x] All 43 new regression tests pass\n- [x] Full unit test suite (3077 tests) passes with no regressions\n- [x] No new type errors introduced (verified via `tsc --noEmit`)\n\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 201,
+        "title": "Demo: snapshot includes prevent silent security vulnerabilities",
+        "state": "merged",
+        "date": "2026-03-25T13:57:24Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/201",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add 8 test scenarios (9 test cases) proving that git-correlated `\\i` resolution prevents a real class of security vulnerabilities when replaying historical migrations on fresh databases\n- Each scenario creates a real temporary git repo, commits a secure shared SQL file, modifies it in a later commit, and verifies that snapshot includes (default) resolve the original secure version while `--no-snapshot` silently picks up the weakened version\n\n## Scenarios covered\n\n1. **RLS policy bypass** -- strict per-user isolation relaxed with admin bypass; migration 1 silently gets the permissive policy on fresh deploys without snapshot\n2. **Authentication function tampering** -- bcrypt-based auth function replaced with plain text comparison; old migrations use the insecure version\n3. **Role privilege escalation** -- SELECT-only grants expanded to full DML; earliest migration grants excessive permissions\n4. **Check constraint weakening** -- strict `amount > 0` relaxed to `amount >= -10000`; data integrity lost from the start\n5. **Audit trigger removal** -- delete trigger removed for \"performance\"; compliance gap on fresh deploys of the original migration\n6. **Nested include chain corruption** -- both `auth_helpers.sql` and `rls_policies.sql` tampered; entire chain resolves wrong versions\n7. **Multi-version permission drift** -- 3 migrations reference the same file at 3 different commits; without snapshot all get the latest (most permissive) version\n8. **SECURITY DEFINER escalation** -- function running as superuser gets additional `create role` operation in later version\n\n## Test results\n\n```\n9 pass\n0 fail\n65 expect() calls\nRan 9 tests across 1 file. [1.85s]\n```\n\nFull unit test suite: 3043 pass, 0 fail.\n\n## Test plan\n\n- [x] All 9 new tests pass (`bun test tests/unit/snapshot-security-demo.test.ts`)\n- [x] Full unit test suite passes (`bun test tests/unit/`)\n- [x] No type errors in new file (`tsc --noEmit`)\n- [ ] CI passes on all platforms\n\nCloses #165\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 200,
+        "title": "test(analysis): standalone analysis demo -- works with any migration tool",
+        "state": "merged",
+        "date": "2026-03-25T07:21:51Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/200",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add comprehensive test proving `sqlever analyze` works as a standalone SQL linter -- no sqitch project, no plan file, no config files needed\n- Tests cover SQL files mimicking Flyway, Rails, Alembic, Django, and golang-migrate naming conventions\n- Verifies all four output formats (text, json, github-annotations, gitlab-codequality), --strict mode, --force-rule, inline suppression, exit codes, directory scanning, and CLI subprocess invocation\n- 39 tests, all passing\n\n## Test plan\n\n- [x] All 39 new tests pass: `bun test tests/unit/standalone-analysis.test.ts`\n- [x] Full unit test suite passes (3073 tests): `bun test tests/unit/`\n- [x] No new type errors introduced: `bun x tsc --noEmit`\n- [x] Test verifies exit code 0 for clean migrations\n- [x] Test verifies exit code 2 for error-level findings\n- [x] Test verifies --strict promotes warnings to exit code 2\n- [x] Test verifies all four output formats produce valid structured output\n- [x] Test verifies inline suppression works without project setup\n\nCloses #164\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 199,
+        "title": "test(includes): add git-correlated \\i/\\ir resolution tests",
+        "state": "merged",
+        "date": "2026-03-25T07:18:12Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/199",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add comprehensive tests for git-correlated `\\i` / `\\ir` snapshot include resolution, covering the exact scenario from issue #166 (view loses a column when a shared file changes after migration deployment)\n- Test timestamp-based commit resolution, `\\ir` relative path resolution from historical commits, edge cases (circular includes, missing/deleted/renamed files, max depth enforcement, branch merges), and the `getFileContent` fallback chain\n- 31 tests, all passing, no type errors introduced\n\n## Test plan\n\n- [x] All 31 new tests pass (`bun test tests/unit/git-correlated-includes.test.ts`)\n- [x] Full unit test suite passes (3065 tests, 0 failures)\n- [x] No new type-check errors (`bun x tsc --noEmit` shows no errors for the new file)\n- [x] Tests use real temporary git repos (no mocking of git operations)\n\nCloses #166\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 198,
+        "title": "test(compat): add mid-deploy handoff integration test",
+        "state": "merged",
+        "date": "2026-03-25T07:17:50Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/198",
+        "author": "NikolayS",
+        "body": "## Summary\n- Add REAL-TEST-4 integration test for mid-deploy handoff scenario (issue #143)\n- Simulates Sqitch deploying changes 1-3 by inserting tracking records into `sqitch.*` tables and running SQL scripts via psql, then deploys changes 4-6 with sqlever\n- Validates that sqlever correctly reads Sqitch's tracking state and picks up where it left off\n\n## Test coverage (6 tests)\n- **Core handoff**: Sqitch deploys 1-3, sqlever deploys 4-6 -- verifies all 6 changes tracked, correct committer attribution, only pending changes deployed\n- **Status after handoff**: JSON status reports 6 deployed, 0 pending\n- **Idempotent re-deploy**: second deploy after handoff is a no-op\n- **Verify after handoff**: verify command passes on all 6 changes\n- **change_id consistency**: IDs in tracking tables match plan file exactly\n- **Revert after handoff**: all 6 changes reverted, 12 events (6 deploy + 6 revert)\n\n## Test output\n```\nbun test v1.3.5 (1e86cebd)\n\n 6 pass\n 0 fail\n 90 expect() calls\nRan 6 tests across 1 file. [3.58s]\n```\n\nFull integration suite (30 tests) also passes.\n\n## Test plan\n- [x] All 6 new tests pass against PG 17 via docker compose\n- [x] All 30 integration tests pass (no regressions)\n- [x] No type errors in the new file (pre-existing errors in other files are unrelated)\n\nCloses #143\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 197,
+        "title": "test(includes): demo snapshot includes -- git-correlated \\i resolution",
+        "state": "merged",
+        "date": "2026-03-25T07:17:11Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/197",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add comprehensive tests proving that snapshot includes correctly resolve `\\i`/`\\ir` files from the git commit when each migration was planned, not from the current HEAD\n- Covers the core two-migration scenario from issue #163 (shared file changes between migrations), plus nested includes, `\\ir` relative paths, fallback behavior, and three-version evolution isolation\n- 12 tests, 69 assertions, all passing\n\n## Test scenarios\n\n| Scenario | Tests | What it proves |\n|----------|-------|----------------|\n| Two-migration shared file | 7 | Snapshot uses v1 for migration-1, v2 for migration-2; `--no-snapshot` uses HEAD for both |\n| Nested includes | 1 | Types and functions both resolve from the correct historical commit |\n| `\\ir` relative includes | 1 | Relative path resolution also respects snapshot commits |\n| File added after migration | 1 | Graceful fallback when included file did not exist at planned commit |\n| Three-version evolution | 1 | Each of three migrations sees the correct version of a shared config file |\n\n## Test output\n\n```\nbun test v1.3.5 (1e86cebd)\n\n 12 pass\n 0 fail\n 69 expect() calls\nRan 12 tests across 1 file. [2.21s]\n```\n\n## Test plan\n\n- [x] All 12 unit tests pass locally\n- [x] Type-check passes (no errors in new file)\n- [x] Tests use real temporary git repos -- no mocks for git operations\n\nCloses #163\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 196,
+        "title": "feat(deploy): integrate static analysis -- block on errors (R4)",
+        "state": "merged",
+        "date": "2026-03-25T07:09:37Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/196",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Run static analysis on each deploy script before executing it (R4 from spec)\n- Error-severity findings block deploy with exit code 2, unless `--force` is passed\n- Warning/info findings are displayed but do not block deploy\n- New flags: `--skip-analysis`, `--force`, `--force-rule SA003`\n- Passes `isTransactional` context to analyzer so SA020 correctly detects CONCURRENTLY operations in non-auto-commit scripts\n- Inline suppressions (`-- sqlever:disable`) are honored during deploy\n\n## Changes\n\n- `src/commands/deploy.ts` -- integrate `Analyzer` into the deploy loop, add `EXIT_ANALYSIS_FAILED = 2`, parse new CLI flags, build analysis config from `sqlever.toml`\n- `src/analysis/types.ts` -- add `isTransactional` to `AnalyzeOptions`\n- `src/analysis/index.ts` -- wire `isTransactional` from options to context\n- `tests/unit/deploy-analysis.test.ts` -- 24 new tests covering: error blocks, warnings pass, `--skip-analysis`, `--force`, `--force-rule`, auto-commit/SA020, inline suppression, multi-change partial deploy\n- Existing test files updated to include the new required `DeployOptions` fields\n\n## Test evidence\n\n```\nbun test tests/unit/deploy-analysis.test.ts\n 24 pass, 0 fail, 42 expect() calls\n\nbun test tests/unit/\n 3058 pass, 0 fail, 17449 expect() calls\n```\n\nAll existing tests continue to pass with zero regressions.\n\n## Test plan\n\n- [x] Error-severity findings block deploy (exit code 2)\n- [x] Warning-severity findings display but do not block\n- [x] `--skip-analysis` bypasses analysis entirely\n- [x] `--force` bypasses all analysis errors\n- [x] `--force-rule SA003` bypasses a specific rule\n- [x] Auto-commit scripts do not false-positive on SA020\n- [x] Non-auto-commit CIC scripts trigger SA020\n- [x] Inline suppressions honored\n- [x] Multi-change deploy: first succeeds, second blocked\n- [x] Clean scripts deploy without issues\n- [x] `analysisBlocked` flag set correctly in DeployResult\n- [ ] Integration test with real Postgres (requires Docker)\n\nCloses #176\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 195,
+        "title": "test(analysis): verify analyze findings on real SQL files",
+        "state": "merged",
+        "date": "2026-03-25T07:04:22Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/195",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Implements issue #142 (REAL-TEST-3): run sqlever analyze on real SQL files and verify findings are correct\n- Creates 8 realistic migration SQL files exercising multiple analysis rules\n- 46 tests with 164 assertions covering the full analyze pipeline\n\n## Test files and coverage\n\n| File | Pattern | Rules tested |\n|------|---------|-------------|\n| file1.sql | ALTER TABLE ADD COLUMN NOT NULL without DEFAULT | SA001 fires (error) |\n| file2.sql | CREATE INDEX without CONCURRENTLY | SA004 fires (warn) |\n| file3.sql | DROP TABLE | SA007 fires (error) |\n| file4.sql | Safe migration (CREATE TABLE IF NOT EXISTS, int8 PK, text columns) | No rules fire |\n| file5.sql | UPDATE without WHERE inside CREATE FUNCTION | SA010 does NOT fire (PL/pgSQL exclusion) |\n| file6.sql | Multiple dangerous patterns in one file | SA001, SA004, SA006, SA010 all fire |\n| file7.sql | CREATE INDEX CONCURRENTLY inside BEGIN | SA020 fires (error) |\n| file8.sql | ALTER COLUMN TYPE | SA003 fires (error) |\n\n## Verified aspects\n\n- Correct rule IDs, severities, messages, and line numbers\n- PL/pgSQL body exclusion (SA010 skips function bodies)\n- SA007 revert context exemption (DROP TABLE allowed in revert scripts)\n- SA020 transaction detection (explicit BEGIN and isTransactional)\n- Reporter formats: JSON schema validation, github-annotations format, text output\n- Config overrides: skip rules, severity override, errorOnWarn promotion\n- Edge cases: empty SQL, whitespace-only, unparseable SQL, psql metacommands, inline suppressions\n- Full pipeline equivalence: analyze() vs analyzeSql() produce identical results\n\n## Test output\n\n```\n46 pass\n0 fail\n164 expect() calls\nRan 46 tests across 1 file. [38.00ms]\n```\n\nCloses #142\n\n## Test plan\n\n- [x] All 46 new tests pass\n- [x] All 3080 existing unit tests still pass\n- [x] No new TypeScript errors introduced\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 194,
+        "title": "test(e2e): add compiled binary end-to-end tests",
+        "state": "merged",
+        "date": "2026-03-25T07:01:47Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/194",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add e2e test suite at `tests/e2e/compiled-binary.test.ts` that builds the compiled binary via `bun run build` and exercises it as an external process\n- Covers 21 test cases: `--version`, `--help`, `analyze` on clean/broken/issue SQL, `--format json` validation, `init`/`add` scaffolding, WASM parser verification, error handling, binary size (<100 MiB), and startup time (<500ms)\n- All tests run against the actual compiled binary (`dist/sqlever`), not `bun run src/cli.ts`\n\nCloses #144\n\n## Evidence\n\n**Binary size:** 58 MiB (under 100 MiB limit)\n\n**Startup time:** 26ms (`./dist/sqlever --version`)\n\n**Test results:**\n```\nbun test v1.3.5\n\n 21 pass\n 0 fail\n 51 expect() calls\nRan 21 tests across 1 file. [1213.00ms]\n```\n\n**Unit tests (no regressions):** 3034 pass, 0 fail\n\n## Test plan\n\n- [x] `bun test tests/e2e/ --timeout 120000` -- all 21 tests pass\n- [x] `bun test tests/unit/` -- all 3034 existing tests still pass\n- [x] `bun x tsc --noEmit` -- no new type errors in the added file\n- [ ] CI green on Ubuntu and macOS\n\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 193,
+        "title": "test: deploy + revert full lifecycle (#141)",
+        "state": "merged",
+        "date": "2026-03-25T07:01:27Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/193",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add comprehensive integration tests for the full deploy + revert lifecycle against a real Postgres database (issue #141)\n- Create fixture project with 3 migrations: `create_users`, `create_orders` (FK dependency), `create_indexes` (CREATE INDEX CONCURRENTLY -- non-transactional)\n- 11 test cases covering deploy, verify, status, revert, partial operations, and re-deploy\n\n## Test cases\n\n1. **Deploy creates tables, indexes, and tracking entries** -- verifies users/orders tables, FK constraints, 3 concurrent indexes, sqitch.changes (3 entries), sqitch.events (3 deploy events), sqitch.dependencies (3 require deps)\n2. **Status shows 0 pending after full deploy** -- JSON output with deployed_count=3, pending_count=0\n3. **Verify passes after deploy** -- all 3 verify scripts succeed\n4. **Revert removes all tables and updates tracking** -- tables/indexes gone, sqitch.changes empty, 6 events (3 deploy + 3 revert in correct order)\n5. **Re-deploy after revert succeeds** -- tables/indexes recreated, tracking state correct, subsequent deploy is no-op\n6. **Partial deploy with --to** -- deploys only create_users + create_orders, status shows 1 pending\n7. **Partial revert with --to** -- reverts to create_users, only users table remains, 2 revert events\n8. **Deploy after partial revert** -- deploys only missing changes (create_orders + create_indexes)\n9. **Second deploy is a no-op** -- no duplicate changes/events\n10. **Revert on fresh database returns error** -- no sqitch schema exists\n11. **Revert after full revert reports nothing to revert** -- sqitch schema exists but empty\n\n## Test output\n\n```\n11 pass\n0 fail\n90 expect() calls\nRan 11 tests across 1 file. [3.16s]\n```\n\nFull integration suite (all 3 test files):\n```\n35 pass\n0 fail\n986 expect() calls\nRan 35 tests across 3 files. [5.15s]\n```\n\n## Test plan\n\n- [x] All 11 new tests pass against Postgres 17 via docker compose\n- [x] All 35 integration tests pass (no regressions)\n- [x] No type errors in new files (pre-existing errors in other files are unrelated)\n- [ ] CI matrix (PG 14-18) validates across versions\n\nCloses #141\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 191,
+        "title": "feat(analysis): add human-readable rule names for inline suppression",
+        "state": "merged",
+        "date": "2026-03-25T06:56:49Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/191",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add a `name` field (kebab-case) to the Rule interface so users can write `-- sqlever:disable add-column-not-null` instead of remembering numeric IDs like `SA001`\n- Both ID and name forms are accepted in suppression comments and can be mixed (e.g. `-- sqlever:disable SA010,add-column-not-null`)\n- Reporter now shows names alongside IDs in all output formats (text, JSON, GitHub annotations)\n\n### Rule name mapping\n\n| ID | Name |\n|---|---|\n| SA001 | add-column-not-null |\n| SA002 | add-column-volatile-default |\n| SA002b | add-column-default-pre-11 |\n| SA003 | alter-column-type |\n| SA004 | create-index-not-concurrently |\n| SA005 | drop-index-not-concurrently |\n| SA006 | drop-column |\n| SA007 | drop-table |\n| SA008 | truncate |\n| SA009 | add-foreign-key-not-valid |\n| SA010 | dml-without-where |\n| SA011 | dml-on-large-table |\n| SA012 | alter-sequence-restart |\n| SA013 | missing-lock-timeout |\n| SA014 | vacuum-full-or-cluster |\n| SA015 | alter-table-rename |\n| SA016 | add-check-not-valid |\n| SA017 | set-not-null |\n| SA018 | add-primary-key-without-index |\n| SA019 | reindex-not-concurrently |\n| SA020 | concurrently-in-transaction |\n| SA021 | lock-table |\n| SA022 | drop-schema |\n| SA023 | drop-database |\n| SA024 | drop-cascade |\n| SA025 | nested-begin |\n| SA026 | missing-statement-timeout |\n| SA027 | drop-not-null |\n| SA028 | truncate-cascade |\n| SA029 | create-table-serial |\n| SA030 | add-unique-constraint |\n| SA031 | alter-type-add-value-in-transaction |\n| SA032 | begin-without-commit |\n| SA033 | missing-fk-index |\n| SA034 | concurrently-index-validity |\n| SA035 | drop-primary-key |\n| SA036 | large-dml-without-batching |\n| SA037 | int-pk-capacity |\n| SA038 | prefer-text-over-varchar |\n| SA039 | prefer-bigint-pk |\n| SA040 | prefer-identity-over-serial |\n| SA041 | prefer-timestamptz |\n| SA042 | prefer-if-not-exists |\n\n## Test plan\n\n- [x] All 3,043 existing unit tests pass\n- [x] 9 new tests for name-based suppression (parsing, resolution, filtering, backward compatibility)\n- [x] No new TypeScript errors in source files\n- [ ] CI passes on all PG versions\n\nCloses #175"
+      },
+      {
+        "number": 190,
+        "title": "fix: resolve TypeScript strict mode errors",
+        "state": "merged",
+        "date": "2026-03-25T06:56:05Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/190",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Remove all unused imports, variables, and function declarations (TS6133/TS6192/TS6196) across 26 test files\n- Fix fetch mock type casts by routing through `unknown` (TS2352) in ai-dblab-deep tests\n- Add non-null assertions for array index accesses flagged by `noUncheckedIndexedAccess` (TS18048)\n- Fix MockPgClient `query()` return types from inferred `never[]` to explicit `unknown[]` (TS2322) in 5 test files\n- Replace `PsqlRunner` value used as type with `InstanceType<typeof PsqlRunner>` (TS2749) in 5 test files\n- Fix `Event` type in log tests by importing the proper interface (TS2769)\n- Narrow `SignalCheckFn` return literal with `as const` (TS2322)\n\nNo production code was changed -- all fixes are in test files. No `any` casts or `@ts-ignore`/`@ts-expect-error` suppressions were used.\n\n**Before:** 137 errors from `bun x tsc --noEmit`\n**After:** 0 errors\n\nCloses #182\n\n## Test plan\n\n- [x] `bun x tsc --noEmit` exits with 0 errors\n- [x] `bun test tests/unit/` -- all 3034 tests pass (0 failures)\n\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 192,
+        "title": "test: inline suppression end-to-end tests",
+        "state": "merged",
+        "date": "2026-03-25T06:55:39Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/192",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add 32 end-to-end tests for inline suppression directives exercising the full `Analyzer.analyzeSql()` pipeline (preprocessing, parsing, rule execution, suppression filtering)\n- Cover all seven requirements from #170: block-form disable/enable, disable-next-line (not implemented -- verified as no-op), \"all\" keyword rejection, scope isolation, full pipeline integration, invalid directive handling, and multi-rule comma-separated suppression\n- Tests use custom test rules (SA001, SA004, SA010) that mimic real rule behavior, verifying suppression through the complete analysis flow rather than just unit-level functions\n\n## Test plan\n\n- [x] All 32 new tests pass (`bun test tests/unit/suppression-e2e.test.ts`)\n- [x] All 3066 unit tests pass (`bun test tests/unit/`)\n- [x] No new type errors introduced (verified with `bun x tsc --noEmit`)\n- [x] Existing suppression tests unaffected (`analysis-suppression.test.ts`, `analysis-index.test.ts`)\n\nCloses #170\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 189,
+        "title": "feat: implement rebase and config commands",
+        "state": "merged",
+        "date": "2026-03-25T03:34:40Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/189",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Implement `rebase` command that composes `revert --to <change>` + `deploy`, supporting `--onto`, `--to`, and `-y`/`--no-prompt` flags\n- Implement `config` command for reading/writing sqitch.conf values (`get`, `set`, `--unset`, `--list`)\n- Update remaining stub commands (bundle, checkout, upgrade, engine, target) to say \"planned for v1.1\"\n- Add unit tests for both new commands (argument parsing, config read/write/list/unset)\n\nCloses #185\n\n## Test plan\n\n- [x] `parseRebaseOptions` unit tests: defaults, `--onto`, `--to`, `-y`, `--no-prompt`, combined flags, missing values\n- [x] `parseConfigOptions` unit tests: key, key+value, `--unset`, `--list`, `-l`, `--top-dir`\n- [x] `loadProjectConf` / `writeProjectConf` unit tests\n- [x] `runConfig` integration tests: get, set, unset, list, missing key, subsection keys, new project\n- [x] Updated CLI stub tests to match new \"planned for v1.1\" message\n- [x] All 3064 existing unit tests pass\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 187,
+        "title": "docs: update README with SA022-SA042 analysis rules",
+        "state": "merged",
+        "date": "2026-03-25T03:24:06Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/187",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add SA022-SA042 (21 new rules) to the analysis rules table in the README\n- Update all \"22 rules\" references to \"43 rules\" across the README (intro, feature descriptions, comparison table, JSON example output)\n- Rule descriptions are sourced directly from the implementation files in `src/analysis/rules/`\n\nCloses #183\n\n## Test plan\n\n- [x] All 3034 unit tests pass (`bun test tests/unit/`)\n- [x] Verified rule descriptions match the source code\n- [x] Confirmed the table formatting matches the existing SA001-SA021 entries\n- [x] Confirmed `node:22` Docker image reference was not modified (line 413)\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 181,
+        "title": "fix(analysis): SA020 false positive on CIC after COMMIT",
+        "state": "merged",
+        "date": "2026-03-25T03:23:16Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/181",
+        "author": "NikolayS",
+        "body": "## Summary\n- SA020 was flagging CIC (CREATE INDEX CONCURRENTLY) even when it appeared after COMMIT, outside the transaction block\n- Fix: track BEGIN/COMMIT/ROLLBACK boundaries while walking the AST, only flag when txnDepth > 0\n- Added no_trigger fixture: `cic_after_commit.sql`\n\n## Test plan\n- [x] New fixture `cic_after_commit.sql` passes (BEGIN; CREATE TABLE; COMMIT; CIC -- no finding)\n- [x] All existing SA020 trigger/no_trigger fixtures still pass\n- [x] Full unit test suite: 3035 pass, 0 fail"
+      },
+      {
+        "number": 188,
+        "title": "ci: add Sqitch oracle compatibility tests to CI",
+        "state": "merged",
+        "date": "2026-03-25T03:23:13Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/188",
+        "author": "NikolayS",
+        "body": "## Summary\n- Add `POSTGRES_DB: postgres` to the compat job's Postgres service container for consistency with the integration job\n- The compat job runs `tests/compat/` (oracle + handoff tests) using the `sqitch/sqitch` Docker image against a PG 17 service container\n- Oracle tests deploy the same project with both Sqitch and sqlever, then compare every row in `sqitch.changes`, `sqitch.events`, and `sqitch.tags` -- any divergence is a compatibility bug\n- Handoff tests verify mid-deploy handoff between Sqitch and sqlever in both directions\n\nCloses #186\n\n## Test plan\n- [x] Unit tests pass locally (3034 pass, 0 fail)\n- [ ] CI compat job runs all 26 compatibility tests without skips\n- [ ] CI pipeline passes on push\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 178,
+        "title": "feat(analysis): add SA038-SA042 style rules",
+        "state": "merged",
+        "date": "2026-03-24T05:21:18Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/178",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add 5 opinionated style rules (SA038-SA042), all `info` severity, `static` type\n  - **SA038**: Prefer `text` over `varchar(n)` -- Postgres treats them identically, avoids arbitrary length limits\n  - **SA039**: Prefer `bigint` over `int` for primary keys -- avoids future capacity exhaustion\n  - **SA040**: Prefer `IDENTITY` over `SERIAL` -- modern SQL-standard approach, avoids implicit sequence ownership issues\n  - **SA041**: Prefer `timestamptz` over `timestamp` -- prevents timezone-related bugs\n  - **SA042**: Prefer `IF NOT EXISTS` / `IF EXISTS` on CREATE/DROP -- idempotent migrations\n- Each rule covers both `CREATE TABLE` column definitions and `ALTER TABLE ADD COLUMN`\n- SA042 covers `CREATE TABLE/INDEX/SCHEMA` and `DROP TABLE/INDEX/SCHEMA`\n- 93 new tests across trigger/no_trigger fixtures and inline edge cases\n- Update rule registry (27 total rules)\n\n## Test plan\n\n- [x] All 93 new tests pass (`bun test tests/unit/analysis-rules-38-42.test.ts`)\n- [x] All 2729 unit tests pass (`bun test tests/unit/`)\n- [x] Type check passes (`bun x tsc --noEmit` -- no new errors)\n- [ ] CI matrix (PG 14-18) passes\n\nCloses #174\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 180,
+        "title": "feat(analysis): add SA033-SA037 advanced rules",
+        "state": "merged",
+        "date": "2026-03-24T05:19:35Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/180",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- **SA033**: Missing FK index (connected) -- when ADD FOREIGN KEY is found, warns about missing index on referencing column(s) that causes sequential scans on parent table DELETE/UPDATE\n- **SA034**: CIC without indisvalid check (info) -- reminds to verify pg_index.indisvalid after CREATE INDEX CONCURRENTLY, which can silently produce INVALID indexes\n- **SA035**: DROP PK breaks replica identity (warn) -- detects DROP CONSTRAINT on primary keys that may break logical replication subscribers using REPLICA IDENTITY DEFAULT\n- **SA036**: Large UPDATE/INSERT without batching (connected) -- extends SA011 pattern to cover INSERT...SELECT, suggests `sqlever batch` for batched execution\n- **SA037**: Integer PK capacity (info) -- warns when CREATE TABLE uses int4/integer/int/serial for primary keys, suggests bigint (int8) to avoid future capacity exhaustion\n\nEach rule includes 5 trigger fixtures, 5 no-trigger fixtures, and comprehensive unit tests (102 new tests, all passing).\n\nCloses #173\n\n## Test plan\n\n- [x] 102 new tests in `tests/unit/analysis-rules-33-37.test.ts` covering all 5 rules\n- [x] All 2754 existing tests continue to pass (updated allRules count from 22 to 27)\n- [x] Updated clean.sql fixture in analyze.test.ts to use int8 (avoids SA037 trigger)\n- [x] Type-check passes with no new errors\n- [x] Each rule has 5+ trigger and 5+ no-trigger SQL fixtures\n- [ ] CI pipeline green\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 179,
+        "title": "feat(analysis): add SA027-SA032 rules",
+        "state": "merged",
+        "date": "2026-03-24T05:17:55Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/179",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add 6 new static analysis rules for squawk parity (SA027-SA032)\n- SA027: `ALTER TABLE ... ALTER COLUMN ... DROP NOT NULL` -- warns about breaking NOT NULL assumptions\n- SA028: `TRUNCATE ... CASCADE` -- warns about cascading data loss across FK relationships\n- SA029: `CREATE TABLE` with `SERIAL`/`BIGSERIAL` column -- info-level, off by default, suggests IDENTITY\n- SA030: `ADD UNIQUE` constraint or `CREATE UNIQUE INDEX` -- warns about potential duplicate failures\n- SA031: `ALTER TYPE ... ADD VALUE` inside transaction -- error on PG < 12 (version-gated)\n- SA032: `BEGIN` without `COMMIT` or `ROLLBACK` -- warns about uncommitted transactions\n- Add `defaultOff` property to Rule interface for style rules that are disabled unless explicitly enabled in config\n\n## Test plan\n\n- [x] 104 new tests across all 6 rules (trigger fixtures, no-trigger fixtures, edge cases)\n- [x] All 2740 unit tests pass\n- [x] Updated existing test assertions for new rule count (22 -> 28)\n- [x] Fixture coverage: 3 trigger + 6 no-trigger (SA027), 3 trigger + 5 no-trigger (SA028), 3 trigger + 5 no-trigger (SA029), 3 trigger + 5 no-trigger (SA030), 3 trigger + 5 no-trigger (SA031), 2 trigger + 5 no-trigger (SA032)\n\nCloses #172\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 177,
+        "title": "feat(analysis): add SA022-SA026 safety gap rules",
+        "state": "merged",
+        "date": "2026-03-24T04:48:59Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/177",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Add 5 new static analysis rules closing critical safety gaps (Tier 1):\n  - **SA022**: DROP SCHEMA detection -- error severity, revert-context-aware (like SA007)\n  - **SA023**: DROP DATABASE detection -- error severity, always fires (no revert exemption)\n  - **SA024**: DROP ... CASCADE on any DropStmt or AlterTableCmd -- error severity\n  - **SA025**: Nested BEGIN/START TRANSACTION inside migrations -- warn severity\n  - **SA026**: Missing SET statement_timeout before UPDATE/DELETE/INSERT...SELECT -- warn severity (mirrors SA013 pattern for statement_timeout)\n- Each rule has trigger and no-trigger SQL fixtures (>=5 no-trigger per rule)\n- Comprehensive test suite (90 tests) covering metadata, fixture-driven trigger/no-trigger, inline edge cases, and cross-cutting empty-input validation\n- Updated rules/index.ts registry and existing test count assertions\n\nCloses #171\n\n## Test plan\n\n- [x] All 90 new tests in `analysis-rules-22-26.test.ts` pass\n- [x] Existing `analysis-rules.test.ts` (SA001-SA010) passes with updated rule count (27)\n- [x] Existing `analysis-rules-11-21.test.ts` passes with updated rule count (27)\n- [x] Full unit test suite (2726 tests across 65 files) passes with 0 failures\n- [x] No new type errors introduced in `src/` files\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 169,
+        "title": "fix: SA020 false positive — CIC without transaction context is correct usage",
+        "state": "merged",
+        "date": "2026-03-24T04:42:02Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/169",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- SA020 previously fired on any `CREATE INDEX CONCURRENTLY`, `DROP INDEX CONCURRENTLY`, or `REINDEX CONCURRENTLY` regardless of context, producing false positives for standalone usage -- which is the correct way to create/drop indexes on live tables.\n- Now SA020 only fires when there is a transaction context: either the SQL contains an explicit `BEGIN` statement (detected via `TransactionStmt` in the AST), or the `AnalysisContext` has `isTransactional: true` (set by deploy mode).\n- Added `isTransactional` field to `AnalysisContext` for callers to signal transactional execution context.\n\n## Test plan\n\n- [x] Standalone `CREATE INDEX CONCURRENTLY` without BEGIN or `isTransactional` produces no finding\n- [x] Standalone `DROP INDEX CONCURRENTLY` and `REINDEX CONCURRENTLY` produce no finding\n- [x] CIC inside explicit `BEGIN ... COMMIT` block fires SA020\n- [x] CIC with `isTransactional: true` context fires SA020\n- [x] `-- sqlever:auto-commit` directive still suppresses when transactional\n- [x] All 2645 unit tests pass (0 failures)\n- [x] Type-check passes (no new errors)\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 167,
+        "title": "docs: rewrite README -- world-class structure, real examples, accuracy fixes",
+        "state": "merged",
+        "date": "2026-03-24T04:13:37Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/167",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Rewrote the README from the ground up with a value-first structure: leads with safety and static analysis, not Sqitch compatibility\n- Added \"Use with your existing tools\" section showing one-step CI integration for Flyway, Liquibase, Rails, Django, Alembic, and raw SQL users\n- Expanded snapshot includes section with a concrete `\\i` directive example that shows the problem (GDPR cleanup breaks old migration) and the solution\n- Added table of contents, prerequisites section, dedicated CI integration section with full GitHub Actions and GitLab CI YAML\n- Added dbmate to the comparison table\n\n## Accuracy fixes\n\n- Removed \"All Sqitch commands are supported\" -- 7 commands (rebase, bundle, checkout, upgrade, engine, target, config) are stubs\n- Removed \"All commands support `--format json`\" -- only analyze, log, batch, review, diff, doctor, status support it\n- Removed Docker image claim -- no image is published\n- Removed `--force` bypass claim -- not implemented in deploy\n- Removed `--log-only` claim -- not implemented\n- Fixed `pg_version` example to use string `\"14\"` not integer `14`\n- Listed stub commands explicitly as \"recognized but not yet implemented\"\n- Added `--force-rule` suppression example (verified in source)\n\n## Test plan\n\n- [ ] Verify all internal links in table of contents resolve correctly\n- [ ] Verify YAML snippets are syntactically valid\n- [ ] Spot-check that all claims match source code (commands table, format support, rule descriptions)\n- [ ] Review rendering on GitHub\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 162,
+        "title": "refactor: deduplicate command patterns -- loadPlan, file resolution, batch withDatabase",
+        "state": "merged",
+        "date": "2026-03-23T20:59:39Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/162",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Extract `loadPlan(topDir, config, planFileOverride?)` to `src/commands/shared.ts` -- eliminates the duplicated 4-step plan resolve/check/read/parse pattern from 10 commands\n- Move `resolveFromPlan()` and `resolveChangedFiles()` from both `analyze.ts` and `review.ts` to `shared.ts` (were identical copies)\n- Refactor `batch.ts` to use `withDatabase()` from `shared.ts` via a new `withQueue()` helper, replacing manual connect/try/finally/disconnect in 7 handlers\n- Unify plan file error messages to lowercase, consistent format (`plan file not found: <path>`)\n\nNet result: -271 lines added / +211 lines removed = **60 fewer lines** across 15 source files.\n\n## Test plan\n\n- [x] All 2637 unit tests pass (`bun test tests/unit/`)\n- [x] TypeScript strict mode passes (`bun x tsc --noEmit` -- zero errors in `src/`)\n- [x] Updated 3 test assertions to match unified lowercase error messages\n\nCloses #156\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 161,
+        "title": "perf(deploy): eliminate redundant reads and quadratic rebuilds",
+        "state": "merged",
+        "date": "2026-03-23T20:55:29Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/161",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- **Read deploy script once per change** -- was read 3 times (auto-commit check, script hash via `computeScriptHash`, include resolution in `resolveDeployIncludes`). Now reads as a Buffer once, derives string content, and passes pre-read content to all consumers.\n- **Build dependency name-to-ID map once before deploy loop** -- `buildDependencies()` was rebuilding the map from scratch on every change (O(C*N) total). Now `buildDependencyMap()` runs once and the map is passed to each call.\n- **Replace `plan.tags.filter` with pre-built map lookup** -- line 767 was doing a linear scan of all tags per change despite `changeTagMap` already existing. Added `buildChangeTagObjectMap` for the `recordTag` call that needs full Tag objects.\n- **Parse plan file once in `runDeploy`** -- was parsed in both `runDeploy` (for project name) and again in `executeDeploy`. Now the parsed Plan is passed through.\n- **Cache git commits by timestamp** in `findCommitByTimestamp` -- avoids spawning a git subprocess when multiple changes share the same `planned_at` timestamp.\n- **Use static frozen `EMPTY_NODE`** for `node()` null case -- avoids allocating a new `{}` on every null AST node access.\n- **Precompute line-start index** for `offsetToLocation` -- O(log N) binary search per call instead of O(N) linear scan, with caching for repeated calls on the same SQL string.\n\n## Test plan\n\n- [x] All 2637 unit tests pass (`bun test tests/unit/`)\n- [x] Type-check passes for all source files (`bun x tsc --noEmit`)\n- [x] Deploy-specific tests pass (64 tests in `tests/unit/deploy.test.ts`)\n- [x] Snapshot include tests pass\n- [ ] Integration tests (CI)\n\nCloses #157\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 160,
+        "title": "refactor(analysis): deduplicate rules -- shared AST helpers",
+        "state": "merged",
+        "date": "2026-03-23T20:53:43Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/160",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Extract shared AST patterns into `src/analysis/ast-helpers.ts`: `VOLATILE_FUNCTIONS` set, `containsVolatileFunction()`, `forEachAlterTableCmd()`, and `extractDropObjectNames()`\n- Update SA001, SA002, SA002b, SA003, SA006, SA009, SA016, SA017, SA018 to use `forEachAlterTableCmd()`, eliminating duplicated 5-line ALTER TABLE iteration boilerplate and fixing the node-before-null-guard pattern\n- Update SA005, SA007, SA020 to use `extractDropObjectNames()`, removing duplicated DropStmt name extraction\n- Make `nodes()` generic (`nodes<DefElem>(...)`) to eliminate `as unknown as T[]` double-casts across SA012, SA013, SA014, SA019, SA020, SA009, SA018\n- Add frozen `EMPTY` sentinel for `node()` to avoid per-call object allocations\n- Remove dead `str()` export and unused `RangeVar` interface from `types.ts`\n\nNet result: -150 lines, zero behavior change. All 2637 unit tests pass.\n\nCloses #155\n\n## Test plan\n\n- [x] `bun test tests/unit/` -- all 2637 tests pass (0 fail)\n- [x] `bun x tsc --noEmit` -- no new type errors in `src/`\n- [x] Verified no remaining `as unknown as DefElem[]` or `as unknown as StringNode` double-casts in rules\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 159,
+        "title": "refactor: remove process.exit from library code, clean dead code",
+        "state": "merged",
+        "date": "2026-03-23T20:51:27Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/159",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Replace `process.exit(10)` in `DatabaseClient.connect()` with `throw` -- the caller (`main()`'s global try/catch) handles exit codes\n- Replace `process.exit(1)` in `runExpandAdd()` with propagated throw\n- Replace throwaway `readFileSync` in `revert.ts` with `existsSync` check\n- Remove deprecated `isNonTransactional` alias from `deploy.ts` and update all tests\n- Remove re-export of `resolveTargetUri` from `status.ts` -- tests now import from `shared.ts`\n- Remove TOCTOU `existsSync` + `readFileSync` in `config/index.ts` `readFileSafe()` -- just try/catch\n- Rename `n`/`nd` to `astNode`/`exprNode` in SA002/SA002b for clarity\n\nCloses #158\n\n## Test plan\n\n- [x] All 2636 unit tests pass (`bun test tests/unit/`)\n- [x] No new type errors in `src/` (`bun x tsc --noEmit`)\n- [ ] CI green on all PG versions\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 154,
+        "title": "quality: tighten TypeScript types — eliminate any, add return types",
+        "state": "merged",
+        "date": "2026-03-23T15:32:57Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/154",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- **Eliminate all `any` types from src/** (was ~40 usages, now 0)\n- **Fix all 87 tsc errors in src/** (was 87 errors from `Record<string, unknown>` + unused vars, now 0)\n- **Remove 8 `!` non-null assertions** in `commands/add.ts` (replaced with safe fallbacks)\n- **Remove 6 unused imports/variables** across `batch/worker.ts`, `commands/batch.ts`, `commands/diff.ts`, `commands/doctor.ts`, `commands/revert.ts`, `config/index.ts`, `signals.ts`\n\n### Key approach\n\nAdded a `PgNode` type and `node()`/`nodes()`/`str()` helper functions in `analysis/types.ts` that let rule files (SA001-SA021) navigate the libpg-query AST without `as any` casts. The helpers are lightweight wrappers that narrow `unknown` to typed records, replacing ~40 scattered `as any[]` / `: any` annotations with a consistent pattern.\n\n### What changed\n\n| Area | Before | After |\n|------|--------|-------|\n| `tsc --noEmit` errors in `src/` | 87 | 0 |\n| `any` type usages in `src/` | ~40 | 0 |\n| `!` non-null assertions in `src/` | 8 | 0 |\n| Unused imports/variables | 6 | 0 |\n| Test results | 2626 pass | 2626 pass |\n\n### Files touched (34 files, +403 / -317)\n\n- `src/analysis/types.ts` — new `PgNode`, `DefElem`, `StringNode`, `TypeName` types; `node()`, `nodes()`, `str()` helpers; fixed `extractTypeName`/`extractTypeMods`/`displayTypeName` signatures\n- `src/analysis/rules/SA001-SA021.ts` — replaced `any` with typed helpers\n- `src/commands/add.ts` — replaced `!` assertions with safe regex group extraction\n- `src/commands/diff.ts` — removed unused `Change`/`Tag` imports, fixed `parseDiffArgs` return type\n- `src/commands/log.ts` — prefixed unused param, fixed `ConfEntry.value` type narrowing\n- `src/output.ts` — fixed `noUncheckedIndexedAccess` violations in table formatting\n- `src/plan/parser.ts` — fixed nullable regex match group\n- Other files — removed unused imports/variables\n\n## Test plan\n\n- [x] `bun test` — 2626 pass, 0 fail\n- [x] `bun x tsc --noEmit` — 0 errors in `src/`\n- [x] `grep -rn ': any\\|as any' src/` — 0 results (only English \"any\" in comments)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 153,
+        "title": "refactor: standardize CLI patterns — async/await, exit codes, error messages",
+        "state": "merged",
+        "date": "2026-03-23T15:27:56Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/153",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- **Exit code handling**: Commands no longer call `process.exit()` directly — they throw errors or return exit codes, letting `cli.ts` handle all exits in one place with consistent `\"sqlever <cmd>: <message>\"` formatting\n- **Async dispatch**: Replace 15 separate `.then().catch()` chains in `cli.ts` with a single `async dispatchCommand()` switch/case and one `try/catch` — removes ~200 lines of duplicated error-handling boilerplate\n- **Error messages**: Remove redundant `\"Error:\"` prefix from command messages (cli.ts already adds `\"sqlever <cmd>:\"` prefix); lowercase message starts to follow Unix conventions\n- **Help text**: Standardize all 24 command descriptions to consistent imperative verb phrases\n\nFiles changed: `cli.ts`, 11 command files (`add`, `batch`, `diff`, `init`, `log`, `plan`, `rework`, `show`, `status`, `tag`, `verify`), 6 test files. Net -432 lines.\n\n## Test plan\n\n- [x] All 2626 tests pass (0 failures)\n- [x] Tests updated to use `rejects.toThrow()` / `toThrow()` instead of mocking `process.exit()`\n- [x] No new TypeScript errors introduced (all pre-existing)\n- [x] CLI subprocess integration tests still verify exit codes and stderr messages\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 152,
+        "title": "refactor: rename no-transaction to auto-commit (Postgres always has transactions)",
+        "state": "merged",
+        "date": "2026-03-23T15:25:07Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/152",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- **Renamed all \"no-transaction\" / \"non-transactional\" naming to \"auto-commit\"** throughout the codebase. In Postgres, every statement always runs in a transaction -- the term \"no-transaction\" is misleading. The correct concept is \"auto-commit\": each statement commits via its own implicit transaction, vs `--single-transaction` which wraps everything in an explicit `BEGIN`/`COMMIT`.\n\n- **Backward compatible**: the regex now accepts BOTH directives (`sqlever:(auto-commit|no-transaction)`), and `isNonTransactional` is kept as a deprecated alias for `isAutoCommit`.\n\n### What changed\n\n| Before | After |\n|--------|-------|\n| `-- sqlever:no-transaction` | `-- sqlever:auto-commit` (preferred; old form still accepted) |\n| `isNonTransactional()` | `isAutoCommit()` (+ backward-compat alias) |\n| `hasNoTransactionComment()` | `hasAutoCommitDirective()` |\n| `noTransaction` / `noTxn` variables | `autoCommit` |\n| `\" [no-transaction]\"` display | `\" [auto-commit]\"` |\n| `--no-transaction` in spec/docs | `--auto-commit` |\n| `non-transactional` in prose | `auto-commit` |\n| `non_transactional_statement_timeout` | `auto_commit_statement_timeout` |\n\n### Files modified (15)\n\n- `src/commands/deploy.ts` -- core `isAutoCommit()` function + alias\n- `src/commands/revert.ts` -- updated import and comment\n- `src/analysis/rules/SA020.ts` -- `hasAutoCommitDirective()`, updated suggestions\n- `spec/SPEC.md` -- all prose and tables updated\n- `spec/SPEC-CHANGELOG.md` -- all changelog entries updated\n- `RELEASE_NOTES_v0.2.0.md` -- updated directive name\n- `tests/unit/deploy.test.ts` -- new tests + backward compat tests\n- `tests/unit/deploy-failures.test.ts` -- updated names + backward compat test\n- `tests/unit/deploy-revert-robustness.test.ts` -- updated names + legacy test\n- `tests/unit/revert.test.ts` -- updated names + legacy backward compat test\n- `tests/unit/analysis-rules-11-21.test.ts` -- updated assertions\n- `tests/unit/analysis-deep.test.ts` -- updated test descriptions\n- `tests/unit/e2e-deep.test.ts` -- updated import\n- `tests/fixtures/analysis/SA020/no_trigger/concurrently_with_no_transaction.sql` -- uses new directive\n- `tests/fixtures/edge-cases.sql` -- updated comment\n\n## Test plan\n\n- [x] `bun test` passes: 2631 pass, 37 skip, 0 fail\n- [x] New backward-compat tests verify `-- sqlever:no-transaction` still works\n- [x] `isNonTransactional` alias still works for any external consumers\n- [x] SA020 suppression works with both `auto-commit` and `no-transaction` directives\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 151,
+        "title": "refactor: extract shared command patterns (withDatabase, resolveTargetUri)",
+        "state": "merged",
+        "date": "2026-03-23T15:20:45Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/151",
+        "author": "NikolayS",
+        "body": "## Summary\n\n- Extract `resolveTargetUri(config, dbUri?, targetName?)` into `src/commands/shared.ts` -- eliminates 5 near-identical copies across log, diff, status, verify, and revert commands\n- Extract `withDatabase(uri, settings, fn)` into `src/commands/shared.ts` -- eliminates the duplicated connect/try/finally/disconnect pattern in log, status, diff, and verify commands\n- Add 12 unit tests for the shared helpers in `tests/unit/shared.test.ts`\n- Update all call sites and their existing tests to use the shared versions\n- Net: -181 lines removed from 5 command files, +80 lines added in shared module and tests\n\n## What was NOT extracted\n\nAdvisory lock acquire/release was considered but only appears in 2 commands (deploy, revert), below the 3-command threshold. The deploy command also has unique advisory lock semantics (two-argument form with namespace + project key) vs. revert (single-argument form with REGISTRY_LOCK_KEY), making a shared abstraction non-trivial without over-generalizing.\n\n## Test plan\n\n- [x] All 12 new `shared.test.ts` tests pass\n- [x] All 2622 existing unit tests pass (0 failures)\n- [x] No new type-check errors introduced (verified via `tsc --noEmit`)\n\nGenerated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 150,
+        "title": "security: audit findings — fix SQL injection risks, validate paths",
+        "state": "merged",
+        "date": "2026-03-23T15:17:10Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/150",
+        "author": "NikolayS",
+        "body": "## Summary\n\nSecurity audit of the sqlever codebase covering SQL injection, command injection, password exposure, path traversal, and subprocess safety. Six vulnerabilities found and fixed across 6 source files.\n\n### Findings and fixes\n\n- **CRITICAL — Command injection in `gitExec()`** (`src/includes/snapshot.ts`): Used `execSync` with string concatenation (`git ${args.join(\" \")}`), allowing shell metacharacter injection via crafted file paths, commit hashes, or timestamps. Fixed by switching to `execFileSync` which bypasses the shell.\n\n- **HIGH — SQL injection via `source_filter`** (`src/expand-contract/tracker.ts`): The `checkBackfill()` method interpolated `input.source_filter` directly into SQL queries (`WHERE ${input.source_filter}`). This is a textbook SQL injection vector. Fixed by removing `source_filter` usage from generated queries entirely.\n\n- **MEDIUM — Unvalidated numeric interpolation in session settings** (`src/db/client.ts`): `statementTimeout`, `lockTimeout`, and `idleInTransactionSessionTimeout` were interpolated into SQL SET statements without validation. Added explicit checks that values are non-negative finite integers before interpolation.\n\n- **MEDIUM — Unvalidated `lockTimeout` in psql command builder** (`src/psql.ts`): `buildPsqlCommand()` interpolated `lockTimeout` into a `-c \"SET lock_timeout = '${ms}ms'\"` argument without type validation. Added integer validation.\n\n- **LOW — Missing name validation in rework command** (`src/commands/rework.ts`): Unlike `add` which validates change names against `^[a-zA-Z_][a-zA-Z0-9_-]*$`, `rework` accepted any string, allowing path traversal when constructing file paths like `deploy/${name}.sql`. Added the same validation regex.\n\n- **LOW — Missing name validation in show command** (`src/commands/show.ts`): `resolveScriptPath()` used `changeName` in `join(topDir, scriptDir, changeName + \".sql\")` without validation. Added name format check for script display types (deploy/revert/verify).\n\n### What was audited and found clean\n\n- **SQL injection in registry queries**: All 20+ queries in `src/db/registry.ts` use parameterized statements (`$1`, `$2`, ...). No string interpolation.\n- **Password exposure**: Passwords are correctly masked via `maskUri()` in all log output. psql receives passwords via `PGPASSWORD` env var, never command-line args. The `extractPassword()` function strips passwords from URIs before adding them to the args array.\n- **Subprocess safety**: `spawn()` is used with array arguments (not shell strings) throughout. `.psqlrc` is disabled via both env var and `--no-psqlrc` flag. `ON_ERROR_STOP=1` is always set.\n- **Change name validation in `add` command**: Already validates with strict regex.\n- **DBLab client**: Uses `encodeURIComponent()` for clone IDs in URL paths.\n\n## Test plan\n\n- [x] All 2626 existing tests pass (0 failures, 37 skipped)\n- [x] Security edge case tests (37 tests) all pass\n- [x] Updated tracker test to verify `source_filter` is now ignored\n- [x] No new type errors in changed files (pre-existing type errors in analysis rules are unrelated)\n\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 149,
+        "title": "test: fill regression test gaps for 10 oracle-found bugs",
+        "state": "merged",
+        "date": "2026-03-23T15:14:49Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/149",
+        "author": "NikolayS",
+        "body": "## Summary\n\nCloses test coverage gaps identified in issue #148:\n\n- **Gap 1 (Bug 2):** `@tag` dependency references in `topologicalSort` and `validateDependencies` -- verifies that `name@tag` suffix is stripped before graph lookup\n- **Gap 2 (Bug 3):** `buildScriptNameMap` unit tests -- verifies correct filename resolution for original vs reworked changes (function exported for direct testing)\n- **Gap 3 (Bug 6):** `top_dir` applied to default paths -- verifies that `plan_file`, `deploy_dir`, `revert_dir`, `verify_dir` resolve relative to `top_dir` when not explicitly configured\n- **Gap 4 (Bugs 8/9/10):** SHA-1 known-good fixtures for whitespace/escape edge cases -- trailing space in planner name, `\\n` in note text, whitespace-only planner name\n\n## Test plan\n\n- [x] All 4 new test groups pass locally (`bun test`)\n- [x] Full suite: 2636 pass, 0 fail\n- [ ] CI green\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      }
+    ],
+    "openPRs": [
+      {
+        "number": 206,
+        "title": "spec: offline schema diff, safe mode, verify-with-rewrites (v1.0)",
+        "state": "open",
+        "date": "2026-03-26T21:12:48Z",
+        "url": "https://github.com/NikolayS/sqlever/pull/206",
+        "author": "NikolayS",
+        "body": "Adds three new capabilities to the spec — positions sqlever as a three-in-one tool:\n\n**5.12 Offline schema diff**\n- `sqlever schema diff before.sql after.sql` — no live DB required\n- Parses `pg_dump --schema-only`; structural diff → dependency-ordered SQL\n- Two-pass algorithm: object maps → added/removed/changed → topological SQL generation\n- `--rename` hint for column renames; `--confirm-destructive` for DROP\n- Shadow DB mode opt-in\n\n**5.13 Safe mode**\n- ST001–ST008: production-safe transformation catalog (ADD COLUMN, FK, CHECK, INDEX, SET NOT NULL, TYPE change, RENAME)\n- Rewrites dangerous single-step operations into multi-step, multi-transaction equivalents\n- Version-aware: PG11+ vs PG<11 for ADD COLUMN DEFAULT\n- Multi-file output: separate Sqitch changes for NOT VALID and VALIDATE steps\n- `sqlever scaffold`: generate full migration sets for complex patterns\n\n**5.14 Verify SQL with rewrites**\n- `--suggest-rewrites`: show safe SQL alongside each finding\n- `--rewrite`: output a safe version of the entire migration\n\nAlso adds DD15, DD16, prior art (strong_migrations, migra, postgres.ai guides), bumps spec to v1.0."
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 209,
+        "title": "feat: safe mode — production-safe migration rewriting (C1-C4, D1-D2)",
+        "state": "open",
+        "date": "2026-03-26T22:25:01Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/209",
+        "author": "NikolayS"
+      },
+      {
+        "number": 208,
+        "title": "feat: offline schema diff — structural diff engine + SQL generator (A4, B1-B4)",
+        "state": "open",
+        "date": "2026-03-26T22:24:42Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/208",
+        "author": "NikolayS"
+      },
+      {
+        "number": 207,
+        "title": "feat: offline schema diff — pg_dump parser (A1-A3)",
+        "state": "open",
+        "date": "2026-03-26T22:24:26Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/207",
+        "author": "NikolayS"
+      },
+      {
+        "number": 205,
+        "title": "feat: rename config to sqlever.conf with sqitch.conf fallback",
+        "state": "open",
+        "date": "2026-03-25T15:14:44Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/205",
+        "author": "NikolayS"
+      },
+      {
+        "number": 73,
+        "title": "Post-MVP roadmap — validation, polish, advanced features",
+        "state": "open",
+        "date": "2026-03-21T00:04:32Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/73",
+        "author": "NikolayS"
+      },
+      {
+        "number": 1,
+        "title": "Polish the SPEC",
+        "state": "open",
+        "date": "2026-03-20T17:23:55Z",
+        "url": "https://github.com/NikolayS/sqlever/issues/1",
+        "author": "NikolayS"
+      }
+    ],
+    "commitCount": 35,
+    "topContributors": [
+      "NikolayS"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "NikolayS",
+    "description": "GitHub profile",
+    "url": "https://github.com/NikolayS/NikolayS",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 1,
+    "topContributors": [
+      "NikolayS"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "rachio-supervisor",
+    "description": "Rachio irrigation supervisor — schedule control, water usage, visual inspection",
+    "url": "https://github.com/NikolayS/rachio-supervisor",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 1,
+    "topContributors": [
+      "NikolayS"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "postgresai",
+    "description": "postgresai – Postgres observability built for humans and AI agents",
+    "url": "https://github.com/postgres-ai/postgresai",
+    "stars": 115,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 24,
+        "title": "[Bug] The first account registration confirmation message failed to send.",
+        "state": "open",
+        "date": "2026-01-12T23:51:52Z",
+        "url": "https://github.com/postgres-ai/postgresai/issues/24",
+        "author": "RokeJulianLockhart"
+      }
+    ],
+    "commitCount": 3,
+    "topContributors": [
+      "NikolayS"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "postgres-ai/postgresai"
+  }
+]

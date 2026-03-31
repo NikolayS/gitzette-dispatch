@@ -1,0 +1,17 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Two commits and a question mark walk into a week",
+  "editionNote": "A contemplative week: file-classifier-backend received two commits and not much else.",
+  "articles": [
+    {
+      "repo": "file-classifier-backend",
+      "headline": "file-classifier-backend goes quiet",
+      "deck": "Sometimes the best work happens in the spaces between pushes.",
+      "body": "@Apostletree42 logged two commits to file-classifier-backend this week, neither of which cracked the surface of public view. No releases. No merged PRs. No issues resolved. The repository sits in a holding pattern—not abandoned, not stalled, but in that curious state all side projects know: the thinking phase. It's possible something is cooking. It's also possible nothing is. The dispatch will report when it knows more.",
+      "tag": "PENDING",
+      "illustrationPrompt": "Workbench with tools laid out but untouched, soft dust gathering on handles, single light source overhead.",
+      "illustrate": true
+    }
+  ],
+  "closingNote": "See you next week, assuming something happens."
+}

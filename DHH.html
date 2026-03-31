@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>the dispatch — Vol. 1, No. 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink: #0f0f0f; --paper: #f7f4ee; --rule: #c8c2b4;
+    --muted: #666; --tag-bg: #0f0f0f; --tag-fg: #f7f4ee;
+    --link: #1a1a8c;
+  }
+  body { background: #e8e4dc; font-family: 'IBM Plex Sans', sans-serif; color: var(--ink); font-size: 15px; line-height: 1.6; }
+  a { color: var(--ink); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .muted { color: var(--muted); }
+  .paper { max-width: 960px; margin: 24px auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 2px 12px rgba(0,0,0,.15); overflow-x: hidden; }
+  .paper img { max-width: 100%; height: auto; display: block; }
+  /* broadsheet: two pages side by side on very wide screens */
+  .page-2 { display: block; }
+  /* articles-p2: always visible on page 1; moves to page 2 in broadsheet */
+  .articles-p2 { display: block; }
+  @media (min-width: 1400px) {
+    body { background: #d8d4cc; }
+    .broadsheet-wrap { display: flex; align-items: flex-start; gap: 0; max-width: 1900px; margin: 32px auto; }
+    .broadsheet-wrap .paper { max-width: none; flex: 1; margin: 0; box-shadow: 0 4px 24px rgba(0,0,0,.2); }
+    .broadsheet-wrap .paper.page-2 { display: block; border-left: 3px double var(--rule); margin-left: -1px; }
+    /* on broadsheet, hide p2 articles from page 1 (they move to page 2) */
+    .broadsheet-wrap .paper:first-child .articles-p2 { display: none; }
+    /* on broadsheet, hide the sidebar from page 1 (stats + p2 articles move to page 2) */
+    .broadsheet-wrap .paper:first-child .grid-2-1 { grid-template-columns: 1fr; }
+    .broadsheet-wrap .paper:first-child .grid-2-1 .col:last-child { display: none; }
+  }
+
+  /* header */
+  .header { padding: 20px 24px 14px; border-bottom: 3px solid var(--ink); }
+  .header-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--rule); padding-bottom: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; overflow: hidden; }
+  .header-kicker .kicker-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .header-kicker .kicker-date { white-space: nowrap; flex-shrink: 0; color: var(--muted); font-weight: 400; }
+  .header-kicker a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); }
+  .header-kicker a:hover { color: var(--link); border-color: var(--link); }
+  .header-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; overflow: hidden; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .header-meta .meta-left { white-space: nowrap; }
+  .header-meta .meta-right { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+  .masthead { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(32px,7vw,64px); letter-spacing: -.03em; line-height: 1; }
+  .masthead span { color: var(--muted); font-weight: 400; }
+  .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .edition-bar { margin-top: 12px; padding: 6px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .05em; display: flex; flex-wrap: nowrap; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .edition-bar::-webkit-scrollbar { display: none; }
+  .edition-bar span { white-space: nowrap; padding: 0 16px 0 0; }
+  .edition-bar span::before { content: "▸ "; color: var(--muted); }
+
+  /* body */
+  .body { padding: 0 24px 32px; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 0; }
+  @media (min-width: 640px) { .grid-2-1 { grid-template-columns: 3fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
+  .col { padding: 20px 20px 0 0; }
+  .col:last-child { padding-right: 0; }
+  @media (min-width: 640px) { .col { border-right: 1px solid var(--rule); } .col:last-child { border-right: none; padding-left: 20px; } .grid-3 .col { padding: 20px 16px 0; } .grid-3 .col:first-child { padding-left: 0; } .grid-3 .col:last-child { padding-right: 0; } }
+
+  /* tags */
+  .tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; background: var(--tag-bg); color: var(--tag-fg); padding: 2px 7px; margin-bottom: 8px; }
+
+  /* articles */
+  .article { margin-bottom: 24px; }
+  h1 { font-family: 'IBM Plex Serif', serif; font-size: clamp(22px,4vw,36px); font-weight: 700; line-height: 1.1; margin-bottom: 8px; }
+  h2 { font-family: 'IBM Plex Serif', serif; font-size: clamp(16px,3vw,22px); font-weight: 700; line-height: 1.15; margin-bottom: 6px; }
+  h3 { font-family: 'IBM Plex Serif', serif; font-size: 15px; font-weight: 700; line-height: 1.2; margin-bottom: 4px; }
+  .headline-link { color: var(--ink); text-decoration: none; }
+  .headline-link:hover { text-decoration: underline; }
+  .deck { font-family: 'IBM Plex Serif', serif; font-style: italic; font-size: 14px; line-height: 1.55; color: #333; margin-bottom: 10px; }
+  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; }
+  .body-text a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .body-text a:hover { border-bottom-color: var(--ink); }
+  .body-text code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 2px; }
+  .release-links, .pr-links { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .release-link { font-weight: 600; color: var(--ink); }
+  .pending-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; border-left: 2px solid var(--rule); padding-left: 8px; }
+
+  /* infographics */
+  .infographic { margin-bottom: 4px; }
+  .infographic-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+
+  /* rule */
+  .rule { border: none; border-top: 1px solid var(--rule); margin: 0 0 0; }
+
+  /* footer */
+  .footer { padding: 12px 24px; border-top: 2px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+</style>
+</head>
+<body>
+<div class="broadsheet-wrap">
+<div class="paper">
+  <div class="header">
+    <div class="header-kicker">
+      <span class="kicker-text"><a href="https://github.com/DHH" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@DHH</a> <span style="font-weight:400;letter-spacing:.12em;">— open-source digest</span></span>
+      <span class="kicker-date">March 16 – March 22, 2026</span>
+    </div>
+    <div class="header-meta">
+      <span class="meta-left">Vol. 1, No. 2</span>
+      <span class="meta-right">github.com/DHH</span>
+    </div>
+    <div class="masthead">the <span>dispatch</span></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(13px,2.5vw,18px);font-weight:700;letter-spacing:.06em;margin-top:4px;"><a href="https://github.com/DHH" style="color:var(--ink);text-decoration:none;">@DHH</a></div>
+    <div class="tagline">A quiet week across the Omarchy ecosystem — mostly upstream work and open conversations.</div>
+    <div class="edition-bar">
+      <span>29 commits</span>
+      <span>30 PRs</span>
+      <span>0 releases</span>
+      <span>7 repos</span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="grid grid-2-1">
+      <div class="col">
+        <p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">26 commits across seven repos, no releases or merged PRs from @DHH.</p>
+        
+    <div class="article">
+      <div class="tag">PENDING</div>
+      <h1><a href="https://github.com/basecamp/omarchy" class="headline-link">bluetooth audio still hunting for the right sink on Wayland</h1>
+      <p class="deck">*@DHH's ecosystem sits on open PRs while the community debugs Wayland audio switching and display sleep issues.*</p>
+      <div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
+        <img src="https://gitzette.online/img/a-single-mechanical-object-related-to-bluetooth-audio-still-.jpg" alt="" style="width:100%;max-width:100%;height:auto;max-height:40vh;object-fit:cover;display:block;">
+      </div>
+      <p class="body-text">The omarchy project carries five open feature PRs this week, none merged. The most substantial is @purrsec's #5090, which tackles Bluetooth audio sink switching on Wayland — auto-move streams between sinks and preserve volume across switches. Wayland's audio plumbing has proven tricky; separate issues track display sleep blocking under Chromium 146 and SDDM Wayland mode stability. The work is live in PRs but not yet in the main branch.</p>
+      
+      
+      <div class="pending-note">29 open PRs: <a href="https://github.com/basecamp/omarchy/pull/5091">#5091 Add Pi to the AI install menu</a>, <a href="https://github.com/basecamp/omarchy/pull/5090">#5090 Fix Bluetooth audio: auto-switch sink, move streams, preserve volume</a>, <a href="https://github.com/basecamp/omarchy/pull/5088">#5088 feat: enable calc provider by default in walker launcher</a></div>
+    </div>
+
+    <div class="article">
+      <div class="tag">COMMUNITY</div>
+      <h2><a href="https://github.com/omacom-io/omarchy-pkgs" class="headline-link">package mirror sync ticks over nine commits for the week</h2>
+      <p class="deck">*Routine AUR synchronization with no user-facing changes.*</p>
+      
+      <p class="body-text">The omarchy-pkgs repository logged nine commits across the week, driven largely by the automated edge sync PR #59 opened by github-actions. No merged PRs, no releases. The repo continues to track open requests for additional Elephant Providers packages and cursor auto-update disabling.</p>
+      
+      
+      <div class="pending-note">1 open PR: <a href="https://github.com/omacom-io/omarchy-pkgs/pull/59">#59 chore: sync AUR packages (edge)</a></div>
+    </div>
+
+    <div class="article">
+      <div class="tag">PENDING</div>
+      <h2><a href="https://github.com/omacom-io/omaterm" class="headline-link">minimal terminal project ticks through seven commits</h2>
+      <p class="deck">*omaterm accumulates work without visible releases or merged changes.*</p>
+      
+      <p class="body-text">omaterm logged seven commits this week with no releases or merged PRs. An open issue requests default Omatern skill inclusion, similar to the setup flow in omarchy itself.</p>
+      
+      
+      
+    </div>
+
+    <div class="article">
+      <div class="tag">COMMUNITY</div>
+      <h3><a href="https://github.com/omacom-io/lumon.nvim" class="headline-link">lumon neovim theme sees single commit</h3>
+      <p class="deck">*Quiet week on the theme front.*</p>
+      
+      <p class="body-text">One commit landed in lumon.nvim with no additional activity reported.</p>
+      
+      
+      
+    </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>26 commits, zero releases. @DHH's repos are holding steady while the community debugs Wayland plumbing.</span>
+    <span>generated 2026-03-23</span>
+  </div>
+</div><!-- /paper page 1 -->
+
+<!-- page 2: stats + index (only visible as separate page on broadsheet layout) -->
+<div class="paper page-2">
+  <div class="header" style="border-bottom:none;">
+    <div class="header-meta" style="margin-bottom:0;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+      <span class="meta-left">the dispatch — Vol. 1, No. 2</span>
+      <span class="meta-right">March 16 – March 22, 2026</span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="articles-p2">
+    <div class="article">
+      <div class="tag">PENDING</div>
+      <h3><a href="https://github.com/omacom-io/omarchy-iso" class="headline-link">iso installer bumps one commit amid signature and hostname questions</h3>
+      <p class="deck">*Build tooling carries open issues around GPG key lookup and regex validation.*</p>
+      
+      <p class="body-text">omarchy-iso recorded one commit this week. Open issues track GPG key retrieval failures during boot, hostname setup regex validation, and missing package requirements documentation — all blocking smooth first-time builds.</p>
+      
+      
+      
+    </div>
+
+    <div class="article">
+      <div class="tag">COMMUNITY</div>
+      <h3><a href="https://github.com/omacom-io/omadots" class="headline-link">shared config repository logs two commits</h3>
+      <p class="deck">*Configuration tooling sees minor activity.*</p>
+      
+      <p class="body-text">omadots registered two commits with no releases or merged PRs.</p>
+      
+      
+      
+    </div>
+
+    <div class="article">
+      <div class="tag">COMMUNITY</div>
+      <h3><a href="https://github.com/claudey/once-blog" class="headline-link">once-blog lands one commit</h3>
+      <p class="deck">*The Rails-based blogging engine sees quiet week.*</p>
+      
+      <p class="body-text">once-blog recorded a single commit with no releases or merged activity.</p>
+      
+      
+      
+    </div></div>
+    
+<div style="padding:20px 0 0;border-top:3px double var(--ink);">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+    <span>stats corner</span>
+    <span style="flex:1;border-top:1px solid var(--rule);display:inline-block;"></span>
+  </div>
+  
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule);margin-bottom:20px;">
+    
+      <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">29</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">commits</div>
+      </div>
+      <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">30</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">pull requests</div>
+      </div>
+      <div style="padding:14px 10px 12px;text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">0</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">releases</div>
+      </div>
+  </div>
+  
+  <div style="margin-bottom:20px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">commits by repo</div>
+    <svg width="100%" viewBox="0 0 382 197" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" letter-spacing="1">REPO</text>
+      <text x="382" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" text-anchor="end" letter-spacing="1">COMMITS</text>
+      <line x1="0" y1="14" x2="382" y2="14" stroke="#e8e4dc" stroke-width="0.5"/>
+      
+    <text x="104" y="32" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333" font-weight="600">omarchy-pkgs</text>
+    <rect x="110" y="18" width="240" height="18" fill="#555" rx="1"/>
+    <text x="355" y="32" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="600">9</text>
+    <text x="104" y="57" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">omarchy</text>
+    <rect x="110" y="43" width="213" height="18" fill="#888" rx="1"/>
+    <text x="328" y="57" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">8</text>
+    <text x="104" y="82" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">omaterm</text>
+    <rect x="110" y="68" width="187" height="18" fill="#999" rx="1"/>
+    <text x="302" y="82" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">7</text>
+    <text x="104" y="107" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">omadots</text>
+    <rect x="110" y="93" width="53" height="18" fill="#aaa" rx="1"/>
+    <text x="168" y="107" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">2</text>
+    <text x="104" y="132" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">lumon.nvim</text>
+    <rect x="110" y="118" width="27" height="18" fill="#bbb" rx="1"/>
+    <text x="142" y="132" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    <text x="104" y="157" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">omarchy-iso</text>
+    <rect x="110" y="143" width="27" height="18" fill="#ccc" rx="1"/>
+    <text x="142" y="157" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    <text x="104" y="182" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">once-blog</text>
+    <rect x="110" y="168" width="27" height="18" fill="#ddd" rx="1"/>
+    <text x="142" y="182" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    </svg>
+  </div>
+  
+  <div style="margin-bottom:20px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">github stars</div>
+    <table style="width:100%;border-collapse:collapse;">
+      <tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/basecamp/omarchy" style="color:var(--ink);text-decoration:none;">omarchy</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:100%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">21,352</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/omacom-io/omarchy-iso" style="color:var(--ink);text-decoration:none;">omarchy-iso</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:1%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">183</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/omacom-io/omaterm" style="color:var(--ink);text-decoration:none;">omaterm</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">43</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/omacom-io/omadots" style="color:var(--ink);text-decoration:none;">omadots</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">22</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/omacom-io/omarchy-pkgs" style="color:var(--ink);text-decoration:none;">omarchy-pkgs</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">19</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/omacom-io/lumon.nvim" style="color:var(--ink);text-decoration:none;">lumon.nvim</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">7</td>
+    </tr>
+    </table>
+  </div>
+  
+</div>
+    <div style="padding-top:24px;border-top:2px solid var(--ink);margin-top:8px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+        <span>repo index</span>
+        <span style="flex:1;border-top:1px solid var(--rule);display:inline-block;"></span>
+      </div>
+      <ul style="list-style:none;">
+        <li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/omacom-io/omarchy-pkgs" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">omarchy-pkgs</a>
+          
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">9 commits · 0 releases · ★ 19</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/basecamp/omarchy" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">omarchy</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Beautiful, Modern & Opinionated Linux</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">8 commits · 0 releases · ★ 21352</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/omacom-io/lumon.nvim" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">lumon.nvim</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Lumon Industries Neovim Theme</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 7</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/omacom-io/omaterm" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">omaterm</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Minimal Terminal Omakase for Arch</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">7 commits · 0 releases · ★ 43</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/omacom-io/omarchy-iso" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">omarchy-iso</a>
+          
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 183</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/omacom-io/omadots" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">omadots</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Shared configs for Omacoms</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">2 commits · 0 releases · ★ 22</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/claudey/once-blog" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">once-blog</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">A blog you own forever. Built with Rails 8, vanilla CSS, and no JavaScript frameworks.</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 0</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">
+    <span>the dispatch is generated weekly from live GitHub data</span>
+    <span>github.com/NikolayS/dispatch</span>
+  </div>
+</div><!-- /paper page 2 -->
+
+</div><!-- /broadsheet-wrap -->
+</body>
+</html>

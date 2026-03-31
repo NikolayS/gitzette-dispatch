@@ -1,0 +1,71 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "A quiet week across the Omarchy ecosystem — mostly upstream work and open conversations.",
+  "editionNote": "26 commits across seven repos, no releases or merged PRs from @DHH.",
+  "articles": [
+    {
+      "repo": "omarchy",
+      "headline": "bluetooth audio still hunting for the right sink on Wayland",
+      "deck": "*@DHH's ecosystem sits on open PRs while the community debugs Wayland audio switching and display sleep issues.*",
+      "body": "The omarchy project carries five open feature PRs this week, none merged. The most substantial is @purrsec's #5090, which tackles Bluetooth audio sink switching on Wayland — auto-move streams between sinks and preserve volume across switches. Wayland's audio plumbing has proven tricky; separate issues track display sleep blocking under Chromium 146 and SDDM Wayland mode stability. The work is live in PRs but not yet in the main branch.",
+      "tag": "PENDING",
+      "illustrationPrompt": "a wireless speaker icon with dotted signal lines splitting into two paths, one fading away",
+      "illustrate": false
+    },
+    {
+      "repo": "omarchy-pkgs",
+      "headline": "package mirror sync ticks over nine commits for the week",
+      "deck": "*Routine AUR synchronization with no user-facing changes.*",
+      "body": "The omarchy-pkgs repository logged nine commits across the week, driven largely by the automated edge sync PR #59 opened by github-actions. No merged PRs, no releases. The repo continues to track open requests for additional Elephant Providers packages and cursor auto-update disabling.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "omaterm",
+      "headline": "minimal terminal project ticks through seven commits",
+      "deck": "*omaterm accumulates work without visible releases or merged changes.*",
+      "body": "omaterm logged seven commits this week with no releases or merged PRs. An open issue requests default Omatern skill inclusion, similar to the setup flow in omarchy itself.",
+      "tag": "PENDING",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "lumon.nvim",
+      "headline": "lumon neovim theme sees single commit",
+      "deck": "*Quiet week on the theme front.*",
+      "body": "One commit landed in lumon.nvim with no additional activity reported.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "omarchy-iso",
+      "headline": "iso installer bumps one commit amid signature and hostname questions",
+      "deck": "*Build tooling carries open issues around GPG key lookup and regex validation.*",
+      "body": "omarchy-iso recorded one commit this week. Open issues track GPG key retrieval failures during boot, hostname setup regex validation, and missing package requirements documentation — all blocking smooth first-time builds.",
+      "tag": "PENDING",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "omadots",
+      "headline": "shared config repository logs two commits",
+      "deck": "*Configuration tooling sees minor activity.*",
+      "body": "omadots registered two commits with no releases or merged PRs.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": null,
+      "illustrate": false
+    },
+    {
+      "repo": "once-blog",
+      "headline": "once-blog lands one commit",
+      "deck": "*The Rails-based blogging engine sees quiet week.*",
+      "body": "once-blog recorded a single commit with no releases or merged activity.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": null,
+      "illustrate": false
+    }
+  ],
+  "closingNote": "26 commits, zero releases. @DHH's repos are holding steady while the community debugs Wayland plumbing."
+}

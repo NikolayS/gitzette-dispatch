@@ -1,0 +1,502 @@
+[
+  {
+    "name": "autoresearch",
+    "description": "AI agents running research on single-GPU nanochat training automatically",
+    "url": "https://github.com/karpathy/autoresearch",
+    "stars": 48261,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [
+      {
+        "number": 372,
+        "title": "Preserve split document suffixes in make_dataloader",
+        "state": "open",
+        "date": "2026-03-21T23:05:18Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/372",
+        "author": "AliFozooni",
+        "body": "## Summary\n- keep suffixes of overlong tokenized documents instead of discarding them when a row fills up\n- reuse the existing best-fit heuristic, but resume split spans on later rows so train/val cover the full corpus\n- add a regression test for the packing helper to lock in the lossless behavior\n\n## Why\nWhen no buffered document fits the remaining row capacity, the current packer crops the shortest document to fill the row and drops the rest. Any long document tail that lands in this path never reaches training or validation, so both the optimization signal and the reported `val_bpb` are biased toward document prefixes.\n\nThis change keeps the exact same fixed-length row budget and packing strategy, but carries the leftover span forward so every token is eventually seen."
+      },
+      {
+        "number": 370,
+        "title": "MPS port: train Bach inventions on Apple M3 Ultra",
+        "state": "open",
+        "date": "2026-03-21T19:09:49Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/370",
+        "author": "steefvw",
+        "body": "## Summary\n- Port `train.py` from CUDA/Flash Attention 3 to Apple MPS backend with PyTorch native SDPA\n- Monkey-patch `prepare.py` dataloader/eval for MPS device (without modifying the read-only file)\n- Add Bach 2-part & 3-part inventions dataset (75 pieces, custom notation) with train/val parquet conversion\n- Add post-training sample generation (controllable via `SAMPLE_OUTPUT_PATH` env var)\n- Run scaling experiments: DEPTH 4→8→12, achieving val_bpb from 2.96 → 1.50 → 0.69\n\n## Results (results.tsv)\n| commit | val_bpb | memory_gb | status | description |\n|--------|---------|-----------|--------|-------------|\n| ef1e262 | 2.961 | 14.1 | keep | baseline: DEPTH=4 dim=256 |\n| dab8187 | 1.500 | 52.2 | keep | DEPTH=8 dim=512 + dropout=0.1 |\n| e3bea63 | 0.687 | 103.3 | keep | DEPTH=12 dim=768 (28 steps) |\n| 76c65fc | 1.312 | 35.0 | discard | DEPTH=10 dim=640 (worse) |\n\n## Test plan\n- [x] Verified training runs to completion on M3 Ultra (MPS)\n- [x] Validated val_bpb evaluation produces meaningful results\n- [x] Confirmed sample generation outputs coherent Bach-style notation\n- [ ] Convert generated samples to MIDI using txt_to_mid_music21_v2.py\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 366,
+        "title": "fix(security): torch.load weights_only, safe exit",
+        "state": "open",
+        "date": "2026-03-21T16:43:10Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/366",
+        "author": "robotlearning123",
+        "body": "Add weights_only=True, replace exit(1) with RuntimeError. From audit 2026-03-21."
+      },
+      {
+        "number": 362,
+        "title": "feat: MPS/CPU support for Apple Silicon (M3 Max)",
+        "state": "open",
+        "date": "2026-03-21T12:29:36Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/362",
+        "author": "jeong-sik",
+        "body": "## Summary\n\nKarpathy autoresearch를 CUDA 없는 환경(Apple Silicon MPS, CPU)에서 실행 가능하게 적응.\n\n- FlashAttention 3 → PyTorch SDPA fallback (CUDA 없을 때 자동)\n- 조건부 torch.compile (CUDA only, MPS/CPU는 비활성)\n- MPS용 축소 설정: depth 8→6, batch 128→32, total_batch 2^19→2^16\n- Eval 최적화: MPS에서 EVAL_TOKENS 21M→4.2M (eval 시간 ~640s→~120s)\n- `kernels` 패키지를 optional-dependency로 분리\n\n## Baseline (M3 Max, MPS)\n\n| Metric | Value |\n|--------|-------|\n| val_bpb | 1.697931 |\n| training_seconds | 300.9 |\n| peak_vram_mb | 273.8 |\n| mfu_percent | 16.44 |\n| num_params_M | 26.3 |\n| steps | 87 |\n\n## Test plan\n\n- [x] `uv run train.py` 완주 (87 steps, 5min budget)\n- [x] val_bpb 측정 성공\n- [ ] CUDA 환경에서 regression 없는지 확인 (원본 동작 유지)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 360,
+        "title": "print experiment hyperparams in final summary",
+        "state": "open",
+        "date": "2026-03-21T05:29:39Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/360",
+        "author": "mvanhorn",
+        "body": "The final summary block prints output metrics (val_bpb, peak_vram_mb, etc.) but only one input parameter (depth). Agents running overnight sessions re-read train.py after every experiment just to recall what learning rates or batch size they used.\n\nThis adds the key hyperparameters to the existing summary format - seed, batch sizes, learning rates, weight decay, and window pattern. Same `key: value` layout, no new files or imports.\n\nComplementary to #331 (which covers structured output metrics via results.json - this covers input config via stdout).\n\nBefore:\n```\nnum_params_M:     50.3\ndepth:            8\n```\n\nAfter:\n```\nnum_params_M:     50.3\ndepth:            8\nseed:             42\ntotal_batch:      524288\ndevice_batch:     128\nmatrix_lr:        0.04\nembedding_lr:     0.6\nweight_decay:     0.2\nwindow_pattern:   SSSL\n```\n\nThis contribution was developed with AI assistance (Claude Code)."
+      },
+      {
+        "number": 357,
+        "title": "fix: accumulate `train_loss` correctly across micro-steps",
+        "state": "open",
+        "date": "2026-03-20T23:06:41Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/357",
+        "author": "sjhddh",
+        "body": "Currently, `train_loss = loss.detach()` overwrites the loss tracking on each micro-step, meaning the reported `train_loss_f` solely reflects the loss of the *final* micro-batch instead of the true mean of the entire global batch.\n\nThis PR fixes this by accumulating `loss.detach() / grad_accum_steps` over the loop. This reduces the variance in the logged `debiased_smooth_loss` and provides an exact mean loss corresponding to the global batch."
+      },
+      {
+        "number": 353,
+        "title": "60% more efficient autoresearch via better training analysis",
+        "state": "open",
+        "date": "2026-03-20T12:21:42Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/353",
+        "author": "ottogin",
+        "body": "Hi! While experimenting with autoresearch, I noticed that the agent has very limited observability into the training process and rarely looks beyond the final validation loss.\r\n\r\nI updated `train.py` to log more training statistics and added an analysis step where the agent uses Python to inspect training dynamics. This consistently improves BPB.\r\n\r\n![Comparison of autoresearch vs auto-log-research](https://github.com/ottogin/auto-log-research/blob/main/progress.png?raw=true)\r\n\r\nI ran this comparison multiple times—there’s some noise, but extended logging + analysis consistently leads to lower BPB. Experiments were run on H100 with Claude Opus 4.6 via Claude Code.\r\n\r\nI think this could be helpful for others working with autoresearch, so in this PR I’m adding a link to my code as a notable fork. I’m also happy to submit a PR with all the changes to the main repo if you think that makes sense.\r\n\r\nDetails: [https://github.com/ottogin/auto-log-research](https://github.com/ottogin/auto-log-research)"
+      },
+      {
+        "number": 351,
+        "title": "Add davesque/autoresearch-mlx to notable forks (1.280 val_bpb, best Apple Silicon result I've seen?)",
+        "state": "open",
+        "date": "2026-03-20T06:51:20Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/351",
+        "author": "davesque",
+        "body": "Best val_bpb: 1.280 on M4 Max (vs 1.295 prior Apple Silicon best).\nKey additions: Muon optimizer, Peri-LN normalization, and an enhanced\nexperiment protocol with literature-driven search and a persistent\nstrategy journal."
+      },
+      {
+        "number": 345,
+        "title": "Add autoresearch-spark (with a sandboxed setup) to notable forks",
+        "state": "open",
+        "date": "2026-03-19T20:56:16Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/345",
+        "author": "pimlock",
+        "body": "Hi Andrej, first of all, thank you for sharing your insights, joy and experiments in this new era of AI-assisted engineering/research.\r\n\r\nI've been experimenting with your autoresearch project and got it to work on the DGX Spark and wanted to share my setup.\r\n\r\nOn top of adapting (only a small modification was needed) for DGX Spark, I also set it up to run the research inside of a sandbox with a pretty good UX (_disclaimer: this is a project I'm working on_).\r\nThere is lots of value when running autonomous research (i.e. YOLO-mode) in a good sandbox. We are trying to get the UX really good, without impacting the safety.\r\n\r\n- Repo: https://github.com/pimlock/autoresearch-spark\r\n- OpenShell: https://github.com/NVIDIA/OpenShell"
+      },
+      {
+        "number": 343,
+        "title": "feat(train): add preflight run guardrails and setup failure hints",
+        "state": "open",
+        "date": "2026-03-19T16:51:27Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/343",
+        "author": "kaizen-38",
+        "body": "## Summary\nAdd a small reproducibility/guardrail layer for training runs by introducing explicit preflight checks and clearer failure paths.\n\n## What changed\n- `train.py`\n  - Move CUDA/kernel assumptions out of import-time and into startup preflight.\n  - Add `PRECHECK_FAIL` output with structured `reason`/`hint` for setup failures.\n  - Validate setup before training starts:\n    - CUDA availability and visible device\n    - tokenizer artifacts exist in cache\n    - `WINDOW_PATTERN` validity\n    - integer gradient accumulation (`TOTAL_BATCH_SIZE % (DEVICE_BATCH_SIZE * MAX_SEQ_LEN) == 0`)\n  - Add clearer divergence failure (`RuntimeError`) for non-finite/exploding loss.\n- `program.md`\n  - Teach experiment loop to treat `PRECHECK_FAIL` as setup issue (not experiment crash).\n  - Instruct agent to stop and ask human for environment fix when preflight fails.\n\n## Why\nThis makes failures easier to diagnose, reduces noisy crash loops caused by setup issues, and improves reproducibility by validating key assumptions up front.\n"
+      },
+      {
+        "number": 342,
+        "title": "fix(analysis): define best_bpb before y-axis scaling",
+        "state": "open",
+        "date": "2026-03-19T16:45:12Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/342",
+        "author": "kaizen-38",
+        "body": "## Summary\nFixes a NameError in `analysis.ipynb` where `best` was used before being defined in the progress plot cell.\n\n## What changed\n- Define `best_bpb = kept_bpb.min()` in the plotting cell.\n- Use `best_bpb` for y-axis margin calculation and `set_ylim`.\n\n## Why\nRunning the notebook top-to-bottom can fail in the plot cell because `best` is not defined in that scope. This makes the cell self-contained and executable.\n\nFixes #262.\n"
+      },
+      {
+        "number": 341,
+        "title": "feat: Implement episodic memory layer and experiment gating with LLM resolution",
+        "state": "open",
+        "date": "2026-03-19T16:12:45Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/341",
+        "author": "dishafaujdar",
+        "body": "## Key Changes\r\n- **Persistent Storage ([memory.py](cci:7://file:///Users/dishafaujdar/karpathy/autoresearch/memory.py:0:0-0:0))**: Added SQLite read/write tracking, hooking each run to its `val_bpb` and `confidence` limits.\r\n- **Entry Gating ([should_run_experiment](cci:1://file:///Users/dishafaujdar/karpathy/autoresearch/memory.py:367:0-395:84))**: The agent now actively gates experiment proposals. It blocks exploration on high-confidence `REJECT` zones while allowing refinement in `ACCEPT` regions or low-confidence zones.\r\n- **Geometric Retrieval**: Standardized hyperparameters via Z-score scaling ([compute_stats](cci:1://file:///Users/dishafaujdar/karpathy/autoresearch/memory.py:154:0-178:16)/[normalize](cci:1://file:///Users/dishafaujdar/karpathy/autoresearch/memory.py:181:0-192:21)) to prevent variables like `batch_size=64` and `lr=0.001` from distorting distances. Added [cosine_similarity](cci:1://file:///Users/dishafaujdar/karpathy/autoresearch/memory.py:195:0-219:68) to perform precise nearest-neighbor threshold checks.\r\n- **Orchestrating Write-Backs ([record_verdict](cci:1://file:///Users/dishafaujdar/karpathy/autoresearch/memory.py:324:0-364:36))**: Centralizes the logic to update past experiment confidence bounds dynamically upon new evaluation completion.\r\n- **LLM Conflict Resolution ([resolve_with_llm](cci:1://file:///Users/dishafaujdar/karpathy/autoresearch/memory.py:248:0-299:29))**: Built a `gpt-4o` wrapper to act as an explicit judge when highly similar sets yield contradicting verdicts, effectively determining the new overarching ground truth based on their underlying `val_bpb` scores.\r\n- **Test Coverage ([test.py](cci:7://file:///Users/dishafaujdar/karpathy/autoresearch/test.py:0:0-0:0))**: Added an autonomous `:memory:` DB test validating the three-case gating logic, metric bounding, and the API fallback states.\r\n- **Documentation ([memory.md](cci:7://file:///Users/dishafaujdar/karpathy/autoresearch/memory.md:0:0-0:0))**: Wrote a full architectural markdown briefing outlining the workflow, geometry mapping, and quick start setup.\r\n\r\n## How to Test\r\n1. pip install pydantic requests\r\n2. Run the memory layer simulation:\r\n```bash\r\npython test.py\r\n"
+      },
+      {
+        "number": 336,
+        "title": "docs(program): add hypothesis column to results.tsv format",
+        "state": "open",
+        "date": "2026-03-19T00:15:31Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/336",
+        "author": "morozow",
+        "body": "## Add hypothesis column to results.tsv for learning\r\n\r\nThis PR introduces a lightweight mechanism for the agent to accumulate non-obvious research directions during experimentation.\r\n\r\n### Changes:\r\n- Added `hypothesis` column to `results.tsv` format\r\n- Updated `program.md`: column spec and examples for agent\r\n- Added \"gather hypotheses from results.tsv and look for unexplored combinations\" to the \"out of ideas\" recovery flow\r\n\r\n### What is a hypothesis here:\r\nNot a restatement of what was tried (that's `description`), but a non-obvious combination, condition, or connection worth exploring later. Example: experiment fails with GeLU → hypothesis is \"GeLU might unlock with RMSNorm instead of LayerNorm\", not \"GeLU didn't work\".\r\n\r\n### Why this matters:\r\nWhen the agent exhausts obvious directions after 50+ experiments, it can revisit its own accumulated hypotheses — ideas it generated in context but never tested. This creates a passive memory that survives context window limits.\r\n\r\n---\r\n\r\n### Open question – needs A/B testing:\r\nThe hypothesis gathering instruction is currently placed at the beginning of the \"out of ideas\" list. Unclear if it should be first (prioritize own insights) or last (use as final fallback). Requires empirical testing."
+      },
+      {
+        "number": 334,
+        "title": "feat: real-time web dashboard for experiment monitoring",
+        "state": "open",
+        "date": "2026-03-18T18:37:00Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/334",
+        "author": "Death-Incarnate",
+        "body": "## What this adds\n\nA single-file FastAPI dashboard (`dashboard.py`) that gives autoresearch a proper UI for monitoring and controlling experiments in real time.\n\n### Start it\n```bash\ncd autoresearch\nuv run dashboard.py\n# open http://localhost:7788\n```\nSet `REPO_DIR` env var to point at any autoresearch clone. Set `PORT` to change from 7788.\n\n---\n\n### Tabs\n\n**Overview**\n- KPI cards: best val_bpb, baseline, improvement %, total/kept/discarded run counts\n- val_bpb scatter chart colored by status (keep=green, discard=red, crash=gray)\n- Status pie chart\n- Live GPU stats: utilization %, VRAM used, temperature (polls `nvidia-smi`)\n\n**Live Training**\n- Step progress bar with % complete\n- Loss + mfu% dual-axis chart, updates every 2 seconds via polling\n- SSE log stream from run.log — color-coded (amber for step lines, green for summary blocks, red for errors)\n- Autoscroll toggle\n\n**Experiments**\n- Full results table sorted newest-first, best run highlighted in gold\n- Click any commit hash → inline diff of that experiment's train.py changes\n\n**Git History**\n- Last 40 commits with click-to-diff\n\n**Controls**\n- Launch form: run tag, model picker, max experiments\n- Stop button for the running experiment\n- Live hyperparameter table parsed directly from train.py\n\n**Settings**\n- Edit program.md in-browser with save\n- Read-only train.py viewer\n\n---\n\n### Implementation notes\n- Zero frontend dependencies — all HTML/CSS/JS served inline from the single Python file\n- FastAPI + uvicorn only (added to pyproject.toml)\n- SSE endpoint for streaming log tail to the browser\n- All file reads are relative to `REPO_DIR` so it works with any clone location"
+      },
+      {
+        "number": 332,
+        "title": "docs: add RTX 3090 community results (~1,800 experiments, val_bpb 1.596 → 1.101)",
+        "state": "open",
+        "date": "2026-03-18T17:18:56Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/332",
+        "author": "ssmithers",
+        "body": "## Summary\n\nAdds a **Community Results** section to the README documenting findings from an autonomous agent run on an NVIDIA RTX 3090 (24 GB VRAM) — the most common high-end consumer GPU. Since RTX 3090 users are likely a significant portion of the community running autoresearch, I thought empirical results at that compute tier would be useful reference material.\n\n**Run details:**\n- Hardware: NVIDIA RTX 3090, 24 GB VRAM\n- Experiments: ~1,800 over ~48 hours (March 2026)\n- Agent: Claude Sonnet 4.6 (autonomous experiment loop)\n- Baseline val_bpb: 1.5963 → Best: **1.1008** (31.1% improvement)\n\n## What's included\n\n- Full results table (kept experiments only, not the ~1,800 discarded)\n- Winning configuration with all relevant hyperparameters\n- Six concrete findings for RTX 3090 users: depth/steps tradeoff, batch size sweet spot, LR scaling (don't do it), warmdown tuning, window pattern, and OOM thresholds\n\n## Key finding worth highlighting\n\nAt the 5-minute budget, **shallower models beat deeper ones on an RTX 3090**. depth=5 consistently outperforms depth=8+ because a shallower model gets more optimizer steps in 300 seconds — the time constraint dominates over model capacity. This diverges from what an H100 would find at the same budget (more tokens/step, so depth can be higher).\n\nThe winning config (`depth=5, dim=512, SSSS, TOTAL_BATCH_SIZE=2**16, WARMDOWN_RATIO=0.6`) achieves ~7.5 GB peak VRAM and ~430s total wall time — comfortably within the RTX 3090's 24 GB and the 5-minute budget.\n\nHappy to adjust the format or move the section if you have a preferred location in the README."
+      },
+      {
+        "number": 331,
+        "title": "write results.json for structured agent consumption, harden crash diagnostics",
+        "state": "open",
+        "date": "2026-03-18T16:37:45Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/331",
+        "author": "shichangs",
+        "body": "## Summary\n\nFixes #64\n\n- `train.py`: writes `results.json` after evaluation with the same metrics already printed to stdout. Gives agents a structured, parseable results channel instead of relying on grepping free-form stdout from `run.log`.\n- `program.md`: instructs agent to read `results.json` first (fallback to grep). Crash diagnostics now use filtered `grep -i \"error|exception|traceback\"` instead of raw `tail -n 50`, reducing the surface for indirect prompt injection via training output.\n- `.gitignore`: adds `results.json` and `run.log` as runtime artifacts.\n\nExisting stdout output is unchanged. No new dependencies (`json` is stdlib).\n\nSimilar to #79 but rebased on current main with no merge conflicts.\n\n## Test plan\n\n- [ ] Run `uv run train.py` and verify `results.json` is written with correct metrics\n- [ ] Verify stdout output is unchanged\n- [ ] Verify `results.json` values match stdout summary\n- [ ] Simulate a crash (e.g. syntax error in train.py) and confirm `results.json` is NOT written\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 329,
+        "title": "feat: add observability, memory, resilience, and guidance modules",
+        "state": "open",
+        "date": "2026-03-18T14:50:10Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/329",
+        "author": "reh3376",
+        "body": "## Summary\n\nAdds four optional, non-breaking Python modules that improve the effectiveness of autonomous experiment runs by bringing production-grade observability, learning, and resilience patterns to autoresearch. Inspired by [mdemg](https://github.com/reh3376/mdemg) — a persistent memory system for AI coding agents built on Neo4j, Hebbian learning, and Prometheus metrics.\n\n**Key principle:** These modules enhance the *infrastructure around* the experiment loop — they never touch `train.py` or `prepare.py`. The core 5-minute experiment loop works exactly as before. All modules use only Python stdlib (`json`, `time`, `math`, `dataclasses`) — **zero new dependencies**.\n\n## New Modules\n\n### `monitor.py` — Experiment Metrics & Observability\n*Inspired by mdemg's `internal/metrics/` Prometheus pipeline and 10-panel Grafana dashboard*\n\n- **ExperimentTracker** class with full experiment lifecycle tracking (`start_experiment` → `record_step` → `end_experiment`)\n- Per-step loss curve capture (sampled at configurable intervals to bound memory)\n- Session-level aggregates: keep rate, improvement velocity (BPB/hour), training hours\n- **Real-time alerting** with configurable thresholds (env vars):\n  - Loss spike detection (smoothed EMA vs raw loss ratio)\n  - VRAM pressure warnings\n  - Consecutive crash streak alerts\n  - Improvement plateau detection\n- **Prometheus text exposition format** export (`get_prometheus_text()`) — compatible with node_exporter textfile collector or direct scraping\n- **JSON export** for external dashboard consumption (Grafana, custom UIs)\n- **Terminal dashboard** (`format_dashboard()`) for quick-glance session status\n- Crash-resilient: persists session state to disk, recovers on restart\n\n### `memory.py` — Cross-Session Experiment Memory with Hebbian Learning\n*Inspired by mdemg's Conversation Memory System (`internal/conversation/`) and Hebbian learning engine (`internal/learning/`)*\n\n- **ExperimentMemory** class — persistent knowledge base across research sessions\n- **Hebbian association tracking**: strengthens connections between change categories and positive/negative outcomes using mdemg's **tanh soft-capping** formula (`w = wmax * tanh((w + eta * signal) / wmax)`) — smooth saturation instead of hard clamping, allowing continuous learning near weight limits\n- **15 standardized change categories**: `architecture`, `attention`, `activation`, `optimizer`, `learning_rate`, `schedule`, `batch_size`, `initialization`, `regularization`, `normalization`, `embedding`, `numerical`, `simplification`, `combination`, `radical`\n- **Auto-tagging**: keyword-based classifier automatically assigns categories from experiment descriptions\n- **Temporal decay**: exponential weight decay with cautious skipping of recently-reinforced associations (mirrors mdemg's cautious decay window)\n- **Surprise-weighted storage**: unexpected results (contradicting Hebbian expectations) receive higher surprise scores and stronger learning signals — inspired by mdemg's CMS which retains novel observations longer than routine ones\n- **Pattern extraction APIs**:\n  - `get_promising_directions()` — ranked categories blending Hebbian weight with exploration bonus\n  - `get_dead_ends()` — categories that consistently fail (agent should avoid)\n  - `get_plateaus()` — velocity-based plateau detection comparing recent vs earlier improvement rates\n  - `get_surprise_highlights()` — most unexpected results for investigation\n- Persists to `.autoresearch/memory/memory.json`\n\n### `resilience.py` — Circuit Breakers & Anomaly Detection\n*Inspired by mdemg's `internal/circuitbreaker/`, `internal/anomaly/`, and `internal/backpressure/`*\n\n- **CircuitBreaker** — prevents wasting GPU time on repeated failures:\n  - State machine: CLOSED → OPEN (after N crashes) → HALF_OPEN (probe) → CLOSED/OPEN\n  - Exponential backoff on probe failures (configurable multiplier and max cooldown)\n  - Mirrors mdemg's per-endpoint circuit breaker with half-open recovery\n- **AnomalyDetector** — multi-pattern detection across experiment history:\n  - **Plateau**: no improvements in configurable window\n  - **VRAM creep**: monotonically increasing memory usage across experiments\n  - **Systematic regression**: BPB worsening over consecutive experiments\n  - **Crash clustering**: high crash rate in recent experiments\n- **BackpressureMonitor** — VRAM pressure tracking:\n  - Warning/critical thresholds based on GPU VRAM capacity\n  - Trend analysis (increasing/stable/decreasing)\n  - Actionable suggestions (reduce batch size, reduce model depth)\n- **ExperimentGuard** — unified pre/post experiment safety wrapper:\n  - `pre_experiment()` → checks circuit breaker, VRAM pressure, anomalies → returns `PreExperimentVerdict` with `allowed`, `blocked`, `warnings`, `suggestions`\n  - `post_experiment()` → updates all safety systems\n  - Single integration point for all resilience features\n- Persists state to `.autoresearch/resilience/state.json`\n\n### `guidance.py` — Proactive Experiment Suggestions\n*Inspired by mdemg's Jiminy inner voice (`internal/jiminy/`) and RSIC (`internal/ape/`)*\n\n- **ExperimentAdvisor** — synthesizes signals from memory, monitoring, and resilience:\n  - **Suggestion generation** (4 sources, mirroring Jiminy's parallel fan-out):\n    1. Hebbian memory associations → promising categories\n    2. Plateau detection → radical change recommendations\n    3. Surprise analysis → revisit unexpectedly bad results (try the opposite)\n    4. Dead end avoidance → categories to skip\n  - **Contradiction detection**: finds pairs where the same change category produced opposite outcomes — suggests context-dependent dynamics worth investigating\n  - **Strategy assessment** (simplified RSIC assess phase):\n    - Phase detection: `exploring` | `exploiting` | `plateaued` | `recovering`\n    - Effectiveness score (0-1) blending keep rate with velocity trend\n    - High-level strategy recommendations\n  - **Formatted guidance** (`get_guidance()[\"formatted\"]`): human-readable text block designed for injection into agent context before each experiment decision\n\n## Modified Files\n\n### `program.md`\n- Added comprehensive \"Observability & Intelligence Modules\" section (+205 lines)\n- Full usage documentation for all four modules with code examples\n- Environment variable reference for alert thresholds\n- Recommended integration pattern showing complete experiment loop\n- State directory documentation\n\n### `analysis.ipynb`\n- **Change Category Effectiveness** cell: builds Hebbian associations from results.tsv, plots horizontal bar charts of category weights and success rates\n- **Monitoring Dashboard** cell: loads session.json, plots VRAM trends and training durations, displays alert timeline\n- **Guidance Report** cell: generates and displays formatted guidance with suggestion table and contradictions\n\n### `.gitignore`\n- Added `.autoresearch/` to exclude module state directories from version control\n\n## Design Decisions\n\n1. **Zero new dependencies** — all modules use Python stdlib only. No changes to `pyproject.toml`.\n2. **Non-intrusive** — modules never modify `train.py` or `prepare.py`. They observe and advise.\n3. **Opt-in** — every module is independently usable. You can use just `monitor.py` without `memory.py`, etc.\n4. **Crash-resilient** — all state persists to disk and gracefully handles corrupted state files.\n5. **Hebbian tanh soft-capping** over hard clamping — continuous learning without saturation walls.\n6. **Circuit breaker with exponential backoff** — progressively longer cooldowns prevent thrashing.\n\n## Test plan\n\n- [ ] Verify `train.py` and `prepare.py` are completely unmodified (zero diff)\n- [ ] Verify no new dependencies added to `pyproject.toml`\n- [ ] Import each module independently: `python -c \"import monitor\"`, `import memory\"`, etc.\n- [ ] Run `ExperimentTracker` lifecycle: `start_experiment` → `record_step` → `end_experiment`\n- [ ] Run `ExperimentMemory.store_experiment()` and verify `.autoresearch/memory/memory.json` is created\n- [ ] Run `CircuitBreaker` through CLOSED → OPEN → HALF_OPEN → CLOSED transition\n- [ ] Run `ExperimentAdvisor.get_guidance()` and verify formatted output\n- [ ] Run existing `analysis.ipynb` cells (original cells unchanged, new cells gracefully handle missing data)\n- [ ] Verify `.autoresearch/` is gitignored\n\nAuthored-by: reh3376"
+      },
+      {
+        "number": 327,
+        "title": "program.md: add lightweight exploration and stagnation guidance",
+        "state": "open",
+        "date": "2026-03-18T12:54:25Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/327",
+        "author": "Sunnylincc",
+        "body": "## Summary\r\n\r\nThis PR makes a small improvement to `program.md` by adding lightweight guidance for:\r\n- avoiding repeated near-duplicate experiments\r\n- using recent `results.tsv` history\r\n- balancing local improvement with occasional exploration\r\n- switching experiment type after short-horizon stagnation\r\n\r\n## Scope\r\n\r\n- program.md only\r\n- no code changes\r\n- no dependency changes\r\n\r\n## Motivation\r\n\r\nThe current loop is intentionally minimal and works well as a baseline.\r\nThis change keeps that spirit, while adding a small amount of guidance to reduce repetitive local search and help the search process recover from short stagnation."
+      },
+      {
+        "number": 321,
+        "title": "Add GTX 1060 (Pascal sm_61) support",
+        "state": "open",
+        "date": "2026-03-18T03:54:36Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/321",
+        "author": "raj1003",
+        "body": "- Replace Flash Attention 3 with PyTorch SDPA (F.scaled_dot_product_attention)\r\n- Remove kernels dependency\r\n- Downgrade PyTorch 2.9.1 -> 2.5.1+cu121 (last version supporting sm_61)\r\n- Switch bfloat16 -> float16 (Pascal lacks bf16 support)\r\n- Disable torch.compile (Triton requires sm_70+)\r\n- Rewrite optimizer steps for eager mode with float32 master weights\r\n- Reduce model size for 6GB VRAM: DEPTH 4, DEVICE_BATCH_SIZE 8, TOTAL_BATCH_SIZE 32K, MAX_SEQ_LEN 512, WINDOW_PATTERN L\r\n- Reduce EVAL_TOKENS for faster validation\r\n\r\nVerified: trains to completion in ~6min, 985MB VRAM, val_bpb ~3.21"
+      },
+      {
+        "number": 318,
+        "title": "#314 - Allow iterative refinement of program.md based on experiment",
+        "state": "open",
+        "date": "2026-03-18T00:55:05Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/318",
+        "author": "stephenchen2025",
+        "body": "#314 - Allow iterative refinement of program.md based on experiment results alongside train.py"
+      },
+      {
+        "number": 316,
+        "title": "Add Tenstorrent TT-XLA fork to notable forks section",
+        "state": "open",
+        "date": "2026-03-17T20:46:32Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/316",
+        "author": "bro4all",
+        "body": "Adds [autoresearch-tenstorrent](https://github.com/bro4all/autoresearch-tenstorrent) to the Notable Forks section — a single-device TT-XLA port targeting Tenstorrent Wormhole hardware (tested on N300).\n\n**How it differs from upstream:**\n\n| | upstream | autoresearch-tenstorrent |\n|---|---|---|\n| Backend | CUDA (H100) | TT-XLA on Tenstorrent Wormhole |\n| Attention | Flash Attention 3 | Pure PyTorch causal attention |\n| Optimizer | Muon + AdamW | AdamW (Muon needs torch.compile, not TT-stable yet) |\n| Precision | bfloat16 | float32 (bf16 crashes TT MLIR compiler) |\n\n**Baseline result:** val_bpb 1.968 on N300 (single Wormhole chip, 168 steps in 5 min, 3.7M params)"
+      },
+      {
+        "number": 315,
+        "title": "add darwin-derby to notable forks section",
+        "state": "open",
+        "date": "2026-03-17T19:07:56Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/315",
+        "author": "kousun12",
+        "body": "Adding a fork here - the `derby` is a generalization of autoresearch -- still git based but just a thin set of conventions about what is mutable and how a scoring function would be set up\r\n\r\nhttps://robc.substack.com/p/welcome-to-the-darwin-derby"
+      },
+      {
+        "number": 310,
+        "title": "code optimization",
+        "state": "open",
+        "date": "2026-03-17T13:39:04Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/310",
+        "author": "qingfeng123-www",
+        "body": "Change the dataset path to the root directory of the project to prevent occupying C drive space. All parameter configurations in train.py have been placed at the forefront for easy modification. I Use backup links to download datasets to prevent network issues from causing dataset download failures."
+      },
+      {
+        "number": 303,
+        "title": "docs: guide for evaluating experiment results at scale",
+        "state": "open",
+        "date": "2026-03-16T19:37:57Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/303",
+        "author": "dean0x",
+        "body": "After running about 100 experiments I kept squinting at results.tsv trying to figure out which improvements were real. Wrote up what I learned about noise floor estimation and Pareto efficiency for the autoresearch metric format.\n\nThis doesn't add any tooling or change any code. Just a standalone guide in docs/ for people who have accumulated enough experiments that eyeballing val_bpb deltas stops working.\n\nHappy to adjust scope or placement if you'd prefer this somewhere else."
+      },
+      {
+        "number": 302,
+        "title": "Karpathy's AutoResearch with Memory-in-the-Loop States by The Adimension",
+        "state": "open",
+        "date": "2026-03-16T18:34:15Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/302",
+        "author": "habanwer",
+        "body": "## Summary\r\n\r\nThis fork applies the [DEITY Principles Framework](https://doi.org/10.1093/ehjimp/qyaf038) (Data, Ethics, Informatics, Technology, You) to restructure autoresearch for transparent human-machine collaboration across GPU platforms — from Volta (SM 7.0) through Blackwell (SM 10.0).\r\n\r\n## Changes (8 per-file commits)\r\n\r\n| File | Type | Description |\r\n|---|---|---|\r\n| `ground.json` | NEW | User-owned read-only config: data paths, tokenizer, time budgets, processor overrides |\r\n| `model.json` | NEW | Agent-owned hyperparameters: architecture, optimization, evaluation |\r\n| `prepare.py` | MODIFIED +125/-17 | GPU platform detection, ground.json reads, `PLATFORM` dict export |\r\n| `train.py` | MODIFIED +194/-55 | model.json reads, PLATFORM import, fp32 moments, crash handler, `update_research_memory()` |\r\n| `program.md` | MODIFIED +96/-114 | Structured agent protocol with file ownership governance |\r\n| `.gitignore` | MODIFIED +5/-2 | Add *.pkl, run.log; remove results.tsv from ignore |\r\n| `analysis.ipynb` | MODIFIED metadata | Kernel updated to Python 3.12.10 |\r\n| `README.md` | MODIFIED | Fork introduction with DEITY Principles mapping |\r\n\r\n## Key design decisions\r\n\r\n- **Config extraction**: Hardcoded constants → `ground.json` (user-owned) + `model.json` (agent-owned)\r\n- **File ownership governance**: Clear boundaries for human/agent through program.md\r\n- **GPU auto-detection**: dtype, attention backend, torch.compile, GradScaler per GPU generation\r\n- **Memory-in-the-loop**: `update_research_memory()` persists outcomes to `sessions/memory.md` so the agent's next hypothesis is informed by all prior runs, in addition to logs, and standard structure of tab-separated values.\r\n- **Windows support**: compile guards for sys.platform, extended in reference to notable repo: [jsegov/autoresearch-win-rtx](https://github.com/jsegov/autoresearch-win-rtx)\r\n\r\n## Attribution\r\n- Upstream: [karpathy/autoresearch](https://github.com/karpathy/autoresearch)\r\n- Platform support: [jsegov/autoresearch-win-rtx](https://github.com/jsegov/autoresearch-win-rtx)\r\n- Framework: [The Adimension: DEITY Principles](https://doi.org/10.1093/ehjimp/qyaf038) — *Eur Heart J Imaging Methods Pract*, Shehab Anwer, 2025.\r\n\r\nAuthor: Shehab Anwer, MD — [habanwer](https://github.com/habanwer) · [The Adimension](https://github.com/the-adimension)"
+      },
+      {
+        "number": 299,
+        "title": "Working version with nvidia geforce 1050 ti 4GB",
+        "state": "open",
+        "date": "2026-03-16T18:20:14Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/299",
+        "author": "ssingh10",
+        "body": "PR to get autoresearch working with commodity hardware\r\ncommit\tval_bpb\tmemory_gb\tstatus\tdescription\r\nbeffca5\t1.802948\t0.2\tkeep\tbaseline\r\n7a9ac45\t1.812531\t0.4\tdiscard\tdepth 6 (worse than baseline)\r\n488bb6c\t1.709017\t0.2\tkeep\tbatch 2 (improved gradient signal)\r\ncbf0477\t1.644740\t0.3\tkeep\tbatch 4 (further improvement)\r\n57a782f\t1.625506\t0.6\tkeep\tbatch 8\r\ndcd8e21\t1.610689\t1.0\tkeep\tbatch 16\r\nd1a4f1c\t1.581806\t1.8\tkeep\tbatch 32\r\ne49bf5d\t1.569257\t1.8\tkeep\tMATRIX_LR 0.05\r\nc0213f7\t0.000000\t0.0\tcrash\tseq 384 (TOTAL_BATCH_SIZE divisibility)\r\naedf903\t1.576799\t1.8\tdiscard\tMATRIX_LR 0.06 (worse)\r\n682811e\t1.563258\t1.8\tkeep\tWARMUP_RATIO 0.1\r\n86e99fc\t1.570927\t1.8\tdiscard\tEMBEDDING_LR 0.8 (worse)\r\n44ac775\t1.715129\t2.5\tdiscard\tdepth 5 (worse)\r\nefc797c\t1.563657\t1.8\tdiscard\tWARMUP_RATIO 0.15 (slightly worse)\r\n75d1c1d\t1.564486\t1.8\tdiscard\tWEIGHT_DECAY 0.1 (worse)\r\ncc05e34\t1.616739\t1.8\tdiscard\tTOTAL_BATCH 32K (fewer steps)\r\nb5a12d4\t1.566375\t1.8\tdiscard\tADAM_BETAS (0.85, 0.95)\r\nb9492b9\t1.562771\t1.8\tkeep\tWINDOW_PATTERN SSSL\r\n909f61e\t1.568223\t1.8\tdiscard\tWARMUP_RATIO 0.12"
+      },
+      {
+        "number": 291,
+        "title": "Fix: add data integrity verification to downloader to prevent corrupted shardsfeat: add data integrity verification to downloader",
+        "state": "open",
+        "date": "2026-03-16T13:31:31Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/291",
+        "author": "GhostDragon124",
+        "body": "The Problem: Current downloader assumes successful transfers if the file exists on disk. However, network interruptions can lead to truncated .parquet files, causing pyarrow.lib.ArrowInvalid or UnicodeDecodeError during the preprocessing stage.\r\n\r\nThe Solution:\r\n\r\nImplemented Atomic Renaming: Use .tmp files during download to prevent partial files from being treated as complete.\r\n\r\nAdded Integrity Validation: Use pyarrow.parquet.read_metadata to verify the file structure before finalizing the download.\r\n\r\nAdded Length Verification: Compare Content-Length headers with actual local file size.\r\n\r\nImpact: Enhances the robustness of the data pipeline, especially for users with unstable network connections."
+      },
+      {
+        "number": 290,
+        "title": "Fix typos and improve readability in README.md",
+        "state": "open",
+        "date": "2026-03-16T12:10:52Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/290",
+        "author": "jmfinch",
+        "body": "fix README grammar/typo"
+      },
+      {
+        "number": 287,
+        "title": "Train: add gradient clipping before optimizer step",
+        "state": "open",
+        "date": "2026-03-16T04:44:35Z",
+        "url": "https://github.com/karpathy/autoresearch/pull/287",
+        "author": "renee-jia",
+        "body": "relu² activations can produce gradient spikes that silently degrade model weights. The existing fast-fail (loss > 100) only catches damage after it has already happened. Clipping gradients prevents wasted time long experiment runs.\r\n\r\nAdds GRAD_CLIP_NORM hyperparameter (default 1.0, set 0.0 to disable)."
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 367,
+        "title": "Question about reuse/adaptation of autoresearch code (no license)",
+        "state": "open",
+        "date": "2026-03-21T17:40:31Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/367",
+        "author": "heinricitorgau"
+      },
+      {
+        "number": 365,
+        "title": "Auto-Research Tracks: pluggable idle optimization across harness, skills, memory, and model selection",
+        "state": "open",
+        "date": "2026-03-21T15:47:53Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/365",
+        "author": "craigm26"
+      },
+      {
+        "number": 364,
+        "title": "JudgeModel layer: snapshot-diff scoring + binary rubric verification between evaluator and promoter",
+        "state": "open",
+        "date": "2026-03-21T14:49:24Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/364",
+        "author": "craigm26"
+      },
+      {
+        "number": 363,
+        "title": "Expand harness generator to explore pattern/memory/security design space",
+        "state": "open",
+        "date": "2026-03-21T14:35:40Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/363",
+        "author": "craigm26"
+      },
+      {
+        "number": 349,
+        "title": "Proposal: data-centric autoresearch",
+        "state": "open",
+        "date": "2026-03-20T03:51:06Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/349",
+        "author": "huaiyizhao"
+      },
+      {
+        "number": 348,
+        "title": "[Bug] Tokenizer.encode: prepend_id scope issue causes NameError when prepend is string",
+        "state": "open",
+        "date": "2026-03-20T00:13:12Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/348",
+        "author": "Financier-Nuri"
+      },
+      {
+        "number": 347,
+        "title": "RTX-5090 GPU",
+        "state": "open",
+        "date": "2026-03-19T23:34:10Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/347",
+        "author": "jdnichollsc"
+      }
+    ],
+    "commitCount": 2,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/karpathy-autoresearch-0.jpg"
+    ]
+  },
+  {
+    "name": "nanochat",
+    "description": "The best ChatGPT that $100 can buy.",
+    "url": "https://github.com/karpathy/nanochat",
+    "stars": 49844,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [
+      {
+        "number": 659,
+        "title": "Fix tokenizer serialization: JSON instead of pickle to prevent ARM Docker crashes",
+        "state": "open",
+        "date": "2026-03-19T20:41:25Z",
+        "url": "https://github.com/karpathy/nanochat/pull/659",
+        "author": "abcdedf",
+        "body": "## Summary\n\n- **`save()`**: Serialize tokenizer as JSON instead of pickling tiktoken's native\n  Rust `Encoding` object. Hex-encodes byte keys for JSON compatibility.\n- **`from_directory()`**: Load from JSON when available, fall back to legacy\n  `.pkl` files (backward compatible).\n- **`get_token_bytes()`**: Add `weights_only=True` to `torch.load` (fixes\n  FutureWarning in PyTorch 2.6+, safer default).\n\n## Problem\n\nOn ARM Docker (aarch64, e.g. Apple Silicon Macs), `pickle.dump(enc)` of a\ntiktoken `Encoding` object triggers non-deterministic heap corruption in\ntiktoken's Rust FFI layer. Symptoms:\n\n- `free(): invalid next size (fast)`\n- `corrupted double-linked list`\n- SIGSEGV (exit 139), SIGABRT (exit 134), SIGTRAP (exit 133)\n\nThe crash is non-deterministic — the same command sometimes succeeds,\nsometimes crashes. jemalloc (`LD_PRELOAD`) reduces frequency but doesn't\neliminate it. Avoiding pickle of the Rust object entirely fixes the root cause.\n\n## Our view of the performance side-effects\n\nThe performance impact is negligible for this use case.\n\n**Save/Load speed**: JSON serialization of the tokenizer is a one-time operation (once during `tok_train`, once at the start of `base_train`). For a 4096-vocab tokenizer, the JSON file is ~200KB. Parsing that takes milliseconds — invisible next to minutes/hours of training.\n\n**File size**: JSON with hex-encoded byte keys is ~2-3x larger than pickle for the same data, but still tiny (hundreds of KB vs the model checkpoints which are MBs/GBs).\n\n**Runtime inference**: Zero impact. Once loaded, the in-memory `tiktoken.Encoding` object is identical regardless of whether it was deserialized from JSON or pickle. All the hot-path encoding/decoding goes through the same Rust code.\n\n**The only real tradeoff**: We access `enc._pat_str`, `enc._mergeable_ranks`, and `enc._special_tokens` which are private attributes of tiktoken's `Encoding`. If tiktoken changes its internals, this could break. But pickle of a Rust-backed object is even more fragile — it's already crashing on ARM.\n\nShort answer: no measurable performance difference. The fix trades a ~2ms pickle load for a ~2ms JSON parse, once per run.\n\n## Test plan\n\n- [x] `tok_train` → saves `tokenizer.json` (no crash on ARM Docker)\n- [x] `base_train` → loads from `tokenizer.json`, trains 5 iterations successfully\n- [x] Full pipeline tested on Mac ARM Docker (aarch64): data download → tokenizer\n  training → pretraining, exit code 0\n- [x] Backward compatible: `from_directory()` still loads `.pkl` if no `.json` exists\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code), reviewed and verified by the author."
+      },
+      {
+        "number": 656,
+        "title": "fix: add uv install path in speedrun script",
+        "state": "open",
+        "date": "2026-03-18T23:06:10Z",
+        "url": "https://github.com/karpathy/nanochat/pull/656",
+        "author": "DeoJin",
+        "body": "## Summary\n- add `~/.local/bin` to `PATH` after the `uv` installer runs in `runs/speedrun.sh`\n- keep the existing flow intact while fixing shells/container environments where `uv` is installed but not immediately discoverable\n- addresses #529\n\n## Validation\n- `C:\\Program Files\\Git\\bin\\bash.exe -n runs/speedrun.sh`\r\n"
+      },
+      {
+        "number": 655,
+        "title": "perf: architecture + optimizer optimizations (94.6 min, 4.3% speedup)",
+        "state": "open",
+        "date": "2026-03-18T16:54:56Z",
+        "url": "https://github.com/karpathy/nanochat/pull/655",
+        "author": "vivian-my",
+        "body": "## Summary\n\n- We used [WeCo](https://www.weco.ai/) to optimize nanochat training scripts on d12 (~4.5 min/run), then validated top candidates on d24\n- Two rounds of D12 optimization (150 WeCo steps total) + D24 validation\n- Best result: **94.6 min** time-to-GPT-2 vs 99 min in Record 6 (**4.3% speedup**)\n- Mean CORE = 0.2591 (3 runs), val_bpb = 0.72205\n\n## Run details\n\n**Launch command**:\n\n```\nOMP_NUM_THREADS=1 torchrun --standalone --nproc_per_node=8 -m scripts.base_train -- \\\n    --depth=24 \\\n    --target-param-data-ratio=8.0 \\\n    --device-batch-size=16 \\\n    --fp8 \\\n    --run=d24_A8s29 \\\n    --model-tag=d24_A8s29 \\\n    --sample-every=-1 \\\n    --save-every=-1 \\\n    --core-metric-every=999999 \\\n    --core-metric-max-per-task=-1\n```\n\n**Results (3 runs):**\n\n| Metric | Record 6 (baseline) | Ours (mean ± std) | Delta |\n|---|---|---|---|\n| CORE | 0.2626 | 0.2591 ± 0.0052 | -1.3% (above GPT-2 0.2565) |\n| val\\_bpb | 0.71816 | 0.72205 ± 0.00004 | +0.54% (slight regression) |\n| Training time | 1.65 hr | 1.58 ± 0.001 hr | **-4.3%** |\n\nIndividual scores across 3 runs:\n\n| Run | Training time (min) | CORE | val\\_bpb |\n|---|---|---|---|\n| 1 | 94.6 | 0.2540 | 0.72205 |\n| 2 | 94.6 | 0.2643 | 0.72208 |\n| 3 | 94.6 | 0.2589 | 0.72203 |\n\n**Baseline (Record 6) control** (same hardware, ratio 8.0, unmodified Record 6 code, 1 run):\n\n| Run | Training time (min) | CORE | val\\_bpb |\n|---|---|---|---|\n| 1 | 98.8 | 0.2580 | 0.71827 |\n\nRecord 6 training time (98.8 min = 1.65 hr) matches reported in leaderboard, confirming equivalent hardware.\n\n**Per-step speedup breakdown:**\n- Architecture changes (smaller windows, fewer VE layers, RoPE 200K): reduces per-step compute\n- Removed smear gate: eliminates per-step bigram mixing overhead\n- Optimizer buffer pre-allocation: eliminates per-step `torch.stack()` allocations\n- Conditional dtype cast in Linear: skips no-op `.to()` calls\n- Net per-step improvement: ~1.019s vs ~1.065s baseline (**~4.3% faster per step**)\n\n\n## Optimization Process\n\n### Round 1: D12 WeCo Search (150 steps across 3 runs)\n- Run A: minimize training time (50 steps)\n- Run B: minimize val_bpb (50 steps)\n- Run C: multi-token prediction (50 steps, high crash rate)\n- Pareto analysis → selected 6 candidates for D24 transfer\n\n### Round 1: D24 Validation (6 candidates + baseline)\n- 3/6 candidates passed CORE threshold\n- Best: candidate A-8 at 95.3 min, CORE=0.2596\n\n### Round 2: D12 WeCo Refinement (50 steps on A-8)\n- Further optimized A-8 → A8-s29\n- D12 time: 268.8s → 264.0s, BPB improved (0.8596 → 0.8573)\n\n### Round 2: D24 Validation (3 runs)\n- A8-s29: 94.6 min mean, CORE=0.2591 mean, 2/3 runs pass\n\n\n## Changes (3 files)\n\n### `nanochat/gpt.py` — Architecture tuning\n\nAll changes reduce per-step compute while preserving model quality. Discovered on d12, validated on d24:\n\n1. **Short window size `seq_len/4` → `seq_len/8`** (512 → 256 tokens): Smaller sliding windows reduce attention FLOPs for short-window layers.\n2. **Value embedding frequency: every 2nd → every 3rd layer**: Fewer value embedding layers means fewer parameters and less compute per forward pass.\n3. **RoPE base frequency: 100K → 200K**: Slower positional rotation, better long-range generalization.\n4. **Smear gate: removed**: Eliminates per-step bigram mixing overhead. Small quality cost, significant speed gain.\n5. **Residual lambdas: linear → exponential decay** (1.18→1.06): More principled initialization, better training dynamics.\n6. **x0\\_lambdas: first-half only** (0.24→0.08→0): Input embedding blending only in early layers where it's most useful. Zero for deep layers.\n7. **c\\_v init: uniform(-s, s) → uniform(-0.85s, 0.85s)**: Slightly smaller value projection init for stability.\n8. **c\\_proj init: zeros → uniform(-0.008, 0.008)**: Nonzero output projection init, inspired by modded-nanogpt record #64.\n9. **EmbeddingLinear for lm\\_head**: Simpler linear class without redundant dtype casting.\n\n### `nanochat/optim.py` — Optimizer efficiency\n\n1. **Pre-allocated buffers**: Replaces per-step `torch.stack()` with `torch.empty()` + in-place copy. Eliminates tensor allocations per optimizer step.\n2. **Conditional dtype cast**: Linear class skips `.to()` when weight dtype already matches input. Reduces overhead across all linear layers.\n\n### `scripts/base_train.py` — Hyperparameter tuning\n\n1. **Warmdown ratio: 0.65 → 0.58**: Shorter warmdown, LR stays at peak longer.\n2. **Final LR fraction: 0.05 → 0.10**: Higher minimum learning rate prevents optimizer stalling.\n3. **Momentum warmup: 0.85→0.97 over 400 steps** (was 300 steps): Longer momentum warmup.\n4. **Momentum cooldown: →0.92** (was →0.90): Slightly higher final momentum for stability.\n\n\n## WeCo D12 Optimisation Results\n\nWe ran the search on D12 using WeCo across two rounds:\n\n**Round 1** — 3 parallel optimization tracks (speed, BPB, multi-token prediction), 150 total steps. Pareto analysis selected 6 candidates spanning the speed-quality tradeoff. \n\n**Round 2** — 50-step refinement on the best D24-validated candidate (A-8). Improved D12 time from 268.8s to 264.0s while recovering BPB. [WeCo Dashboard Round 2](https://dashboard.weco.ai/share/p_5ddFfJSgmJT3MQyXYjBCSFP_JPFbHV)\n\nThe best script from D12 Round 2 (step 29) achieves a **5.6% D12 speedup** (264.0s vs 279.6s baseline), which transfers to a **4.3% D24 speedup** (94.6 min vs 98.8 min)."
+      },
+      {
+        "number": 651,
+        "title": "docs: show model-tag in chat CLI examples",
+        "state": "open",
+        "date": "2026-03-17T11:56:34Z",
+        "url": "https://github.com/karpathy/nanochat/pull/651",
+        "author": "DeoJin",
+        "body": "## Summary\n- add explicit `MODEL_TAG` examples to `runs/runcpu.sh` and `runs/speedrun.sh`\n- show `scripts.chat_cli` with `--model-tag $MODEL_TAG` so users can target the intended SFT checkpoint when multiple depths/checkpoints exist\n- addresses #542\n\n## Validation\n- `C:\\Program Files\\Git\\bin\\bash.exe -n runs/runcpu.sh`\n- `C:\\Program Files\\Git\\bin\\bash.exe -n runs/speedrun.sh`\r\n"
+      },
+      {
+        "number": 646,
+        "title": "Attention Residuals addition code",
+        "state": "open",
+        "date": "2026-03-16T21:32:12Z",
+        "url": "https://github.com/karpathy/nanochat/pull/646",
+        "author": "Aum08Desai",
+        "body": "## Summary\n- add an `attnres_block` residual mode that keeps the current nanochat residual path intact and applies AttnRes as a zero-init gated correction\n- patch checkpoint loading for the new AttnRes parameters and expose the relevant training flags in `scripts/base_train.py`\n- add local d12 result figures for the initial 0-500 run and the resumed 500-1000 continuation\n\n## Notes\n- baseline mode is unchanged current nanochat\n- AttnRes starts exactly at the baseline behavior because the new per-layer gate is initialized to 0\n- the 500-1000 figure is a checkpoint continuation from step 500, so its scheduler is not identical to a fresh 0-1000 run planned from step 0\n\n## Local result note\nSee `dev/attention_residuals_local_results.md` for the two figures and checkpoint values."
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 637,
+        "title": "confusion on mmlu dataset",
+        "state": "open",
+        "date": "2026-03-13T09:25:04Z",
+        "url": "https://github.com/karpathy/nanochat/issues/637",
+        "author": "mathieu-lacage"
+      }
+    ],
+    "commitCount": 1,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/karpathy-nanochat-0.jpg"
+    ]
+  },
+  {
+    "name": "jobs",
+    "description": "A research tool for visually exploring Bureau of Labor Statistics Occupational Outlook Handbook data. This is not a report, a paper, or a serious economic publication — it is a development tool for exploring BLS data visually.",
+    "url": "https://github.com/karpathy/jobs",
+    "stars": 1023,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [
+      {
+        "number": 17,
+        "title": "Add Composite Score layer with adjustable weights",
+        "state": "open",
+        "date": "2026-03-18T22:08:07Z",
+        "url": "https://github.com/karpathy/jobs/pull/17",
+        "author": "Kovbo",
+        "body": "## Summary\r\n\r\n- Adds a fifth visualization layer — **Composite Score** — that combines all four existing metrics (pay, outlook, education, AI exposure) into a single color-coded view\r\n- Each factor's importance is controlled by **interactive sliders** (0–10), so users can personalize the view: someone prioritizing income cranks up Pay, someone worried about automation cranks up AI Exposure, etc.\r\n- Green tiles = high-opportunity jobs (well-paying, growing, accessible, AI-resilient); red tiles = low-opportunity\r\n\r\n## Motivation\r\n\r\nThe existing four layers each show a single dimension, but people evaluating career options care about multiple factors simultaneously. A nurse might score well on outlook but poorly on pay; a software developer scores high on pay but high on AI exposure. There was no way to see the combined picture or weight the factors by personal priorities.\r\n\r\nThis layer lets users answer questions like *\"What jobs pay well, are growing, don't require a PhD, and aren't threatened by AI?\"* — and adjust the definition of \"well\" for each axis.\r\n\r\n## Details\r\n\r\n- **Composite score** = weighted average of four normalized components:\r\n  - **Pay**: log-scaled $50K–$250K (jobs under $50K score 0)\r\n  - **Outlook**: BLS projected growth, normalized -12% to +12%\r\n  - **Education**: lower requirement = higher score\r\n  - **AI Exposure**: lower exposure = higher score\r\n- Sliders default to 10 (equal weight); setting any slider to 0 removes that factor entirely\r\n- Stats panel shows: weighted average, tier breakdown, cross-tabs by pay and education, and excellent-tier job count\r\n- Tooltip shows the composite percentage with a progress bar\r\n\r\n<img width=\"1418\" height=\"893\" alt=\"image\" src=\"https://github.com/user-attachments/assets/78a79f7d-d660-4495-9f30-96a08be0e5b3\" />\r\n"
+      },
+      {
+        "number": 14,
+        "title": "Add AI Opportunity layers: Advantage, Growth, and composite",
+        "state": "open",
+        "date": "2026-03-17T13:50:18Z",
+        "url": "https://github.com/karpathy/jobs/pull/14",
+        "author": "sidneyhori",
+        "body": "## Summary\r\n\r\nThe existing \"Digital AI Exposure\" layer captures how much AI will *reshape* a job — but that single lens skews negative. A software developer scoring 9/10 feels alarming, even though demand for developers may actually grow. We wanted additional lenses to explore the positive side of AI's impact on occupations:\r\n\r\n- **AI Advantage** (0–10): How much can a worker amplify their productivity and competitive edge by adopting AI tools? Scored via LLM with anchors from \"minimal — work is physical/manual\" (0) to \"maximum — AI transforms every core task\" (10).\r\n- **AI Growth** (0–10): How much will AI expand demand, create new sub-roles, or grow the market for this occupation? Anchors range from \"shrinking — AI directly replaces demand\" (0) to \"explosive — entirely new demand driven by AI\" (10).\r\n- **AI Opportunity** (0–10): Composite average of Advantage and Growth.\r\n\r\nThese complement rather than replace the existing exposure layer. Together, the four AI layers let you explore questions like: *which occupations are highly exposed but also have high opportunity?*\r\n\r\n## Changes\r\n\r\n- **`score.py`**: Added `--metric` CLI flag (`exposure` | `advantage` | `growth`) with dedicated LLM prompts and separate output files per metric. Default (`exposure`) behavior is unchanged.\r\n- **`build_site_data.py`**: Merges `scores_advantage.json` and `scores_growth.json` alongside existing `scores.json`, computes composite opportunity score. Gracefully handles missing files.\r\n- **`site/index.html`**: 3 new layer toggle buttons, reuses the existing green↔red color scale (flipped: green = high = good), new stats dashboards, tooltips show all AI scores when hovering in any AI layer.\r\n- **`make_prompt.py`**: Adds Advantage, Growth, Opportunity columns to the markdown report when score data is available.\r\n\r\nFully additive — zero changes to the existing exposure pipeline, UI, or data format.\r\n\r\n## Test plan\r\n\r\n- [ ] `uv run python score.py` (no args) still works exactly as before\r\n- [ ] `uv run python score.py --metric advantage --start 0 --end 10` scores 10 occupations\r\n- [ ] `uv run python score.py --metric growth --start 0 --end 10` scores 10 occupations\r\n- [ ] `uv run python build_site_data.py` merges all score files into `site/data.json`\r\n- [ ] All 7 layer buttons render correctly in `site/index.html`\r\n- [ ] Green-positive color scale for new layers (vs red-positive for exposure)\r\n- [ ] Tooltips show all AI scores when hovering in any AI layer\r\n\r\nSidney Hori Hawthorne\r\nX: @sid_hori\r\nlinkedin: https://www.linkedin.com/in/sidney-hori/\r\nsidney@aeonixtech.com\r\n\r\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+      },
+      {
+        "number": 11,
+        "title": "Screen reader accessibility",
+        "state": "open",
+        "date": "2026-03-17T03:00:30Z",
+        "url": "https://github.com/karpathy/jobs/pull/11",
+        "author": "cartertemm",
+        "body": "## Overview\n\nThe treemap visualization is currently canvas-based, which means that screen readers can't interpret any of the 342 occupations or interact with the page in a meaningful way. There are also no landmark regions, the heading hierarchy skips levels, toggle buttons don't expose their active state, and stat updates are silent when switching layers.\n\nThis PR fixes all of these issues, while leaving the pre-existing visual design unchanged.\n\n## Changes\n\n- Added a visually hidden HTML table containing all occupation data (title, category, jobs, pay, outlook, education, AI exposure) so screen readers can browse the full dataset. Each occupation links to its corresponding BLS page.\n- Wrapped the page in proper landmark elements (`<header>`, `<main>`) and added a hidden `<h2>` to aid in navigation and fix the heading hierarchy (was jumping from h1 to h3).\n- Set `aria-pressed` on the layer toggle buttons so screen readers announce which layer is active. This updates dynamically when the user switches layers.\n- Added an `aria-live` region that announces a short summary when the layer changes (e.g. \"Switched to Median Pay. Avg. pay: $58K\")\n- Marked both canvases and the tooltip with `aria-hidden=\"true\"` since they're redundant with the table and not keyboard-accessible anyway.\n\n## Testing\n\n- [x] Opened the site in a browser and confirmed the page looks identical to before. There are no layout shifts, visible text from sr-only elements, or changes to treemap rendering or interaction.\n- [x] Inspected the DOM to verify correct landmark nesting, heading order, aria attributes on all buttons and canvases, table row count (342), and live region updates on layer switch.\n- [x] Tested with a screen reader: navigated by landmarks (banner/main), headings (h1/h2/h3), and table. Confirmed button states announce correctly, layer changes trigger live announcements, and table links open BLS pages in new tabs."
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 16,
+        "title": "Thank you!",
+        "state": "open",
+        "date": "2026-03-18T13:10:38Z",
+        "url": "https://github.com/karpathy/jobs/issues/16",
+        "author": "pascalandy"
+      },
+      {
+        "number": 15,
+        "title": "Visual tool is cut off on the side",
+        "state": "open",
+        "date": "2026-03-17T19:53:48Z",
+        "url": "https://github.com/karpathy/jobs/issues/15",
+        "author": "betab"
+      },
+      {
+        "number": 13,
+        "title": "3D display",
+        "state": "open",
+        "date": "2026-03-17T07:00:33Z",
+        "url": "https://github.com/karpathy/jobs/issues/13",
+        "author": "SamYuan1990"
+      },
+      {
+        "number": 12,
+        "title": "Add a search feature to website",
+        "state": "open",
+        "date": "2026-03-17T04:01:44Z",
+        "url": "https://github.com/karpathy/jobs/issues/12",
+        "author": "pisces76"
+      },
+      {
+        "number": 8,
+        "title": "Built an Indian adaptation - AI Exposure of India's Job Market using NCS Portal data",
+        "state": "open",
+        "date": "2026-03-16T09:10:12Z",
+        "url": "https://github.com/karpathy/jobs/issues/8",
+        "author": "rupeshs"
+      },
+      {
+        "number": 7,
+        "title": "интересно, последствия ИИ  для прфессий",
+        "state": "open",
+        "date": "2026-03-16T07:34:33Z",
+        "url": "https://github.com/karpathy/jobs/issues/7",
+        "author": "9427620"
+      }
+    ],
+    "commitCount": 6,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": []
+  }
+]

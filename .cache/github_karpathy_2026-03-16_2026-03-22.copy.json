@@ -1,0 +1,71 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Nine PRs pending, zero releases shipped, and Apple Silicon finally joins the party.",
+  "editionNote": "Week of March 16–22: autoresearch and nanochat field community contributions across performance, compatibility, and security—while jobs attracts accessibility and analysis upgrades.",
+  "articles": [
+    {
+      "repo": "autoresearch",
+      "headline": "autoresearch gets Apple Silicon with M3 Ultra port",
+      "deck": "Two competing PRs bring MPS support to single-GPU training, opening the door for researchers on Mac hardware.",
+      "body": "Contributors steefvw and jeong-sik independently submitted MPS (Metal Performance Shaders) ports this week, each targeting Apple Silicon acceleration. The <a href=\"https://github.com/karpathy/autoresearch/pull/370\">Bach inventions PR</a> and the <a href=\"https://github.com/karpathy/autoresearch/pull/362\">M3 Max support PR</a> represent parallel efforts to eliminate GPU dependency for the research automation pipeline. @karpathy now faces a pleasant triage problem: reconciling two paths to the same goal. Community is clearly signaling demand for Mac-native training.",
+      "tag": "PENDING",
+      "illustrationPrompt": "MacBook Pro with glowing Apple logo, silhouettes of neural network nodes floating above the keyboard, warm neon blue and purple light.",
+      "illustrate": true
+    },
+    {
+      "repo": "nanochat",
+      "headline": "nanochat tokenizer switches from pickle to JSON, fixing Docker on ARM",
+      "deck": "A serialization swap solves crashes on ARM-based container platforms without code bloat.",
+      "body": "Contributor abcdedf identified that pickle-based tokenizer serialization was crashing nanochat inside ARM Docker environments. The <a href=\"https://github.com/karpathy/nanochat/pull/659\">fix trades pickle for JSON serialization</a>, eliminating architecture-specific binary incompatibilities. Separately, <a href=\"https://github.com/karpathy/nanochat/pull/655\">vivian-my posted a 4.3% speedup</a> through architecture and optimizer tuning (94.6 minutes baseline), showing the repo remains under active performance pressure.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "Docker container splitting into two paths—one blocked with red X, one flowing smoothly through—abstract JSON symbols on right side.",
+      "illustrate": false
+    },
+    {
+      "repo": "autoresearch",
+      "headline": "autoresearch security PR demands weights_only torch.load",
+      "deck": "A hardening measure addresses arbitrary code execution risk in model loading.",
+      "body": "Contributor robotlearning123 submitted <a href=\"https://github.com/karpathy/autoresearch/pull/366\">a security fix requiring weights_only mode</a> during torch.load operations, blocking deserialization of untrusted pickled objects. This is a high-signal defensive change for a tool that automates research pipelines—malicious checkpoint files could compromise experiments at scale. The PR also specifies safe exit protocols.",
+      "tag": "SECURITY",
+      "illustrationPrompt": "Lock icon overlaid on PyTorch logo, shield barrier between file icon and neural network, red warning light.",
+      "illustrate": true
+    },
+    {
+      "repo": "autoresearch",
+      "headline": "autoresearch experiments now print hyperparameters in final summary",
+      "deck": "A UX improvement logs training configuration for reproducibility.",
+      "body": "Contributor mvanhorn added <a href=\"https://github.com/karpathy/autoresearch/pull/360\">hyperparameter printing to the experiment summary</a>, surfacing learning rates, batch sizes, and other config directly in final output. Small change; large impact for researchers reviewing logs weeks later.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "Experiment log output on terminal screen, hyperparameters highlighted in bright green, background fading to bokeh.",
+      "illustrate": false
+    },
+    {
+      "repo": "nanochat",
+      "headline": "nanochat CLI docs now show model tags in examples",
+      "deck": "Documentation clarity for users juggling multiple model checkpoints.",
+      "body": "Contributor DeoJin submitted <a href=\"https://github.com/karpathy/nanochat/pull/651\">a documentation fix</a> showing how to tag models in CLI examples, reducing friction for users managing multiple nanochat instances.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "Terminal window with colorful command examples, tags displayed as labeled boxes next to model names.",
+      "illustrate": false
+    },
+    {
+      "repo": "jobs",
+      "headline": "jobs gains AI Opportunity scoring layers",
+      "deck": "The Bureau of Labor Statistics visualization tool now surfaces AI advantage and growth metrics for occupations.",
+      "body": "Contributors sidneyhori and Kovbo submitted <a href=\"https://github.com/karpathy/jobs/pull/14\">AI Opportunity analysis layers</a> and <a href=\"https://github.com/karpathy/jobs/pull/17\">a composite scoring system</a> that rank jobs by exposure to AI disruption and growth potential. The tool, a visual explorer of BLS data, now enables researchers to plot occupations against machine learning advantage. Separately, <a href=\"https://github.com/karpathy/jobs/pull/11\">cartertemm contributed screen reader support</a>, broadening accessibility.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "3D scatter plot with occupation dots, some glowing bright (high AI opportunity), some dimmed (low risk), layered visualization.",
+      "illustrate": false
+    },
+    {
+      "repo": "autoresearch",
+      "headline": "autoresearch pulls in five pending contributions across splits, performance, and safety",
+      "deck": "A crowded inbox signals growing community investment in the research automation layer.",
+      "body": "Beyond the Apple Silicon and security PRs, the week brought <a href=\"https://github.com/karpathy/autoresearch/pull/372\">suffix preservation fixes in data splitting</a> and continued discussion of deeper roadmap items: MPS tracks, JudgeModel evaluation, and data-centric research design. The open issues queue reflects ambitious thinking from contributors.",
+      "tag": "PENDING",
+      "illustrationPrompt": "Multiple code branches merging together on a timeline, each labeled with different optimization areas, flowing into a central hub.",
+      "illustrate": false
+    }
+  ],
+  "closingNote": "Nine open PRs, zero releases. The community votes with their keyboards."
+}

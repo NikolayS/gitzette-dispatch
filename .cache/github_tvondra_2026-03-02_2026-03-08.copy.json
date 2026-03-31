@@ -1,0 +1,26 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Fourteen commits, zero releases, but @tvondra keeps the cursor stress tests sharp.",
+  "editionNote": "Fourteen commits across two repos this week, with scroll-stress-test seeing the heaviest activity and IvorySQL tracking five open issues.",
+  "articles": [
+    {
+      "repo": "scroll-stress-test",
+      "headline": "scroll-stress-test absorbs eight commits in quiet week",
+      "deck": "The randomized cursor stress harness gets steady maintenance despite no formal release.",
+      "body": "@tvondra committed eight times to scroll-stress-test this week, keeping the randomized stress tests for scrollable cursors and index scans in working order. No new releases landed, but the cadence suggests active refinement under the hood. The project remains a specialized tool for teams hunting edge cases in PostgreSQL's scrollable cursor behavior.",
+      "tag": "PENDING",
+      "illustrationPrompt": "A computer monitor displaying rapid cursor movements and scroll bars flickering with test data patterns flowing",
+      "illustrate": true
+    },
+    {
+      "repo": "IvorySQL",
+      "headline": "IvorySQL backlog grows to five open issues",
+      "deck": "Oracle-compatible PostgreSQL fork flags parser and initialization concerns.",
+      "body": "IvorySQL accumulated five open issues this week, touching scanner quote consistency, frontend safety in identifier transformation, Clang warnings in the psqlplus parser, XML errors, and database initialization mode parameters. @tvondra committed six times against the fork, but none of the issues have been resolved yet. The stack suggests maintenance work ahead on code generation and compilation hygiene.",
+      "tag": "PENDING",
+      "illustrationPrompt": "Stack of papers with checkmarks and X marks, scattered across a desk with a magnifying glass examining one sheet",
+      "illustrate": false
+    }
+  ],
+  "closingNote": "Dispatch returns next week. Same cursor, same tests, same time."
+}

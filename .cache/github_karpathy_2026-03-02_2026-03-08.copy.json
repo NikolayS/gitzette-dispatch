@@ -1,0 +1,53 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Quiet week on GitHub. 170 commits across the autoresearch universe. No releases.",
+  "editionNote": "170 commits spread across 10 repos, mostly autoresearch variants. No releases, no merged PRs, no fires to report.",
+  "articles": [
+    {
+      "repo": "autoresearch",
+      "headline": "autoresearch stuck in the issues queue",
+      "deck": "Five open issues outline the next frontier: licensing questions, pluggable optimization tracks, and a pivot toward data-centric research.",
+      "body": "@karpathy has filed five substantial issues against autoresearch this week, none yet merged. The most ambitious: Auto-Research Tracks, which proposes pluggable idle optimization across harness, skills, memory, and model selection. A separate pitch for data-centric autoresearch suggests the project may be at an inflection point. Pending work also includes a JudgeModel layer for snapshot-diff scoring and a call to expand the harness generator into the pattern/memory/security design space. Licensing remains an open question.",
+      "tag": "PENDING",
+      "illustrationPrompt": "interconnected nodes and pathways glowing in darkness, suggesting autonomous agents exploring multiple optimization tracks simultaneously",
+      "illustrate": true
+    },
+    {
+      "repo": "autoresearch-cpu",
+      "headline": "autoresearch-cpu accumulates commits",
+      "deck": "The CPU-bound variant of autoresearch picked up 17 commits this week but remains undocumented in the public record.",
+      "body": "@karpathy's CPU adaptation saw steady churn. No releases, no PRs, no issues filed. The work is opaque from the outside.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "silicon pathways and logic gates arranged in a glowing lattice, minimal and abstract",
+      "illustrate": false
+    },
+    {
+      "repo": "EvolvedAI",
+      "headline": "EvolvedAI keeps the lights on",
+      "deck": "The social simulation fork of autoresearch registered 17 commits but no user-facing activity.",
+      "body": "@karpathy committed to the prompt-only social simulation built from autoresearch, but nothing shipped or broke this week.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "miniature civilization with buildings and figures in warm light, abstract and bird's-eye view",
+      "illustrate": false
+    },
+    {
+      "repo": "autokernel5090",
+      "headline": "autokernel5090 waits for the RTX 5090",
+      "deck": "GPU-specific kernel work accumulated 17 commits with no visible release or PR activity.",
+      "body": "@karpathy is preparing infrastructure for the RTX 5090. The commits landed but stayed under wraps. Likely not production-ready yet.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "high-end graphics processor chip glowing with internal circuitry and heat signatures",
+      "illustrate": false
+    },
+    {
+      "repo": "TrainRTX5070",
+      "headline": "TrainRTX5070 training pipeline moves quietly",
+      "deck": "Continual learning setup for RTX 5070 saw 17 commits this week with no releases or issues filed.",
+      "body": "@karpathy's RTX 5070 training pipeline accumulated work in silence. No public signals yet on what the commits contain or when they ship.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "modern graphics card under studio lighting with neural network visualizations flowing across its surface",
+      "illustrate": false
+    }
+  ],
+  "closingNote": "170 commits. Zero releases. Patience is a strategy."
+}

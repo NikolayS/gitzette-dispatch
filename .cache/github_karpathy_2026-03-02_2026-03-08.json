@@ -1,0 +1,243 @@
+[
+  {
+    "name": "autoresearch",
+    "description": "AI agents running research on single-GPU nanochat training automatically",
+    "url": "https://github.com/karpathy/autoresearch",
+    "stars": 48246,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 367,
+        "title": "Question about reuse/adaptation of autoresearch code (no license)",
+        "state": "open",
+        "date": "2026-03-21T17:40:31Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/367",
+        "author": "heinricitorgau"
+      },
+      {
+        "number": 365,
+        "title": "Auto-Research Tracks: pluggable idle optimization across harness, skills, memory, and model selection",
+        "state": "open",
+        "date": "2026-03-21T15:47:53Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/365",
+        "author": "craigm26"
+      },
+      {
+        "number": 364,
+        "title": "JudgeModel layer: snapshot-diff scoring + binary rubric verification between evaluator and promoter",
+        "state": "open",
+        "date": "2026-03-21T14:49:24Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/364",
+        "author": "craigm26"
+      },
+      {
+        "number": 363,
+        "title": "Expand harness generator to explore pattern/memory/security design space",
+        "state": "open",
+        "date": "2026-03-21T14:35:40Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/363",
+        "author": "craigm26"
+      },
+      {
+        "number": 349,
+        "title": "Proposal: data-centric autoresearch",
+        "state": "open",
+        "date": "2026-03-20T03:51:06Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/349",
+        "author": "huaiyizhao"
+      },
+      {
+        "number": 348,
+        "title": "[Bug] Tokenizer.encode: prepend_id scope issue causes NameError when prepend is string",
+        "state": "open",
+        "date": "2026-03-20T00:13:12Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/348",
+        "author": "Financier-Nuri"
+      },
+      {
+        "number": 347,
+        "title": "RTX-5090 GPU",
+        "state": "open",
+        "date": "2026-03-19T23:34:10Z",
+        "url": "https://github.com/karpathy/autoresearch/issues/347",
+        "author": "jdnichollsc"
+      }
+    ],
+    "commitCount": 17,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/karpathy-autoresearch-0.jpg"
+    ]
+  },
+  {
+    "name": "autoresearch",
+    "description": "Autonomous pretraining research swarm — adapted for Mac (MPS) and T4 GPU",
+    "url": "https://github.com/mrcloudchase/autoresearch",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 17,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/mrcloudchase-autoresearch-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "mrcloudchase/autoresearch"
+  },
+  {
+    "name": "EvolvedAI",
+    "description": "AutoCiv / EvolvedAI prompt-only social simulation built from karpathy/autoresearch",
+    "url": "https://github.com/HumblePiCCI/EvolvedAI",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 17,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/humblepicci-evolvedai-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "HumblePiCCI/EvolvedAI"
+  },
+  {
+    "name": "autoresearch",
+    "description": null,
+    "url": "https://github.com/delemarchand2020/autoresearch",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 17,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/delemarchand2020-autoresearch-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "delemarchand2020/autoresearch"
+  },
+  {
+    "name": "apex_mes_reasearch",
+    "description": null,
+    "url": "https://github.com/brianshih04/apex_mes_reasearch",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 17,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "brianshih04/apex_mes_reasearch"
+  },
+  {
+    "name": "Jessi",
+    "description": null,
+    "url": "https://github.com/cs245214228-netizen/Jessi",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 17,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/cs245214228-netizen-jessi-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "cs245214228-netizen/Jessi"
+  },
+  {
+    "name": "autokernel5090",
+    "description": "AutoKernel for 5090 GPU",
+    "url": "https://github.com/Cklaus1/autokernel5090",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 17,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/cklaus1-autokernel5090-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "Cklaus1/autokernel5090"
+  },
+  {
+    "name": "autoresearch-cpu",
+    "description": "CPU adaptation of Karpathy's autoresearch — autonomous ML research on commodity hardware, no GPU required",
+    "url": "https://github.com/efecanbasoz/autoresearch-cpu",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 17,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "efecanbasoz/autoresearch-cpu"
+  },
+  {
+    "name": "autoresarch-macos-poc",
+    "description": "autoresarch-macos-poc",
+    "url": "https://github.com/kerenkoshman/autoresarch-macos-poc",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 17,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/kerenkoshman-autoresarch-macos-poc-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "kerenkoshman/autoresarch-macos-poc"
+  },
+  {
+    "name": "TrainRTX5070",
+    "description": "Continual learning pipeline for RTX5070 training the maximum optimal model with it.",
+    "url": "https://github.com/Djordje-Stojanovic/TrainRTX5070",
+    "stars": 1,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 17,
+    "topContributors": [
+      "karpathy"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/djordje-stojanovic-trainrtx5070-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "Djordje-Stojanovic/TrainRTX5070"
+  }
+]

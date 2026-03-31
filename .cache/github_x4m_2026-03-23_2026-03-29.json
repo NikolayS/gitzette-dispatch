@@ -1,0 +1,29 @@
+[
+  {
+    "name": "tea",
+    "description": "Extension for Greenplum to read Apache Iceberg",
+    "url": "https://github.com/lithium-tech/tea",
+    "stars": 14,
+    "releases": [],
+    "mergedPRs": [
+      {
+        "number": 2,
+        "title": "Update README.md",
+        "state": "merged",
+        "date": "2026-03-24T14:58:17Z",
+        "url": "https://github.com/lithium-tech/tea/pull/2",
+        "author": "x4m",
+        "body": null
+      }
+    ],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 1,
+    "topContributors": [
+      "x4m"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "lithium-tech/tea"
+  }
+]

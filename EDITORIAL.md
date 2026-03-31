@@ -136,6 +136,9 @@ What makes them work: varied structure, specific mechanism, no cute wordplay tha
 
 ## Lessons Learned (append as we go)
 
+**2026-03-25:**
+- NikolayS W13: pgMustard API key leak article was WRONG — event happened weeks ago, not this week. LLM grabbed old context linked to v0.8.1/v0.8.2 releases that landed this week but referenced a stale security incident. Rule: **never report a security incident that isn't dated to the current week's commits** — if the fix/rotation happened in a prior week, it's not this week's news.
+
 **2026-03-23:**
 - DHH W12 was boring: "nine commits keep the package mirror in sync" — bot PR + AUR sync, not real news. Should have been 0 articles with a quiet-week closing note.
 - mitchellh W12 was better (real VT state machine content) but still no wit — technically accurate but nobody would forward it.

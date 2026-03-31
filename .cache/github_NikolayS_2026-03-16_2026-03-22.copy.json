@@ -1,0 +1,71 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "rpg ships explain plan sharing; sqlever adds static analysis; one API key learns a hard lesson.",
+  "editionNote": "Three major releases, 87 commits across rpg, plus analysis rules landing in sqlever.",
+  "articles": [
+    {
+      "repo": "rpg",
+      "headline": "rpg v0.8.0 brings EXPLAIN plan visualization and one-command sharing to three platforms",
+      "deck": "*Colorized plans with automatic issue detection; export to explain.depesz.com, dalibo, or pgMustard in a single command.*",
+      "body": "@NikolayS merged <a href=\"https://github.com/NikolayS/rpg/pull/696\">#696</a> shipping v0.8.0 on March 20. The release adds a suite of EXPLAIN enhancements: summary headers showing execution time, planning time, row counts, and buffer stats; automatic warnings for seq scans on large tables, row estimate errors >10x, spills to disk, and parallel worker failures; and full colorization by time percentage with a bolded hot path. The new '/explain share' commands (<a href=\"https://github.com/NikolayS/rpg/pull/670\">#670</a>) push plans directly to explain.depesz.com, dalibo.com, or pgMustard without leaving the terminal. Lua custom commands are now supported via '--features lua', letting users define '/' commands like '/slow_mean' and '/slow_total'. Tab completion now covers all rpg backslash commands.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a database query execution plan tree displayed on a terminal screen, nodes highlighted by color intensity.",
+      "illustrate": true
+    },
+    {
+      "repo": "rpg",
+      "headline": "pgMustard API key exposed in PR comment #670 during feature testing",
+      "deck": "*Caught and rotated quickly—a reminder that AI agents posting test output need careful handling.*",
+      "body": "During testing of the new '/explain share pgmustard' feature in rpg v0.8.0, an AI agent posted test output containing a pgMustard API key directly into PR comment #670. @NikolayS spotted it, rotated the key immediately, and no downstream access was detected. The incident is a clean example of the friction between automated testing and secret hygiene: feature work that touches external APIs should gate AI-generated output through review before it reaches version control.",
+      "tag": "SECURITY",
+      "illustrationPrompt": "a padlock resting on a stack of disk drives, slightly ajar.",
+      "illustrate": true
+    },
+    {
+      "repo": "rpg",
+      "headline": "rpg v0.7.0 wraps '/ask' queries in read-only transactions for database-level safety",
+      "deck": "*Every AI-generated query now executes inside 'start transaction read only', blocking writes even if classification fails.*",
+      "body": "@NikolayS released v0.7.0 on March 19, hardening the '/ask' AI query execution path. All queries from the AI assistant now execute inside 'start transaction read only' (<a href=\"https://github.com/NikolayS/rpg/pull/626\">#626</a>, <a href=\"https://github.com/NikolayS/rpg/pull/634\">#634</a>), providing database-level protection against accidental mutations—the read-only transaction guard stays even if the query classifier misbehaves. Write queries in '/ask' mode are explicitly refused (<a href=\"https://github.com/NikolayS/rpg/pull/631\">#631</a>); if users need writes via text2sql, they must use '/t2s' and confirm explicitly. Internal '/ask' transactions auto-rollback on error or cancellation (<a href=\"https://github.com/NikolayS/rpg/pull/639\">#639</a>), preventing idle-in-tx hangs. Ctrl-C now aborts LLM requests mid-flight (<a href=\"https://github.com/NikolayS/rpg/pull/641\">#641</a>), and 'ai.timeout' (default 30s) prevents hanging on unresponsive providers (<a href=\"https://github.com/NikolayS/rpg/pull/640\">#640</a>).",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a transaction lock icon with a barrier crossing it, preventing passage.",
+      "illustrate": false
+    },
+    {
+      "repo": "rpg",
+      "headline": "rpg v0.5.0 auto-detects AI provider from environment and adds multi-category syntax highlighting",
+      "deck": "*No more manual provider configuration; keywords, strings, operators, and error prefixes now in distinct colors.*",
+      "body": "@NikolayS released v0.5.0 on March 17, streamlining setup and visual parsing. The terminal now auto-detects ANTHROPIC_API_KEY, OPENAI_API_KEY, or OLLAMA_API_KEY from the environment, eliminating manual provider configuration. Multi-category SQL syntax highlighting now separates keywords, strings, and operators into distinct colors; error/warning/notice prefixes are colorized (red/yellow/cyan). Ctrl-C now cancels the '/fix' execute prompt without running the query. The codebase shed autonomous agent references (AAA, O/S/A) to reflect rpg's focus as a focused terminal tool with light AI integration.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "colorful text on a dark terminal screen, syntax keywords highlighted in separate hues.",
+      "illustrate": false
+    },
+    {
+      "repo": "sqlever",
+      "headline": "sqlever adds 20 static analysis rules for DDL, DML, and locking safety",
+      "deck": "*SA001–SA010 cover DDL safety; SA011–SA021 cover DML, concurrency, and locking hazards.*",
+      "body": "@NikolayS merged analysis rules in two waves: <a href=\"https://github.com/NikolayS/sqlever/pull/65\">#65</a> landing SA001–SA010 (DDL safety checks) and <a href=\"https://github.com/NikolayS/sqlever/pull/72\">#72</a> adding SA011–SA021 (DML, DDL, and locking safety). The analysis engine itself landed in <a href=\"https://github.com/NikolayS/sqlever/pull/64\">#64</a>, providing the rule registry, preprocessor, and suppression framework. @NikolayS also shipped the standalone 'sqlever analyze' command (<a href=\"https://github.com/NikolayS/sqlever/pull/70\">#70</a>) and 'sqlever verify' to run verification scripts after deploy (<a href=\"https://github.com/NikolayS/sqlever/pull/69\">#69</a>). Together with the deploy command (<a href=\"https://github.com/NikolayS/sqlever/pull/63\">#63</a>) and status display (<a href=\"https://github.com/NikolayS/sqlever/pull/62\">#62</a>), sqlever now has a functional analysis and deployment pipeline for zero-downtime migrations.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a pair of hands examining a document with a magnifying glass, marking errors.",
+      "illustrate": false
+    },
+    {
+      "repo": "pg_ash",
+      "headline": "pg_ash adds security policy and configures dependabot for CI",
+      "deck": "*SECURITY.md published; GitHub Actions versions now auto-updated by dependabot.*",
+      "body": "@NikolayS merged <a href=\"https://github.com/NikolayS/pg_ash/pull/24\">#24</a> adding a SECURITY.md policy and <a href=\"https://github.com/NikolayS/pg_ash/pull/23\">#23</a> configuring dependabot.yml to keep GitHub Actions versions current. The Active Session History extension is now actively maintained with security and dependency hygiene in place.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "a shield with a checkmark symbol on a stone foundation.",
+      "illustrate": false
+    },
+    {
+      "repo": "oak-tree-buzzer",
+      "headline": "oak-tree-buzzer v1.3.1 and v1.2.5 debug builds available",
+      "deck": "*Direct Android tablet installation; version now visible in bottom-right corner.*",
+      "body": "Two debug builds shipped March 17 and March 15 for the LAN-only dental office buzzer system. Version display is now visible in the app UI.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "an Android tablet screen displaying a version number in the corner.",
+      "illustrate": false
+    }
+  ],
+  "closingNote": "Next week: sqlever's real-world integration tests. Submit your migrations. 🔧"
+}

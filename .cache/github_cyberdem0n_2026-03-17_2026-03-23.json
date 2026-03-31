@@ -1,0 +1,191 @@
+[
+  {
+    "name": "patroni",
+    "description": "A template for PostgreSQL High Availability with Etcd, Consul, ZooKeeper, or Kubernetes",
+    "url": "https://github.com/patroni/patroni",
+    "stars": 8269,
+    "releases": [],
+    "mergedPRs": [
+      {
+        "number": 3571,
+        "title": "Postpone CitusHandler.run()",
+        "state": "merged",
+        "date": "2026-03-20T16:42:26Z",
+        "url": "https://github.com/patroni/patroni/pull/3571",
+        "author": "CyberDem0n",
+        "body": "Before #3526 thread was started with the first attempt to sync metadata, where we had guarantees that citus database is prepared (extension exists).\r\nEarly start caused enormous amount of errors.\r\nWe return to old behavior by using `self._ready_to_run = Event()`"
+      },
+      {
+        "number": 3570,
+        "title": "Don't hit time.sleep() in unit tests",
+        "state": "merged",
+        "date": "2026-03-20T16:32:31Z",
+        "url": "https://github.com/patroni/patroni/pull/3570",
+        "author": "CyberDem0n",
+        "body": "or at least reduce it to minimum"
+      },
+      {
+        "number": 3569,
+        "title": "Shutdown global thread pool last",
+        "state": "merged",
+        "date": "2026-03-19T15:03:36Z",
+        "url": "https://github.com/patroni/patroni/pull/3569",
+        "author": "CyberDem0n",
+        "body": "Ha.shutdown() needs it to run some health checks\r\n\r\nRef #3526"
+      },
+      {
+        "number": 3568,
+        "title": "Check that postgresql.parameters is dict",
+        "state": "merged",
+        "date": "2026-03-19T15:01:56Z",
+        "url": "https://github.com/patroni/patroni/pull/3568",
+        "author": "CyberDem0n",
+        "body": "and discard new config if it is not.\r\n\r\nRef #3546"
+      },
+      {
+        "number": 3526,
+        "title": "Compatibility with threading changes in python3.11+",
+        "state": "merged",
+        "date": "2026-03-18T16:16:05Z",
+        "url": "https://github.com/patroni/patroni/pull/3526",
+        "author": "CyberDem0n",
+        "body": "Avoid starting/stopping threads in runtime:\r\n1. Always start slot advance thread and CitusHandler thread on Patroni start.\r\n2. Introduce thread pool for REST API and use it for running REST API itself and executing incoming HTTP requests.\r\n3. Introduce a global thread pool to execute async tasks and for making REST API requests during leader race and failsafe checks.\r\n4. Allow configuring global `thread_pool_size` and `restapi.thread_pool_size`.\r\n\r\nBesides that, adjust system(d) start script to run Patroni with `MALLOC_ARENA_MAX=1` to reduce allocated virtual memory and add informational warning sections to README.rst and docs.\r\n\r\nClose https://github.com/patroni/patroni/issues/3474\r\nClose https://github.com/patroni/patroni/issues/3481"
+      },
+      {
+        "number": 3563,
+        "title": "Don't reload PostgreSQL config while running custom bootstrap",
+        "state": "merged",
+        "date": "2026-03-17T14:38:31Z",
+        "url": "https://github.com/patroni/patroni/pull/3563",
+        "author": "CyberDem0n",
+        "body": "Close https://github.com/patroni/patroni/issues/3558"
+      },
+      {
+        "number": 3562,
+        "title": "Properly handle Unavailable exception raised by Etcd v3",
+        "state": "merged",
+        "date": "2026-03-17T13:24:38Z",
+        "url": "https://github.com/patroni/patroni/pull/3562",
+        "author": "CyberDem0n",
+        "body": "The response JSON containing error code and message may vary depending on where it is raised from.\r\n\r\nFollow up on #3338 and #3486"
+      },
+      {
+        "number": 3453,
+        "title": "Primary race backoff - preventing false-positive failovers",
+        "state": "merged",
+        "date": "2026-03-17T09:51:18Z",
+        "url": "https://github.com/patroni/patroni/pull/3453",
+        "author": "CyberDem0n",
+        "body": "We often see false-positive failovers on clusters running *without* watchdog. Investigation of Patroni logs from the former primary usually shows that Patroni entered a **frozen** state and couldn’t renew the leader lock within the configured `ttl`. Meanwhile, PostgreSQL on that primary typically continued to operate normally and standbys continued to receive and replay WAL.\r\nBecause these frozen states are usually short (often < 60s), a simple mitigation is to increase `ttl` from the common default (30s) to 60–90s. That reduces spurious failovers but increases the time to failover in a real outage - a trade-off some deployments do not want.\r\n\r\nHowever, such mitigation doesn't really help with Consul setups, when Consul agent on the primary is restarted for upgrade. Such restart invalidates all sessions and replica nodes start leader race quicker than Patroni on primary can recreate its session and keys.\r\n\r\nThe **Primary Race Backoff** feature attacks the same problem from the other side:\r\n- Standby nodes detect an active replication stream by observing the WAL receiver process and the WAL progress.\r\n- If replication is active and advancing, standbys **postpone** participating in the leader race (they back off from initiating a race).\r\n- The decision is made by comparing the current `max(receive_lsn, replay_lsn)` with the last value observed in the heartbeat loop. If progress is observed, the standby assumes the primary is still running and delays the race.\r\n- To avoid waiting forever in case the Patroni primary process dies while keeping a stale replication stream, the backoff is bounded by the cluster-level `primary_race_backoff` parameter. Once that timeout elapses, the normal leader race process proceeds.\r\n\r\nBenefits:\r\n- Reduces false-positive failovers when Patroni on the primary becomes unresponsive briefly but PostgreSQL and replication continue working.\r\n- Keeps `ttl` values lower if you prefer faster automatic failover on real failure (because the backoff lets the cluster avoid premature races without lengthening `ttl`).\r\n\r\nBy default `primary_race_backoff` is set to `0` (i.e., feature is disabled). Consider to enable this feature for clusters that run without watchdog."
+      }
+    ],
+    "openPRs": [
+      {
+        "number": 3564,
+        "title": "Improve switchover unknown-status messaging (#743)",
+        "state": "open",
+        "date": "2026-03-17T23:24:39Z",
+        "url": "https://github.com/patroni/patroni/pull/3564",
+        "author": "m4rrypro",
+        "body": "## Summary\n- clarify API timeout response for failover/switchover polling by including timeout duration and noting the operation may still be in progress\n- adjust `patronictl` output to report `result unknown` (instead of `failed`) when the API returns a `status unknown` detail\n- add/adjust tests in `tests/test_api.py` and `tests/test_ctl.py` for the updated messaging path\n\n## Testing\n- `.venv/bin/pytest tests/test_api.py::TestRestApiHandler::test_do_POST_switchover tests/test_ctl.py::TestCtl::test_switchover`\n\nFixes #743"
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 3560,
+        "title": "DB write blocked when patroni leader's system time rolled back",
+        "state": "open",
+        "date": "2026-03-16T03:53:41Z",
+        "url": "https://github.com/patroni/patroni/issues/3560",
+        "author": "hanguannan"
+      },
+      {
+        "number": 3550,
+        "title": "`failsafe_mode` does not prevent demotion when inter-node latency exceeds 2s",
+        "state": "open",
+        "date": "2026-02-26T21:48:44Z",
+        "url": "https://github.com/patroni/patroni/issues/3550",
+        "author": "marceloneppel"
+      },
+      {
+        "number": 3547,
+        "title": "Citus workernode IP not updated after node failure.",
+        "state": "open",
+        "date": "2026-02-19T13:50:35Z",
+        "url": "https://github.com/patroni/patroni/issues/3547",
+        "author": "seppelucas"
+      },
+      {
+        "number": 3543,
+        "title": "pg_rewind progress output",
+        "state": "open",
+        "date": "2026-02-09T23:38:58Z",
+        "url": "https://github.com/patroni/patroni/issues/3543",
+        "author": "zaneduffield"
+      },
+      {
+        "number": 3536,
+        "title": "Instantaneous  403 Permission Denied caused primary node demote",
+        "state": "open",
+        "date": "2026-01-28T08:25:17Z",
+        "url": "https://github.com/patroni/patroni/issues/3536",
+        "author": "XiuhuaRuan"
+      },
+      {
+        "number": 3524,
+        "title": "Feature: role-based pg_hba rules + postgres parameters",
+        "state": "open",
+        "date": "2025-12-29T19:54:35Z",
+        "url": "https://github.com/patroni/patroni/issues/3524",
+        "author": "wjmorland"
+      },
+      {
+        "number": 3519,
+        "title": "Export failsafe_mode and node failsafe membership statuses to /metrics",
+        "state": "open",
+        "date": "2025-12-18T09:13:33Z",
+        "url": "https://github.com/patroni/patroni/issues/3519",
+        "author": "lpaul87"
+      },
+      {
+        "number": 3480,
+        "title": "Add python3-systemd as Debian package dependency",
+        "state": "open",
+        "date": "2025-10-26T08:49:43Z",
+        "url": "https://github.com/patroni/patroni/issues/3480",
+        "author": "gmemstr"
+      },
+      {
+        "number": 3478,
+        "title": "Patroni failed to correctly handle the status information of a faulty standby node when using k8s as the DCS",
+        "state": "open",
+        "date": "2025-10-23T07:22:18Z",
+        "url": "https://github.com/patroni/patroni/issues/3478",
+        "author": "ice61"
+      },
+      {
+        "number": 3431,
+        "title": "Manage synchronized_standby_slots",
+        "state": "open",
+        "date": "2025-09-02T19:48:02Z",
+        "url": "https://github.com/patroni/patroni/issues/3431",
+        "author": "thedodd"
+      },
+      {
+        "number": 3412,
+        "title": "patroni --generate-config hba rules",
+        "state": "open",
+        "date": "2025-07-16T15:58:16Z",
+        "url": "https://github.com/patroni/patroni/issues/3412",
+        "author": "aleszeleny"
+      }
+    ],
+    "commitCount": 8,
+    "topContributors": [
+      "CyberDem0n"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "patroni/patroni"
+  }
+]

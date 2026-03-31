@@ -1,0 +1,34 @@
+[
+  {
+    "name": "1c_aux",
+    "description": null,
+    "url": "https://github.com/x4m/1c_aux",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 1,
+    "topContributors": [
+      "x4m"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "1c_aux",
+    "description": null,
+    "url": "https://github.com/postgredients/1c_aux",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 1,
+    "topContributors": [
+      "x4m"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "postgredients/1c_aux"
+  }
+]

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>the dispatch — Vol. 1, No. 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink: #0f0f0f; --paper: #f7f4ee; --rule: #c8c2b4;
+    --muted: #666; --tag-bg: #0f0f0f; --tag-fg: #f7f4ee;
+    --link: #1a1a8c;
+  }
+  body { background: #e8e4dc; font-family: 'IBM Plex Sans', sans-serif; color: var(--ink); font-size: 15px; line-height: 1.6; }
+  a { color: var(--ink); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .muted { color: var(--muted); }
+  .paper { max-width: 960px; margin: 24px auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 2px 12px rgba(0,0,0,.15); overflow-x: hidden; }
+  .paper img { max-width: 100%; height: auto; display: block; }
+  /* broadsheet: two pages side by side on very wide screens */
+  .page-2 { display: block; }
+  /* articles-p2: always visible on page 1; moves to page 2 in broadsheet */
+  .articles-p2 { display: block; }
+  @media (min-width: 1400px) {
+    body { background: #d8d4cc; }
+    .broadsheet-wrap { display: flex; align-items: flex-start; gap: 0; max-width: 1900px; margin: 32px auto; }
+    .broadsheet-wrap .paper { max-width: none; flex: 1; margin: 0; box-shadow: 0 4px 24px rgba(0,0,0,.2); }
+    .broadsheet-wrap .paper.page-2 { display: block; border-left: 3px double var(--rule); margin-left: -1px; }
+    /* on broadsheet, hide p2 articles from page 1 (they move to page 2) */
+    .broadsheet-wrap .paper:first-child .articles-p2 { display: none; }
+    /* grid-2 stays two-column on broadsheet (both cols have articles) */
+  }
+
+  /* header */
+  .header { padding: 20px 24px 14px; border-bottom: 3px solid var(--ink); }
+  .header-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--rule); padding-bottom: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; overflow: hidden; }
+  .header-kicker .kicker-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .header-kicker .kicker-date { white-space: nowrap; flex-shrink: 0; color: var(--muted); font-weight: 400; }
+  .header-kicker a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); }
+  .header-kicker a:hover { color: var(--link); border-color: var(--link); }
+  .header-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; overflow: hidden; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .header-meta .meta-left { white-space: nowrap; }
+  .header-meta .meta-right { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+  .masthead { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(32px,7vw,64px); letter-spacing: -.03em; line-height: 1; }
+  .masthead span { color: var(--muted); font-weight: 400; }
+  .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .edition-bar { margin-top: 12px; padding: 6px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .05em; display: flex; flex-wrap: nowrap; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .edition-bar::-webkit-scrollbar { display: none; }
+  .edition-bar span { white-space: nowrap; padding: 0 16px 0 0; }
+  .edition-bar span::before { content: "▸ "; color: var(--muted); }
+
+  /* body */
+  .body { padding: 0 24px 32px; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 0; }
+  @media (min-width: 640px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-2-1 { grid-template-columns: 3fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
+  .col { padding: 20px 20px 0 0; }
+  .col:last-child { padding-right: 0; }
+  @media (min-width: 640px) { .col { border-right: 1px solid var(--rule); } .col:last-child { border-right: none; padding-left: 20px; } .grid-3 .col { padding: 20px 16px 0; } .grid-3 .col:first-child { padding-left: 0; } .grid-3 .col:last-child { padding-right: 0; } }
+
+  /* tags */
+  .tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; background: var(--tag-bg); color: var(--tag-fg); padding: 2px 7px; margin-bottom: 8px; }
+
+  /* articles */
+  .article { margin-bottom: 24px; }
+  h1 { font-family: 'IBM Plex Serif', serif; font-size: clamp(22px,4vw,36px); font-weight: 700; line-height: 1.1; margin-bottom: 8px; }
+  h2 { font-family: 'IBM Plex Serif', serif; font-size: clamp(16px,3vw,22px); font-weight: 700; line-height: 1.15; margin-bottom: 6px; }
+  h3 { font-family: 'IBM Plex Serif', serif; font-size: 15px; font-weight: 700; line-height: 1.2; margin-bottom: 4px; }
+  .headline-link { color: var(--ink); text-decoration: none; }
+  .headline-link:hover { text-decoration: underline; }
+  .deck { font-family: 'IBM Plex Serif', serif; font-style: italic; font-size: 14px; line-height: 1.55; color: #333; margin-bottom: 10px; }
+  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; }
+  .body-text a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .body-text a:hover { border-bottom-color: var(--ink); }
+  .body-text code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 2px; }
+  .release-links, .pr-links { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .release-link { font-weight: 600; color: var(--ink); }
+  .pending-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; border-left: 2px solid var(--rule); padding-left: 8px; }
+
+  /* infographics */
+  .infographic { margin-bottom: 4px; }
+  .infographic-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+
+  /* rule */
+  .rule { border: none; border-top: 1px solid var(--rule); margin: 0 0 0; }
+
+  /* footer */
+  .footer { padding: 12px 24px; border-top: 2px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+</style>
+</head>
+<body>
+<div class="broadsheet-wrap">
+<div class="paper">
+  <div class="header">
+    <div class="header-kicker">
+      <span class="kicker-text"><a href="https://github.com/NikolayS" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@NikolayS</a> <span style="font-weight:400;letter-spacing:.12em;">— open-source digest</span></span>
+      <span class="kicker-date">March 23 – March 29, 2026</span>
+    </div>
+    <div class="header-meta">
+      <span class="meta-left">Vol. 1, No. 3</span>
+      <span class="meta-right">github.com/NikolayS</span>
+    </div>
+    <div class="masthead">the <span>dispatch</span></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(13px,2.5vw,18px);font-weight:700;letter-spacing:.06em;margin-top:4px;"><a href="https://github.com/NikolayS" style="color:var(--ink);text-decoration:none;">@NikolayS</a></div>
+    <div class="tagline">rpg lands Active Session History, sqlever hardens against oracle-discovered bugs, and a leaked API key gets rotated in hours.</div>
+    <div class="edition-bar">
+      <span>79 commits</span>
+      <span>67 PRs</span>
+      <span>8 releases</span>
+      <span>7 repos</span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="grid grid-2">
+      <div class="col">
+        <p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">Five releases across rpg and sqlever. Twelve merged PRs. One security incident, quickly contained.</p>
+        
+    <div class="article">
+      <div class="tag">RELEASE</div>
+      <h1><a href="https://github.com/NikolayS/rpg" class="headline-link">Active Session History arrives in rpg v0.9.0 — /ash charts wait events live and from history</h1>
+      <p class="deck">*rpg users can now see what their database is actually waiting on, in real time, with historical depth when pg_ash is installed.*</p>
+      <img src="https://gitzette.online/img/a-hand-adjusting-a-dial-on-an-old-control-panel-with-stacked.png" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;shape-outside:url(https://gitzette.online/img/a-hand-adjusting-a-dial-on-an-old-control-panel-with-stacked.png);shape-margin:8px;"><p class="body-text">rpg v0.9.0 adds <code>/ash</code>, a full-screen TUI that renders active sessions as a stacked-bar timeline grouped by wait event type. The interface is interactive — arrow keys scroll and drill down through wait types, events, and individual queries. When the pg_ash extension is installed on the server, @NikolayS's <a href="https://github.com/NikolayS/rpg/pull/762">#762</a> pre-populates the timeline with historical samples from <code>ash.samples</code> on connect, so you see the full picture immediately instead of waiting for live data to accumulate. The zoom level (<code>←→</code> keys) syncs both the bucket size and the live sampling interval, so coarser views refresh less frequently. The status bar shows the actual data window in seconds — no more guessing whether you're looking at 10 minutes or 600 samples.</p>
+      <div style="clear:both"></div>
+      
+      <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.9.0" class="release-link">v0.9.0</a> <span class="muted">Sat, Mar 28</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.4" class="release-link">v0.8.4</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.3" class="release-link">v0.8.3</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.2" class="release-link">v0.8.2</a> <span class="muted">Tue, Mar 24</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.1" class="release-link">v0.8.1</a> <span class="muted">Tue, Mar 24</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/762" class="pr-link">#762</a> <a href="https://github.com/NikolayS/rpg/pull/764" class="pr-link">#764</a> <a href="https://github.com/NikolayS/rpg/pull/763" class="pr-link">#763</a> <a href="https://github.com/NikolayS/rpg/pull/751" class="pr-link">#751</a> <a href="https://github.com/NikolayS/rpg/pull/748" class="pr-link">#748</a></div>
+      <div class="pending-note">1 open PR: <a href="https://github.com/NikolayS/rpg/pull/759">#759 feat(wasm): compile rpg to wasm32-unknown-unknown for browser use</a></div>
+    </div>
+
+    <div class="article">
+      <div class="tag">RELEASE</div>
+      <h3><a href="https://github.com/NikolayS/sqlever" class="headline-link">sqlever v0.3.0 fixes 10 bugs found by real-world oracle testing against production Sqitch projects</h3>
+      <p class="deck">*A real Sqitch deployment with 255 migrations ran byte-for-byte against sqlever. All 10 differences have been fixed.*</p>
+      <img src="https://gitzette.online/img/two-identical-database-snapshots-side-by-side-one-being-cros.png" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;shape-outside:url(https://gitzette.online/img/two-identical-database-snapshots-side-by-side-one-being-cros.png);shape-margin:8px;"><p class="body-text">sqlever was validated against a production Sqitch project (255 migrations, timescaledb, pgaudit, pg_cron, plpython3u, pgvector) by deploying each migration with both tools side-by-side and comparing <code>change_id</code> values. The oracle test found 10 bugs that unit tests missed: trailing newlines in change IDs, <code>name@tag</code> dependency resolution failures, inline comment parsing in include paths, and others. @NikolayS's <a href="https://github.com/NikolayS/sqlever/pull/202">#202</a> adds regression test coverage for all 10 bugs — 43 new tests ensuring they never ship again. Final validation: 255/255 migrations match, zero differences. The v0.3.0 release also includes security hardening (input validation, SQL injection risk fixes) and TypeScript type tightening across the codebase.</p>
+      <div style="clear:both"></div>
+      
+      <div class="release-links"><a href="https://github.com/NikolayS/sqlever/releases/tag/v0.3.0" class="release-link">v0.3.0</a> <span class="muted">Mon, Mar 23</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/sqlever/releases/tag/v0.2.2" class="release-link">v0.2.2</a> <span class="muted">Mon, Mar 23</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/sqlever/releases/tag/v0.2.1" class="release-link">v0.2.1</a> <span class="muted">Mon, Mar 23</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/sqlever/pull/204" class="pr-link">#204</a> <a href="https://github.com/NikolayS/sqlever/pull/203" class="pr-link">#203</a> <a href="https://github.com/NikolayS/sqlever/pull/202" class="pr-link">#202</a> <a href="https://github.com/NikolayS/sqlever/pull/201" class="pr-link">#201</a> <a href="https://github.com/NikolayS/sqlever/pull/200" class="pr-link">#200</a></div>
+      <div class="pending-note">1 open PR: <a href="https://github.com/NikolayS/sqlever/pull/206">#206 spec: offline schema diff, safe mode, verify-with-rewrites (v1.0)</a></div>
+    </div>
+      </div>
+      <div class="col">
+    <div class="article">
+      <div class="tag">FEATURE</div>
+      <h2><a href="https://github.com/NikolayS/rpg" class="headline-link">multi-host failover now works — rpg follows psql's comma-separated host semantics</h2>
+      <p class="deck">*HA setups using Patroni or pgBouncer can now point rpg at multiple hosts and let it find the primary automatically.*</p>
+      <p class="body-text">psql supports failover via <code>-h host1,host2,host3</code>, trying each in order until one accepts the connection. rpg did not. @NikolayS's <a href="https://github.com/NikolayS/rpg/pull/751">#751</a> implements the same libpq semantics — connection strings like <code>postgres://host1:5432,host2:5432/db</code> or <code>rpg -h primary,replica -p 5432</code> now work correctly. Per-host ports are supported (<code>-p 5432,5433</code>), and when all hosts fail, rpg reports which hosts were tried and why each one failed, matching psql's error reporting.</p>
+      
+      
+      <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.9.0" class="release-link">v0.9.0</a> <span class="muted">Sat, Mar 28</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.4" class="release-link">v0.8.4</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.3" class="release-link">v0.8.3</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.2" class="release-link">v0.8.2</a> <span class="muted">Tue, Mar 24</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.1" class="release-link">v0.8.1</a> <span class="muted">Tue, Mar 24</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/762" class="pr-link">#762</a> <a href="https://github.com/NikolayS/rpg/pull/764" class="pr-link">#764</a> <a href="https://github.com/NikolayS/rpg/pull/763" class="pr-link">#763</a> <a href="https://github.com/NikolayS/rpg/pull/751" class="pr-link">#751</a> <a href="https://github.com/NikolayS/rpg/pull/748" class="pr-link">#748</a></div>
+      <div class="pending-note">1 open PR: <a href="https://github.com/NikolayS/rpg/pull/759">#759 feat(wasm): compile rpg to wasm32-unknown-unknown for browser use</a></div>
+    </div>
+
+    <div class="article">
+      <div class="tag">FEATURE</div>
+      <h2><a href="https://github.com/NikolayS/rpg" class="headline-link">shell commands in prompts — PROMPT1 and PROMPT2 now execute backtick-quoted scripts</h2>
+      <p class="deck">*Dynamic prompts like `[`git branch`] %/ #` now work in rpg, matching psql behavior that power users depend on.*</p>
+      <p class="body-text">psql allows prompt customization via backtick-delimited shell commands: <code>PROMPT1='</code>hostname<code>:\u@\h:\d> '</code> executes <code>hostname</code> on each prompt render and substitutes the output. rpg was rendering backticks literally. @NikolayS's <a href="https://github.com/NikolayS/rpg/pull/748">#748</a> adds the same behavior — backticks in PROMPT1 and PROMPT2 are now executed via shell, with stdout trimmed and substituted. Failed commands or empty output substitute an empty string without crashing.</p>
+      
+      
+      <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.9.0" class="release-link">v0.9.0</a> <span class="muted">Sat, Mar 28</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.4" class="release-link">v0.8.4</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.3" class="release-link">v0.8.3</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.2" class="release-link">v0.8.2</a> <span class="muted">Tue, Mar 24</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.1" class="release-link">v0.8.1</a> <span class="muted">Tue, Mar 24</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/762" class="pr-link">#762</a> <a href="https://github.com/NikolayS/rpg/pull/764" class="pr-link">#764</a> <a href="https://github.com/NikolayS/rpg/pull/763" class="pr-link">#763</a> <a href="https://github.com/NikolayS/rpg/pull/751" class="pr-link">#751</a> <a href="https://github.com/NikolayS/rpg/pull/748" class="pr-link">#748</a></div>
+      <div class="pending-note">1 open PR: <a href="https://github.com/NikolayS/rpg/pull/759">#759 feat(wasm): compile rpg to wasm32-unknown-unknown for browser use</a></div>
+    </div></div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>rpg shipped five releases in four days. sqlever proved production parity. And one leaked API key proved that even careful engineers need regex scanners. — @NikolayS</span>
+    <span>generated 2026-03-31</span>
+  </div>
+</div><!-- /paper page 1 -->
+
+<!-- page 2: stats + index (only visible as separate page on broadsheet layout) -->
+<div class="paper page-2">
+  <div class="header" style="border-bottom:none;">
+    <div class="header-meta" style="margin-bottom:0;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+      <span class="meta-left">the dispatch — Vol. 1, No. 3</span>
+      <span class="meta-right">March 23 – March 29, 2026</span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="articles-p2">
+    <div class="article">
+      <div class="tag">FEATURE</div>
+      <h3><a href="https://github.com/NikolayS/sqlever" class="headline-link">snapshot includes prevent silent security vulnerabilities when replaying historical migrations</h3>
+      <p class="deck">*Deploying old migrations on a fresh database now uses file versions from when the migration was written, not current HEAD.*</p>
+      <p class="body-text">Every migration tool that supports <code>\i</code> includes has a dangerous assumption: included files are always read from HEAD, not from the version that existed when the migration was written. This means deploying historical migrations silently picks up modifications to shared files, potentially introducing security vulnerabilities or data corruption with no error. @NikolayS's <a href="https://github.com/NikolayS/sqlever/pull/201">#201</a> adds a live demo proving the problem — two migrations share a <code>row_level_security.sql</code> file, and modifying it in subsequent commits changes the behavior of earlier migrations on a fresh database. sqlever's default behavior is to snapshot includes at migration write time, and the PR includes 8 test scenarios demonstrating the difference between snapshot (safe) and <code>--no-snapshot</code> (dangerous) behavior.</p>
+      
+      
+      <div class="release-links"><a href="https://github.com/NikolayS/sqlever/releases/tag/v0.3.0" class="release-link">v0.3.0</a> <span class="muted">Mon, Mar 23</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/sqlever/releases/tag/v0.2.2" class="release-link">v0.2.2</a> <span class="muted">Mon, Mar 23</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/sqlever/releases/tag/v0.2.1" class="release-link">v0.2.1</a> <span class="muted">Mon, Mar 23</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/sqlever/pull/204" class="pr-link">#204</a> <a href="https://github.com/NikolayS/sqlever/pull/203" class="pr-link">#203</a> <a href="https://github.com/NikolayS/sqlever/pull/202" class="pr-link">#202</a> <a href="https://github.com/NikolayS/sqlever/pull/201" class="pr-link">#201</a> <a href="https://github.com/NikolayS/sqlever/pull/200" class="pr-link">#200</a></div>
+      <div class="pending-note">1 open PR: <a href="https://github.com/NikolayS/sqlever/pull/206">#206 spec: offline schema diff, safe mode, verify-with-rewrites (v1.0)</a></div>
+    </div>
+
+    <div class="article">
+      <div class="tag">SECURITY</div>
+      <h3><a href="https://github.com/NikolayS/rpg" class="headline-link">pgMustard API key accidentally committed in a PR comment — quickly rotated via regex scanner</h3>
+      <p class="deck">*An AI testing output in a PR comment exposed a pgMustard API key. Detection and rotation took hours.*</p>
+      <p class="body-text">During testing of the new <code>\explain share pgmustard</code> feature in rpg v0.8.0, an AI agent posted test output as a PR comment that included a pgMustard API key in plaintext. @NikolayS spotted this via regex scanning and rotated the key the same day. No production use was compromised. This is a cautionary example of the risk when testing against real third-party APIs in open repositories — even with private keys, they can leak through test output, logs, and error messages.</p>
+      
+      
+      <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.9.0" class="release-link">v0.9.0</a> <span class="muted">Sat, Mar 28</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.4" class="release-link">v0.8.4</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.3" class="release-link">v0.8.3</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.2" class="release-link">v0.8.2</a> <span class="muted">Tue, Mar 24</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.1" class="release-link">v0.8.1</a> <span class="muted">Tue, Mar 24</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/762" class="pr-link">#762</a> <a href="https://github.com/NikolayS/rpg/pull/764" class="pr-link">#764</a> <a href="https://github.com/NikolayS/rpg/pull/763" class="pr-link">#763</a> <a href="https://github.com/NikolayS/rpg/pull/751" class="pr-link">#751</a> <a href="https://github.com/NikolayS/rpg/pull/748" class="pr-link">#748</a></div>
+      <div class="pending-note">1 open PR: <a href="https://github.com/NikolayS/rpg/pull/759">#759 feat(wasm): compile rpg to wasm32-unknown-unknown for browser use</a></div>
+    </div>
+
+    <div class="article">
+      <div class="tag">FEATURE</div>
+      <h3><a href="https://github.com/NikolayS/gitzette-dispatch" class="headline-link">dispatch articles can now reference linked GitHub issues for richer context</h3>
+      <p class="deck">*The generator now performs a two-pass scan — finding issues linked to merged PRs and weaving their details into articles.*</p>
+      <p class="body-text">@NikolayS's <a href="https://github.com/NikolayS/gitzette-dispatch/pull/3">#3</a> adds a two-pass generation mode that enriches article descriptions. When a merged PR links to an issue, the generator fetches the issue title and body on a second pass, allowing the article to explain the problem the PR solved rather than just the code change itself. This lets readers understand the 'before' context without leaving the dispatch.</p>
+      
+      
+      
+      <div class="pr-links">merged: <a href="https://github.com/NikolayS/gitzette-dispatch/pull/3" class="pr-link">#3</a></div>
+      
+    </div></div>
+    
+<div style="padding:20px 0 0;border-top:3px double var(--ink);">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+    <span>stats corner</span>
+    <span style="flex:1;border-top:1px solid var(--rule);display:inline-block;"></span>
+  </div>
+  
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule);margin-bottom:20px;">
+    
+      <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">79</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">commits</div>
+      </div>
+      <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">67</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">pull requests</div>
+      </div>
+      <div style="padding:14px 10px 12px;text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">8</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">releases</div>
+      </div>
+  </div>
+  
+  <div style="margin-bottom:20px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">commits by repo</div>
+    <svg width="100%" viewBox="0 0 382 197" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" letter-spacing="1">REPO</text>
+      <text x="382" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" text-anchor="end" letter-spacing="1">COMMITS</text>
+      <line x1="0" y1="14" x2="382" y2="14" stroke="#e8e4dc" stroke-width="0.5"/>
+      
+    <text x="104" y="32" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333" font-weight="600">sqlever</text>
+    <rect x="110" y="18" width="240" height="18" fill="#555" rx="1"/>
+    <text x="355" y="32" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="600">35</text>
+    <text x="104" y="57" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">rpg</text>
+    <rect x="110" y="43" width="199" height="18" fill="#888" rx="1"/>
+    <text x="314" y="57" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">29</text>
+    <text x="104" y="82" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">gitzette</text>
+    <rect x="110" y="68" width="62" height="18" fill="#999" rx="1"/>
+    <text x="177" y="82" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">9</text>
+    <text x="104" y="107" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">postgresai</text>
+    <rect x="110" y="93" width="21" height="18" fill="#aaa" rx="1"/>
+    <text x="136" y="107" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">3</text>
+    <text x="104" y="132" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">gitzette-dispatch</text>
+    <rect x="110" y="118" width="7" height="18" fill="#bbb" rx="1"/>
+    <text x="122" y="132" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    <text x="104" y="157" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">NikolayS</text>
+    <rect x="110" y="143" width="7" height="18" fill="#ccc" rx="1"/>
+    <text x="122" y="157" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    <text x="104" y="182" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">rachio-supervisor</text>
+    <rect x="110" y="168" width="7" height="18" fill="#ddd" rx="1"/>
+    <text x="122" y="182" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    </svg>
+  </div>
+  
+  <div style="margin-bottom:20px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">github stars</div>
+    <table style="width:100%;border-collapse:collapse;">
+      <tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/postgres-ai/postgresai" style="color:var(--ink);text-decoration:none;">postgresai</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:100%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">115</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/NikolayS/rpg" style="color:var(--ink);text-decoration:none;">rpg</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:62%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">71</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/NikolayS/gitzette" style="color:var(--ink);text-decoration:none;">gitzette</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:3%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">3</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/NikolayS/sqlever" style="color:var(--ink);text-decoration:none;">sqlever</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:2%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">2</td>
+    </tr>
+    </table>
+  </div>
+  
+  <div style="margin-bottom:4px;overflow:hidden;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">release timeline</div>
+    <svg width="100%" viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+      <line x1="30" y1="78" x2="370" y2="78" stroke="#0f0f0f" stroke-width="1.5"/>
+      <line x1="30" y1="74" x2="30" y2="82" stroke="#aaa" stroke-width="1"/><text x="30" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">MON</text><line x1="87" y1="74" x2="87" y2="82" stroke="#aaa" stroke-width="1"/><text x="87" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">TUE</text><line x1="143" y1="74" x2="143" y2="82" stroke="#aaa" stroke-width="1"/><text x="143" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">WED</text><line x1="200" y1="74" x2="200" y2="82" stroke="#aaa" stroke-width="1"/><text x="200" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">THU</text><line x1="257" y1="74" x2="257" y2="82" stroke="#aaa" stroke-width="1"/><text x="257" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">FRI</text><line x1="313" y1="74" x2="313" y2="82" stroke="#aaa" stroke-width="1"/><text x="313" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SAT</text><line x1="370" y1="74" x2="370" y2="82" stroke="#aaa" stroke-width="1"/><text x="370" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SUN</text>
+      
+        <line x1="43" y1="64" x2="43" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="43" cy="58" r="5" fill="#0f0f0f"/>
+        <text x="50" y="51" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">sqlever v0.2.1</text>
+        <line x1="65" y1="42" x2="65" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="65" cy="36" r="5" fill="#0f0f0f"/>
+        <text x="65" y="29" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">sqlever v0.2.2</text>
+        <line x1="78" y1="20" x2="78" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="78" cy="14" r="5" fill="#0f0f0f"/>
+        <text x="78" y="7" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">sqlever v0.3.0</text>
+        <line x1="95" y1="64" x2="95" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="95" cy="58" r="5" fill="#0f0f0f"/>
+        <text x="95" y="51" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">rpg v0.8.1</text>
+        <line x1="102" y1="42" x2="102" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="102" cy="36" r="5" fill="#0f0f0f"/>
+        <text x="102" y="29" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">rpg v0.8.2</text>
+        <line x1="179" y1="20" x2="179" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="179" cy="14" r="5" fill="#0f0f0f"/>
+        <text x="179" y="7" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">rpg v0.8.3</text>
+        <line x1="179" y1="64" x2="179" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="179" cy="58" r="5" fill="#0f0f0f"/>
+        <text x="179" y="51" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">rpg v0.8.4</text>
+        <line x1="354" y1="42" x2="354" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="354" cy="36" r="5" fill="#0f0f0f"/>
+        <text x="350" y="29" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">rpg v0.9.0</text>
+    </svg>
+  </div>
+</div>
+    <div style="padding-top:24px;border-top:2px solid var(--ink);margin-top:8px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+        <span>repo index</span>
+        <span style="flex:1;border-top:1px solid var(--rule);display:inline-block;"></span>
+      </div>
+      <ul style="list-style:none;">
+        <li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/NikolayS/gitzette" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">gitzette</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Turn your GitHub activity into a weekly newspaper — AI-generated headlines, styled HTML output</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">9 commits · 0 releases · ★ 3</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/NikolayS/gitzette-dispatch" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">gitzette-dispatch</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Weekly engineering newspaper generator — dispatches for gitzette.online</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/NikolayS/rpg" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">rpg</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">rpg — modern Postgres terminal written in Rust. psql-compatible, with built-in DBA diagnostics and AI assistant</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">29 commits · 5 releases · ★ 71</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/NikolayS/sqlever" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">sqlever</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Sqitch-compatible PostgreSQL migration tool with static analysis and zero-downtime migrations</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">35 commits · 3 releases · ★ 2</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/NikolayS/NikolayS" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">NikolayS</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">GitHub profile</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/NikolayS/rachio-supervisor" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">rachio-supervisor</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Rachio irrigation supervisor — schedule control, water usage, visual inspection</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/postgres-ai/postgresai" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">postgresai</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">postgresai – Postgres observability built for humans and AI agents</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">3 commits · 0 releases · ★ 115</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">
+    <span>the dispatch is generated weekly from live GitHub data</span>
+    <span>github.com/NikolayS/dispatch</span>
+  </div>
+</div><!-- /paper page 2 -->
+
+</div><!-- /broadsheet-wrap -->
+</body>
+</html>

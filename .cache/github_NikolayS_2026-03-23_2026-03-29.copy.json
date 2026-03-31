@@ -1,0 +1,71 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "rpg lands Active Session History, sqlever hardens against oracle-discovered bugs, and a leaked API key gets rotated in hours.",
+  "editionNote": "Five releases across rpg and sqlever. Twelve merged PRs. One security incident, quickly contained.",
+  "articles": [
+    {
+      "repo": "rpg",
+      "headline": "Active Session History arrives in rpg v0.9.0 — /ash charts wait events live and from history",
+      "deck": "*rpg users can now see what their database is actually waiting on, in real time, with historical depth when pg_ash is installed.*",
+      "body": "rpg v0.9.0 adds <code>/ash</code>, a full-screen TUI that renders active sessions as a stacked-bar timeline grouped by wait event type. The interface is interactive — arrow keys scroll and drill down through wait types, events, and individual queries. When the pg_ash extension is installed on the server, @NikolayS's <a href=\"https://github.com/NikolayS/rpg/pull/762\">#762</a> pre-populates the timeline with historical samples from <code>ash.samples</code> on connect, so you see the full picture immediately instead of waiting for live data to accumulate. The zoom level (<code>←→</code> keys) syncs both the bucket size and the live sampling interval, so coarser views refresh less frequently. The status bar shows the actual data window in seconds — no more guessing whether you're looking at 10 minutes or 600 samples.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "a hand adjusting a dial on an old control panel with stacked bar graphs displayed above it",
+      "illustrate": true
+    },
+    {
+      "repo": "rpg",
+      "headline": "multi-host failover now works — rpg follows psql's comma-separated host semantics",
+      "deck": "*HA setups using Patroni or pgBouncer can now point rpg at multiple hosts and let it find the primary automatically.*",
+      "body": "psql supports failover via <code>-h host1,host2,host3</code>, trying each in order until one accepts the connection. rpg did not. @NikolayS's <a href=\"https://github.com/NikolayS/rpg/pull/751\">#751</a> implements the same libpq semantics — connection strings like <code>postgres://host1:5432,host2:5432/db</code> or <code>rpg -h primary,replica -p 5432</code> now work correctly. Per-host ports are supported (<code>-p 5432,5433</code>), and when all hosts fail, rpg reports which hosts were tried and why each one failed, matching psql's error reporting.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "two mechanical switches on a control panel side by side, one activated",
+      "illustrate": false
+    },
+    {
+      "repo": "rpg",
+      "headline": "shell commands in prompts — PROMPT1 and PROMPT2 now execute backtick-quoted scripts",
+      "deck": "*Dynamic prompts like `[`git branch`] %/ #` now work in rpg, matching psql behavior that power users depend on.*",
+      "body": "psql allows prompt customization via backtick-delimited shell commands: <code>PROMPT1='</code>hostname<code>:\\u@\\h:\\d> '</code> executes <code>hostname</code> on each prompt render and substitutes the output. rpg was rendering backticks literally. @NikolayS's <a href=\"https://github.com/NikolayS/rpg/pull/748\">#748</a> adds the same behavior — backticks in PROMPT1 and PROMPT2 are now executed via shell, with stdout trimmed and substituted. Failed commands or empty output substitute an empty string without crashing.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a typewriter carriage with a shell script visible on the paper",
+      "illustrate": false
+    },
+    {
+      "repo": "sqlever",
+      "headline": "sqlever v0.3.0 fixes 10 bugs found by real-world oracle testing against production Sqitch projects",
+      "deck": "*A real Sqitch deployment with 255 migrations ran byte-for-byte against sqlever. All 10 differences have been fixed.*",
+      "body": "sqlever was validated against a production Sqitch project (255 migrations, timescaledb, pgaudit, pg_cron, plpython3u, pgvector) by deploying each migration with both tools side-by-side and comparing <code>change_id</code> values. The oracle test found 10 bugs that unit tests missed: trailing newlines in change IDs, <code>name@tag</code> dependency resolution failures, inline comment parsing in include paths, and others. @NikolayS's <a href=\"https://github.com/NikolayS/sqlever/pull/202\">#202</a> adds regression test coverage for all 10 bugs — 43 new tests ensuring they never ship again. Final validation: 255/255 migrations match, zero differences. The v0.3.0 release also includes security hardening (input validation, SQL injection risk fixes) and TypeScript type tightening across the codebase.",
+      "tag": "RELEASE",
+      "illustrationPrompt": "two identical database snapshots side by side, one being crossed out with a checkmark",
+      "illustrate": true
+    },
+    {
+      "repo": "sqlever",
+      "headline": "snapshot includes prevent silent security vulnerabilities when replaying historical migrations",
+      "deck": "*Deploying old migrations on a fresh database now uses file versions from when the migration was written, not current HEAD.*",
+      "body": "Every migration tool that supports <code>\\i</code> includes has a dangerous assumption: included files are always read from HEAD, not from the version that existed when the migration was written. This means deploying historical migrations silently picks up modifications to shared files, potentially introducing security vulnerabilities or data corruption with no error. @NikolayS's <a href=\"https://github.com/NikolayS/sqlever/pull/201\">#201</a> adds a live demo proving the problem — two migrations share a <code>row_level_security.sql</code> file, and modifying it in subsequent commits changes the behavior of earlier migrations on a fresh database. sqlever's default behavior is to snapshot includes at migration write time, and the PR includes 8 test scenarios demonstrating the difference between snapshot (safe) and <code>--no-snapshot</code> (dangerous) behavior.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a file cabinet drawer with an older version of a file pulled out and highlighted",
+      "illustrate": false
+    },
+    {
+      "repo": "rpg",
+      "headline": "pgMustard API key accidentally committed in a PR comment — quickly rotated via regex scanner",
+      "deck": "*An AI testing output in a PR comment exposed a pgMustard API key. Detection and rotation took hours.*",
+      "body": "During testing of the new <code>\\explain share pgmustard</code> feature in rpg v0.8.0, an AI agent posted test output as a PR comment that included a pgMustard API key in plaintext. @NikolayS spotted this via regex scanning and rotated the key the same day. No production use was compromised. This is a cautionary example of the risk when testing against real third-party APIs in open repositories — even with private keys, they can leak through test output, logs, and error messages.",
+      "tag": "SECURITY",
+      "illustrationPrompt": "a padlock being turned by a key, with a small gear visible behind it",
+      "illustrate": false
+    },
+    {
+      "repo": "gitzette-dispatch",
+      "headline": "dispatch articles can now reference linked GitHub issues for richer context",
+      "deck": "*The generator now performs a two-pass scan — finding issues linked to merged PRs and weaving their details into articles.*",
+      "body": "@NikolayS's <a href=\"https://github.com/NikolayS/gitzette-dispatch/pull/3\">#3</a> adds a two-pass generation mode that enriches article descriptions. When a merged PR links to an issue, the generator fetches the issue title and body on a second pass, allowing the article to explain the problem the PR solved rather than just the code change itself. This lets readers understand the 'before' context without leaving the dispatch.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a hand pulling a linked chain from a filing cabinet",
+      "illustrate": false
+    }
+  ],
+  "closingNote": "rpg shipped five releases in four days. sqlever proved production parity. And one leaked API key proved that even careful engineers need regex scanners. — @NikolayS"
+}

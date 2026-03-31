@@ -11,7 +11,7 @@
   "imageGen": {
     "provider": "google",
     "model": "imagen-4.0-fast-generate-001",
-    "style": "Woodblock print illustration. Pure black ink on pure white background. NO border, NO frame, NO enclosing box. The subject floats freely on white paper with white space around it. High contrast black and white only, no gray. Bold simplified forms. The subject: "
+    "style": "Woodblock print illustration in PORTRAIT orientation. A tall, narrow human figure or silhouette related to the subject. Pure black ink on pure white background. NO border, NO frame. The figure occupies the left portion, surrounded by large white space on the right and above where text can flow. High contrast black and white only, bold shapes. Subject: "
   },
   "output": "index.html",
   "knownIncidents": [

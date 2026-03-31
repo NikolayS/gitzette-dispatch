@@ -1,0 +1,565 @@
+[
+  {
+    "name": "omarchy-pkgs",
+    "description": null,
+    "url": "https://github.com/omacom-io/omarchy-pkgs",
+    "stars": 19,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [
+      {
+        "number": 59,
+        "title": "chore: sync AUR packages (edge)",
+        "state": "open",
+        "date": "2026-03-21T06:34:24Z",
+        "url": "https://github.com/omacom-io/omarchy-pkgs/pull/59",
+        "author": "github-actions[bot]",
+        "body": "Automated AUR package sync for edge tier.\n\nPlease review the changes before merging."
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 12,
+        "title": "Inclusion of additional Elephant Providers packages",
+        "state": "open",
+        "date": "2025-11-12T15:17:21Z",
+        "url": "https://github.com/omacom-io/omarchy-pkgs/issues/12",
+        "author": "kmf"
+      },
+      {
+        "number": 11,
+        "title": "Cursor - Disable automatic update",
+        "state": "open",
+        "date": "2025-11-05T17:23:54Z",
+        "url": "https://github.com/omacom-io/omarchy-pkgs/issues/11",
+        "author": "y0no"
+      },
+      {
+        "number": 10,
+        "title": "nvim Existing highlights should only get bg changed",
+        "state": "open",
+        "date": "2025-11-04T21:53:15Z",
+        "url": "https://github.com/omacom-io/omarchy-pkgs/issues/10",
+        "author": "deas"
+      },
+      {
+        "number": 6,
+        "title": "Prevent promoting without signatures",
+        "state": "open",
+        "date": "2025-10-27T18:19:06Z",
+        "url": "https://github.com/omacom-io/omarchy-pkgs/issues/6",
+        "author": "ryanrhughes"
+      }
+    ],
+    "commitCount": 9,
+    "topContributors": [
+      "dhh"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "omacom-io/omarchy-pkgs"
+  },
+  {
+    "name": "omarchy",
+    "description": "Beautiful, Modern & Opinionated Linux",
+    "url": "https://github.com/basecamp/omarchy",
+    "stars": 21352,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [
+      {
+        "number": 5091,
+        "title": "Add Pi to the AI install menu",
+        "state": "open",
+        "date": "2026-03-21T16:42:49Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5091",
+        "author": "chipkoziara",
+        "body": "## Summary\r\n\r\nAdds the [Pi coding agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) as an optional installable AI CLI under: `Install -> AI -> Pi`\r\n\r\nThis adds a dedicated installer command that creates the `pi` CLI via Omarchy’s existing `omarchy-npx-install` wrapper pattern.\r\n\r\n## Why\r\n\r\nPi is a popular agent harness (w/ over 26k stars on GitHub) that occupies a different niche than the existing agent harnesses that are installable in the Omarchy AI menu. Pi has a minimal core—just four tools and a small system prompt—and pushes everything else into a TypeScript extension system that users own and shape, which feels very \"Omarchy\" in nature.\r\n\r\n ## Changes\r\n\r\n - Adds `bin/omarchy-install-pi`\r\n   - checks for `npx`\r\n   - shows a helpful message if Node.js is not installed\r\n   - installs Pi with: `omarchy-npx-install @mariozechner/pi-coding-agent pi`\r\n   - prints brief next-step guidance after install\r\n\r\n- Updates `bin/omarchy-menu`\r\n- adds `Pi` to the `Install -> AI` menu\r\n- points to `omarchy-install-pi`\r\n\r\n## Notes\r\n\r\n- This is intentionally **optional install only**\r\n- Pi is **not** added to `install/packaging/npx.sh`\r\n- Users without Node.js installed will be prompted to install it first from:\r\n  - `Install -> Development -> JavaScript -> Node.js`\r\n\r\n## Testing\r\n\r\n- Verified the new menu entry is wired under `Install -> AI`\r\n- Verified installer script follows Omarchy bash conventions\r\n- Verified install path uses existing `omarchy-npx-install` helper\r\n\r\n## Screenshots\r\n<img width=\"1970\" height=\"1914\" alt=\"image\" src=\"https://github.com/user-attachments/assets/ba32b893-9492-4be2-9b28-0084366f066c\" />"
+      },
+      {
+        "number": 5090,
+        "title": "Fix Bluetooth audio: auto-switch sink, move streams, preserve volume",
+        "state": "open",
+        "date": "2026-03-21T16:42:27Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5090",
+        "author": "purrsec",
+        "body": "Fixes three Bluetooth audio issues:\n\n- Volume keys control PC speakers instead of the connected Bluetooth device\n- Volume resets to max between Spotify tracks (A2DP transport getting suspended)\n- Bluetooth speaker not always appearing without a full PipeWire stack restart\n\nAdds a WirePlumber Bluetooth config to prioritize BT sinks and keep the transport alive between tracks, moves active streams when switching output, and restarts all three audio services in omarchy-restart-pipewire."
+      },
+      {
+        "number": 5088,
+        "title": "feat: enable calc provider by default in walker launcher",
+        "state": "open",
+        "date": "2026-03-21T06:59:33Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5088",
+        "author": "nickkaltner",
+        "body": "## Summary\n* Adds the `calc` provider to the default providers list in the Walker launcher configuration.\n* Allows users to perform simple mathematics as they type without needing the `=` prefix."
+      },
+      {
+        "number": 5082,
+        "title": "feat: add voxtype daemon toggle with dictation warning",
+        "state": "open",
+        "date": "2026-03-20T12:11:49Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5082",
+        "author": "Ergiaa",
+        "body": "## Summary\n\n- Add `omarchy-toggle-voxtype` to start/stop voxtype daemon (frees VRAM when stopped)\n- Add `omarchy-toggle-dictation` wrapper that warns if daemon is not running\n- Update keybindings:\n  - `Super+Ctrl+X` - Toggle dictation recording (warns if daemon stopped)\n  - `Super+Ctrl+Alt+X` - Toggle voxtype daemon (free VRAM)\n\n## Changes\n\n| File | Description |\n|------|-------------|\n| `bin/omarchy-toggle-voxtype` | New command to toggle voxtype daemon via systemctl |\n| `bin/omarchy-toggle-dictation` | New wrapper for `voxtype record toggle` with daemon check |\n| `default/hypr/bindings/utilities.conf` | Updated keybindings for both toggles |"
+      },
+      {
+        "number": 5080,
+        "title": "use Wayland option for SDDM",
+        "state": "open",
+        "date": "2026-03-20T09:06:23Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5080",
+        "author": "EFrMG",
+        "body": "For existing installations, and migration.\r\n\r\nOn issue: #5079"
+      },
+      {
+        "number": 5077,
+        "title": "fix: firmware updates failing with Limine bootloader",
+        "state": "open",
+        "date": "2026-03-19T20:38:34Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5077",
+        "author": "annoyedmilk",
+        "body": "Today I wanted to update my firmware via Update > Firmware and it failed with:\n\n```\nfailed to write-firmware: cannot find either EFI/systemd or EFI/arch in ESP\n```\n\nThe issue is that fwupd expects either `EFI/systemd` (systemd-boot) or `EFI/arch` (GRUB) in the ESP to stage UEFI capsule updates. Since Omarchy uses Limine, which creates `EFI/limine/`, fwupd can't find a recognized bootloader directory to place its EFI binary.\n\nThe fix installs `/usr/lib/fwupd/efi/fwupdx64.efi` into `/boot/EFI/arch/` before running the update. This only runs on UEFI systems where the fwupd EFI binary is available.\n\nThis worked for me on a Lenovo ThinkPad T14s Gen 2a (20XGS04V00), firmware went from 0.1.34 to 0.1.36. The update process takes a while and the actual flash happens on the next reboot, so just let it do its thing. Would be great if someone else could give it a try too."
+      },
+      {
+        "number": 5074,
+        "title": "fix: make notification-toggle feedback silent",
+        "state": "open",
+        "date": "2026-03-19T14:47:25Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5074",
+        "author": "saschabuehrle",
+        "body": "## Summary\nFixes #5073 by preventing the toggle confirmation notification from playing an alert sound.\n\n## Problem\nEven with notifications silenced, toggling notification mode still triggered an audible sound because the confirmation used plain `notify-send`.\n\n## Fix\n- add `-h string:suppress-sound:true` to both toggle confirmation notifications in `bin/omarchy-toggle-notification-silencing`\n- keep existing visual confirmation unchanged\n\n## Validation\n- verified script syntax with `bash -n`\n- confirmed change is minimal and isolated to the toggle helper\n\nGreetings, saschabuehrle"
+      },
+      {
+        "number": 5069,
+        "title": "Add single instance option for webapp installs",
+        "state": "open",
+        "date": "2026-03-19T11:30:20Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5069",
+        "author": "cardoprimo",
+        "body": "Discussion: https://github.com/basecamp/omarchy/discussions/5070\r\n- Add SINGLE_INSTANCE variable with gum choose prompt\r\n- Use omarchy-launch-or-focus-webapp for single instance mode\r\n- Pass APP_DOMAIN to focus command for instance tracking"
+      },
+      {
+        "number": 5066,
+        "title": "feat(hypridle): inhibit suspend during active VoIP streams",
+        "state": "open",
+        "date": "2026-03-19T07:33:09Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5066",
+        "author": "Rockeyxx",
+        "body": "### Description\r\nResolves an issue where `hypridle` suspends the system during active VoIP calls in clients that lack proper Wayland `zwp_idle_inhibit_manager_v1` protocol implementations (e.g., Discord via Electron, Waydroid).\r\n\r\n### Implementation Architecture\r\n- Added `omarchy-idle-call-check` to `./bin/` to parse the PipeWire node graph via `pactl`.\r\n- The script evaluates state by returning `0` if it detects an active `audio/source` (microphone polling) or an `audio/sink` strictly flagged with `media.role = \"communication\"` or `\"phone\"`. `1` otherwise.\r\n- Updated `./config/hypr/hypridle.conf`"
+      },
+      {
+        "number": 5065,
+        "title": "fix: correct 8 shell script bugs",
+        "state": "open",
+        "date": "2026-03-19T01:36:41Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5065",
+        "author": "riftzen-bit",
+        "body": "## Summary\n\nSystematic audit found and fixed 8 confirmed bugs across shell scripts in `bin/` and `install/`:\n\n- **omarchy-drive-set-password**: missing `$` in herestring — multi-drive selection was permanently unreachable\n- **omarchy-reinstall-configs**: `$(bash ...)` captured stdout and tried to execute it as a command\n- **omarchy-ai-skill.sh**: `ln -s` without `-f` fails when symlink already exists (retry install / re-run migration)\n- **omarchy-install-docker-dbs**: `main_menu` function not in scope when run via `present_terminal`\n- **hypridle.conf**: comment said `# 5min` for a 151-second (≈2.5min) timeout\n- **limine-snapper.sh**: BRE regex `^/+` matches literal `/+`, not boot entries like `/Omarchy` — installation verification always failed for limine users\n- **omarchy-theme-set-keyboard-asus-rog**: missing file guard for `keyboard.rgb` (only 1/17 themes has it)\n- **omarchy-menu (Emacs)**: `systemctl --user enable` raced against async `install()` — service never enabled\n\n## Approach\n\nEach fix was:\n1. Verified as a real bug (not a style preference)\n2. Syntax-checked with `bash -n` immediately after editing\n3. Code-reviewed by a separate agent\n4. Confirmed to not change behavior in working code paths\n\n## Test plan\n\n- [x] `bash -n` passes on all 8 modified files\n- [x] Code review confirms all fixes are correct and safe\n- [x] No unintended behavioral changes — each fix only affects the broken path\n- [ ] Manual testing on Omarchy system (limine boot entry verification, ASUS ROG keyboard, Emacs install, multi-drive encryption, config reinstall, Docker DB cancel, AI skill re-link)"
+      },
+      {
+        "number": 5061,
+        "title": "Make omarchy menu and cpu buttons \"infinitely wide\" for easier clicking",
+        "state": "open",
+        "date": "2026-03-18T09:34:17Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5061",
+        "author": "axelfontaine",
+        "body": "This is a simple quality of life improvement that pads the omarchy menu button to the top left corner of the screen and the cpu widget to the top right corner of the screen (with no unclickable gaps). This makes it possible to yank the mouse to the desired corner and click to get the desired action (previously one had to aim carefully as you would otherwise have the pointer in an 8px gap).\r\n\r\nThe layout is unchanged.\r\n\r\nSee https://en.wikipedia.org/wiki/Fitts%27s_law#Implications_for_UI_design"
+      },
+      {
+        "number": 5059,
+        "title": "Remove timeout for normal-level notifications",
+        "state": "open",
+        "date": "2026-03-18T06:40:07Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5059",
+        "author": "patrick-boc",
+        "body": "Depends on: https://github.com/basecamp/omarchy/pull/5056\r\n\r\nDHH stated his philosophy for notifications as follows (https://github.com/basecamp/omarchy/issues/1560#issuecomment-3276209751):\r\n> I looked into [having a notification center], but ultimately decided that I didn't think it was worth it. We stack notifications now, and you really should just be reading and dismissing them. I always found that other operating systems I had that used this ended up with a junk drawer (hello mac!)\r\n\r\nI believe that having normal-level notifications persist until dismissed is more in line with this philosophy. This ensures they are actually read and dismissed. Collecting notifications into a notification center and never reading them is bad but so is not reading notifications because of looking away from the screen for 5 seconds.\r\n\r\nNotifications that should truly be auto-dismissed can be labels as low urgency as I've proposed in https://github.com/basecamp/omarchy/pull/5056."
+      },
+      {
+        "number": 5058,
+        "title": "Persist update log across reboots",
+        "state": "open",
+        "date": "2026-03-18T06:06:45Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5058",
+        "author": "riftzen-bit",
+        "body": "When the update includes a kernel upgrade, `omarchy-update-restart` triggers a reboot which wipes `/tmp`. The update log written by `omarchy-update-perform` is lost before the user can review it.\n\nThis moves the log from `/tmp/omarchy-update.log` to `~/.local/state/omarchy/update.log`. That directory already exists and is used for migration state, toggles, and first-run tracking — it follows XDG conventions and survives reboots.\n\nTwo-line change across two files:\n- `bin/omarchy-update-perform` (writes the log)\n- `bin/omarchy-update-analyze-logs` (reads the log)\n\nFixes #4965"
+      },
+      {
+        "number": 5057,
+        "title": "Add missing hyprland.conf to all themes",
+        "state": "open",
+        "date": "2026-03-18T05:56:50Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5057",
+        "author": "riftzen-bit",
+        "body": "`config/hypr/hyprland.conf` line 13 sources a theme-specific config:\n\n```\nsource = ~/.config/omarchy/current/theme/hyprland.conf\n```\n\nOnly `kanagawa` ships this file (for opacity overrides). The other 16 themes don't have one, causing Hyprland to log a globbing error on every startup:\n\n```\nConfig error in file ~/.config/hypr/hyprland.conf at line 13: source= globbing error: found no match\n```\n\nThis adds empty `hyprland.conf` placeholder files to all 16 themes that are missing one. The empty files satisfy the `source =` directive without changing any behavior — themes that need Hyprland overrides (like kanagawa) already have content in theirs.\n\nFixes #5039"
+      },
+      {
+        "number": 5056,
+        "title": "Set low urgency for immediate-feedback notifications",
+        "state": "open",
+        "date": "2026-03-18T05:42:58Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5056",
+        "author": "patrick-boc",
+        "body": "## Description\r\n\r\nSome users may choose to disable notification timeout for normal-level notifications to ensure no notifications are missed when the user is away from the screen. However, there are several Omarchy notifications that only serve as an immediate feedback for a user action, such as \"Screensaver enabled\" or \"Editing config file foo.conf\", for which disabling the timeout is not desirable. This commit drops the urgency level for such notification to low, allowing configuring a different timeout value for them.\r\n\r\nExample mako configuration utilizing the changes:\r\n```\r\ndefault-timeout=0\r\n[urgency=low]\r\ndefault-timeout=5000\r\n```\r\n\r\nNotifications with an explicitly set timeout are excluded from this commit.\r\n\r\n## Alternative designs\r\n\r\n#### (Selected) Option 1 - Urgency level\r\n\r\nThis is the design implemented in this PR.\r\n\r\nPros: simplicity\r\nCons: broader filter\r\n\r\n#### Option 2 - Category field\r\n\r\n```notify-send \"Screensaver enabled\" -c omarchy.toggle```\r\n\r\n```\r\n[category=omarchy.toggle]\r\ndefault-timeout=5000\r\n```\r\n\r\nPros: narrower filter\r\nCons: new category to manage\r\n\r\nSee also: https://specifications.freedesktop.org/notification/1.3/categories.html\r\n\r\n#### Option 3 - Explicit timeout\r\n\r\n```notify-send \"Screensaver enabled\" -t 5000```\r\n\r\nPros: More opinionated\r\nCons: Harder for user to override"
+      },
+      {
+        "number": 5055,
+        "title": "Add imv keybind to copy current image to clipboard",
+        "state": "open",
+        "date": "2026-03-18T03:16:40Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5055",
+        "author": "vitorpacheco",
+        "body": "Add a Ctrl+c binding in imv config to copy the currently open image to clipboard via wl-copy"
+      },
+      {
+        "number": 5051,
+        "title": "Add sleep mode picker to Setup menu",
+        "state": "open",
+        "date": "2026-03-17T15:49:39Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5051",
+        "author": "alansikora",
+        "body": "## Summary\n\nAdds delayed hibernate support and a unified sleep mode picker. Supersedes #5041 — I originally wanted a smaller PR for the delayed hibernate feature to make it easier to review, but GitHub doesn't support stacking PRs from forks, so this PR includes everything.\n\n### Delayed hibernate\n\nsystemd's native suspend-then-hibernate transitions to hibernate from a suspended state, which hangs on multiple GPU drivers (confirmed on amdgpu, reported on others). This PR works around that by using RTC alarm to fully wake the system from s2idle, then triggering hibernate from a clean, awake state via a transient systemd timer.\n\nThe delay is configurable through `/etc/omarchy/sleep-mode` (e.g. `delayed-hibernate:3600` for 60 minutes). A migration is included for existing hibernation setups.\n\n### Sleep mode picker\n\nConsolidates the old \"Enable/Disable Suspend\", \"Enable/Disable Hibernate\", and separate sleep mode controls into a single **Sleep Mode** entry under Setup:\n\n- **Suspend only** — s2idle on lid close, no automatic hibernation\n- **Delayed hibernate** — s2idle first, then hibernate after a user-chosen delay (15, 60, or 120 minutes)\n- **Direct hibernate** — immediate hibernate on lid close\n- **Disable hibernation** — tears down swap, initramfs hook, and kernel params (only shown when hibernation is active)\n\nWhen a user selects a hibernate mode and hibernation isn't set up yet, the picker automatically launches `omarchy-hibernation-setup` which walks them through creating the swap file, configuring the bootloader, and rebooting.\n\n### Other changes\n\n- Removes `omarchy-toggle-suspend` — the suspend-off toggle is replaced by the sleep mode picker\n- Suspend is now always visible in the power menu regardless of sleep mode\n- Adds `omarchy-set-sleep-mode` script that manages hook installation, logind config, and mode persistence\n- Hibernation removal now cleans up all sleep mode artifacts (delayed-hibernate hook, lid config, sleep mode file)\n\ncc @dhh — if this gets merged, the [System Sleep section](https://learn.omacom.io/2/the-omarchy-manual) of the manual will need updating to reflect the new menu structure.\n\n## Test plan\n\n- [ ] Open Setup → verify \"Sleep Mode\" replaces \"System Sleep\"\n- [ ] Open Sleep Mode without hibernation set up → verify only Suspend/Delayed/Direct options (no Disable)\n- [ ] Pick \"Delayed hibernate\" without hibernation → should launch `omarchy-hibernation-setup`\n- [ ] After hibernate setup, open Sleep Mode again → \"Disable hibernation\" now visible\n- [ ] Switch between each mode and verify with `cat /etc/omarchy/sleep-mode`\n- [ ] Verify Suspend always appears in the power menu\n- [ ] Test delayed hibernate: set to short delay, close lid, verify system wakes and hibernates\n- [ ] Test direct hibernate: close lid, verify immediate hibernate\n- [ ] Disable hibernation → verify all artifacts cleaned up, option disappears"
+      },
+      {
+        "number": 5049,
+        "title": "feat: support tmux in terminal cwd detection",
+        "state": "open",
+        "date": "2026-03-17T12:10:13Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5049",
+        "author": "lucasrabiec",
+        "body": "- traverse full process tree instead of direct child lookup\r\n- detect tmux client and use pane_current_path for accurate cwd\r\n- fallback to shell cwd for non-tmux cases"
+      },
+      {
+        "number": 5047,
+        "title": "Add \"extended-keys\" setting to tmux",
+        "state": "open",
+        "date": "2026-03-17T11:16:46Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5047",
+        "author": "EFrMG",
+        "body": "This uses the \"CSI u\" protocol which allows for bindings such as Ctrl + Shift + X\r\n\r\nMentioned on issue: #5046"
+      },
+      {
+        "number": 5043,
+        "title": "fix: re-run depmod after DKMS to prevent stale modules.dep",
+        "state": "open",
+        "date": "2026-03-17T08:09:01Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5043",
+        "author": "idrisakorede",
+        "body": "## Problem\r\n\r\nAfter `pacman -Syu` upgrades the kernel, systems using `nvidia-open-dkms`\r\n(or any DKMS module) drop to emergency mode on next boot.\r\n\r\nPacman hook execution order is the root cause:\r\n\r\n- `60-depmod` builds `modules.dep` before DKMS has run\r\n- `70-dkms-install` builds `nvidia.ko` and other DKMS modules\r\n- `90-mkinitcpio-install` tries to include them, but they're not in\r\n  `modules.dep` yet — so the UKI is built without them (or not rebuilt at all)\r\n\r\nOn reboot, the old UKI references a kernel module directory that no longer\r\nexists. Emergency mode.\r\n\r\n## Fix\r\n\r\nAdds `install/config/depmod-after-dkms-hook.sh` which installs a pacman\r\nhook at priority 75 — after DKMS builds complete but before mkinitcpio runs.\r\nIt re-indexes `modules.dep` so the UKI is built with all DKMS modules present.\r\n\r\nThe hook only fires when `.ko` files are actually produced, so it is a\r\nno-op on machines without DKMS modules.\r\n\r\nCorrected execution order:\r\n```\r\n60-depmod             → initial modules.dep\r\n70-dkms-install       → builds DKMS modules\r\n75-depmod-after-dkms  → re-indexes modules.dep with DKMS output\r\n90-mkinitcpio-install → builds UKI with all modules present\r\n```\r\n\r\nCloses #5026"
+      },
+      {
+        "number": 5041,
+        "title": "Add delayed hibernate after suspend",
+        "state": "open",
+        "date": "2026-03-16T23:46:58Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5041",
+        "author": "alansikora",
+        "body": "## Summary\r\n\r\nBrings back automatic hibernate after suspend — close the lid, get instant s2idle for quick wake-ups, then the system automatically hibernates after 90 minutes for zero battery drain.\r\n\r\nThis was previously removed (e4b73726) because systemd's native `suspend-then-hibernate` caused wake-up loops on multiple laptops. The issue is that transitioning to hibernate from a suspended state hangs on several GPU drivers (confirmed on amdgpu, reported on others). Direct `systemctl hibernate` from an awake state works fine everywhere.\r\n\r\nThe fix: an RTC alarm wakes the system fully after 90 minutes of s2idle, then a transient systemd timer triggers a direct hibernate from that clean, awake state.\r\n\r\n## How it works\r\n\r\nSingle sleep hook (`system-sleep/delayed-hibernate`):\r\n\r\n1. **On suspend** — sets an RTC alarm for 90 minutes\r\n2. **On wake** — checks if the kernel cleared the alarm (RTC fired) or if the user woke manually\r\n3. **If RTC** — schedules `systemctl hibernate` via `systemd-run --on-active=5s` (waits for the suspend operation to fully complete before hibernating)\r\n4. **If user** — cancels the pending alarm, normal instant wake\r\n\r\n## Migration\r\n\r\n- Only applies to systems with hibernation already configured\r\n- Cleans up old `lid.conf` / `hibernate.conf` if present from the previous suspend-then-hibernate setup\r\n\r\n## Test plan\r\n\r\n- [x] Direct `systemctl hibernate` works (session restored)\r\n- [x] RTC alarm wakes system after delay\r\n- [x] Transient timer triggers hibernate on RTC wake\r\n- [x] User wake before timeout cancels the alarm (instant s2idle wake)\r\n- [x] Tested on Framework 13 AMD (Ryzen 7040, s2idle, kernel 6.19.6)\r\n- [ ] Test on other hardware"
+      },
+      {
+        "number": 5040,
+        "title": "Replace Impala with nettui for network controls",
+        "state": "open",
+        "date": "2026-03-16T21:35:28Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5040",
+        "author": "skibidiandulka",
+        "body": "This PR replaces Impala with nettui as Omarchy's network TUI.\n\nWhy\n\nOmarchy currently routes its top-bar network action to a Wi-Fi-only TUI.\n`nettui` keeps the same iwd-first approach, but extends it into a single network TUI for both Wi-Fi and Ethernet.\n\nThis project is heavily inspired by Impala and intentionally stays close to Impala's interaction model and backend philosophy.\nIt is not meant to replace that model with something foreign. If anything, nettui is much closer to an Impala-derived network TUI than to a clean-sheet rewrite: the same general Wi-Fi workflow, extended with integrated Ethernet support and Omarchy-specific polish.\n\nWhat changed\n\n- replaced `impala` with `nettui` in `install/omarchy-base.packages`\n- updated `omarchy-launch-wifi` to launch `nettui`\n- renamed the Omarchy UI entry from `Wifi` to `Network`\n- renamed the keybinding label from `Wifi controls` to `Network controls`\n- added a dedicated Hyprland floating size for `org.omarchy.nettui`\n- enabled `systemd-networkd.service` in the network setup path\n- added a migration that installs `nettui` and removes `impala`\n- documented the single network click path in `docs/network-click-behavior.md`\n\nWhy this is a better fit for Omarchy\n\n- one TUI for Wi-Fi and Ethernet\n- better match for Omarchy's single network entry point\n- stays very close to the Impala-style iwd workflow\n- avoids splitting network management across separate tools\n\nImportant note\n\nThis PR requires `nettui` to be published in `pkgs.omarchy.org` before merge.\nWithout that package source, replacing `impala` in the Omarchy installer would break the official install path.\n\n\nNettui is available at: https://github.com/skibidiandulka/nettui/\n"
+      },
+      {
+        "number": 5038,
+        "title": "Set critical notification timeout to 30s instead of infinite",
+        "state": "open",
+        "date": "2026-03-16T16:20:09Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5038",
+        "author": "lucletoffe",
+        "body": "## Problem\n\nThe current `default-timeout=0` for `[urgency=critical]` in mako's core.ini means critical notifications never auto-dismiss. Combined with mako's known ghost surface bug ([emersion/mako#622](https://github.com/emersion/mako/issues/622)), this can leave phantom notifications permanently stuck on screen — surviving even `makoctl dismiss --all`.\n\nAny script or application that sends `urgency=critical` (even with an explicit `-t 5000` timeout) gets overridden to infinite by this config, which is surprising behavior.\n\n## Fix\n\nChange `default-timeout=0` to `default-timeout=30000` (30 seconds). This is long enough to notice any critical alert while preventing notifications from becoming permanent screen fixtures.\n\n## Context\n\n- mako upstream bug: https://github.com/emersion/mako/issues/622\n- The ghost surface persists in the Wayland layer-shell even after mako's internal dismiss, requiring a full `makoctl reload` or daemon restart to clear."
+      },
+      {
+        "number": 5037,
+        "title": "Feature - Flat Menu Search",
+        "state": "open",
+        "date": "2026-03-16T15:07:08Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5037",
+        "author": "Idzuo32",
+        "body": "## What\r\n\r\n  Adds two quality-of-life improvements to the Walker launcher:\r\n\r\n  1. **Flat menu search** — type `<` in Walker to get a searchable\r\n  flat list of every Omarchy menu action (~100 entries). No more\r\n  navigating sub-menus step by step. Each entry shows its breadcrumb\r\n  path as a subtitle (e.g. `Install → Development`).\r\n\r\n  2. **Ctrl+J/K navigation** — vim-style alternatives to arrow keys\r\n  for moving through any Walker list.\r\n\r\n  ## How it works\r\n\r\n  A new Elephant Lua module\r\n  (`default/elephant/omarchy_menu_search.lua`) statically enumerates\r\n  all actionable items from `omarchy-menu`, mirroring every `case`\r\n  branch. Terminal-based actions wrap with\r\n  `omarchy-launch-floating-terminal-with-presentation` to preserve the\r\n   existing presentation style.\r\n\r\n  The `<` prefix was chosen because `>` is already claimed by the\r\n  system-wide walker config (`/etc/xdg/walker/config.toml`) for the\r\n  runner provider.\r\n\r\n  ## Files changed\r\n\r\n  - `default/elephant/omarchy_menu_search.lua` — new Elephant module\r\n  - `config/walker/config.toml` — Ctrl+J/K keybinds + `<` prefix\r\n  - `install/config/walker-elephant.sh` — symlink for new module on\r\n  fresh install\r\n  - `bin/omarchy-refresh-walker` — re-establish all elephant symlinks\r\n  on config refresh (covers existing users)\r\n\r\n  ## Usage\r\n\r\n  Open Walker → type `<` → full action list appears → keep typing to\r\n  filter → Enter to run.\r\n  \r\n   ▎ Existing users: The migration script runs automatically on next\r\n  omarchy-update — it creates the elephant symlink and patches\r\n  ~/.config/walker/config.toml in place."
+      },
+      {
+        "number": 5036,
+        "title": "Add TUI calendar to waybar clock",
+        "state": "open",
+        "date": "2026-03-16T12:59:39Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5036",
+        "author": "n0pashkov",
+        "body": "## Summary\n\n- Right-clicking the clock in waybar opens a minimal TUI calendar in a floating terminal\n- Navigate months with `h`/`←` (previous) and `l`/`→` (next), quit with `q`\n- No dependencies — uses the standard `cal` command\n\n## Changes\n\n- **`bin/omarchy-tui-calendar`** — shell script rendering a centered, navigable monthly calendar in the terminal\n- **`bin/omarchy-launch-calendar`** — launcher using `setsid uwsm-app` + `xdg-terminal-exec` with app-id `org.omarchy.calendar`\n- **`config/waybar/config.jsonc`** — `on-click-right` on the clock module set to `omarchy-launch-calendar`\n- **`default/hypr/apps/system.conf`** — window rules for `org.omarchy.calendar`: float, center, fixed size 220×212 (kept separate from the `floating-window` tag to avoid inheriting the 875×600 size rule)"
+      },
+      {
+        "number": 5035,
+        "title": "Prevent empty passwords in omarchy-drive-set-password",
+        "state": "open",
+        "date": "2026-03-16T12:54:08Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5035",
+        "author": "Idzuo32",
+        "body": "Fixes #4964, related to #1848\r\nomarchy-drive-set-password previously delegated all input handling directly to cryptsetup luksChangeKey, which accepts empty passphrases as valid. This caused an unrecoverable state: the LUKS boot prompt cannot submit an empty string, effectively bricking the machine and forcing a full OS reinstall.\r\nThis fix captures the new password via gum input --password before passing it to cryptsetup, adding two guards: rejection of empty passwords (which also handles Ctrl+C cancellation, per omarchy convention), and confirmation mismatch detection.\r\nSome lines were auto-formated on save."
+      },
+      {
+        "number": 5034,
+        "title": "Fix Hyprland freeze on suspend/resume with NVIDIA GPUs",
+        "state": "open",
+        "date": "2026-03-16T12:32:15Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5034",
+        "author": "amlucas0xff",
+        "body": "## Summary\n\n- Adds systemd services that pause Hyprland (SIGSTOP) before NVIDIA GPU suspend and resume it (SIGCONT) after, preventing the race condition that causes compositor freeze and hyprlock SIGSEGV crashes\n- Includes hardware install script (`fix-nvidia-suspend.sh`) for new installations and a migration for existing NVIDIA setups\n- Services are only installed on systems with NVIDIA GPUs detected via `lspci`\n\n## Root Cause\n\n`nvidia-utils` installs a systemd drop-in (`10-nvidia-no-freeze-session.conf`) that sets `SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=false`. This keeps Wayland clients (hyprlock, Hyprland, waybar) running while the GPU is being suspended by `nvidia-suspend.service`. When the GPU disappears mid-operation:\n\n- hyprlock crashes with SIGSEGV in `std::thread::join()` during cleanup\n- Hyprland freezes with a stale framebuffer, requiring a hard reboot\n- Affects both hybrid GPU laptops and multi-GPU desktops\n\n## Approach\n\nBased on the community-proven pattern from [0xFMD/hyprland-suspend-fix](https://github.com/0xFMD/hyprland-suspend-fix), adapted to Omarchy conventions:\n\n- `omarchy-hyprland-suspend.service` runs **before** `nvidia-suspend.service`, sending SIGSTOP to Hyprland\n- `omarchy-hyprland-resume.service` runs **after** `nvidia-resume.service`, sending SIGCONT to Hyprland\n- Follows the same systemd service pattern used by `omarchy-nvme-suspend-fix.service`\n\n## Files Changed\n\n- `install/config/hardware/fix-nvidia-suspend.sh` — new hardware script, auto-detects NVIDIA\n- `install/config/all.sh` — registers the script after `nvidia.sh`\n- `migrations/1773664282.sh` — applies the fix to existing installations\n\n## Test Plan\n\n- [ ] Verify services install only on NVIDIA systems (`lspci | grep -i nvidia`)\n- [ ] Confirm `systemctl is-enabled omarchy-hyprland-suspend.service` after migration\n- [ ] Suspend/resume cycle: lock screen renders, input works, no SIGSEGV in `coredumpctl`\n- [ ] Non-NVIDIA systems: migration exits cleanly without creating services\n\nFixes #4891\nRelated: #3589, #2991, #2635"
+      },
+      {
+        "number": 5031,
+        "title": "add odin to installable development environments",
+        "state": "open",
+        "date": "2026-03-16T03:09:46Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5031",
+        "author": "jimmyx27",
+        "body": "This PR adds \"odin\" as a supported option in the Omarchy development environment installer.\r\n\r\nChanges include:\r\n- bin/omarchy-install-dev-env — updated usage message to include Odin\r\n- bin/omarchy-menu — added Odin to the menu options\r\n- bin/omarchy-remove-dev-env — ensure Odin can be removed if installed\r\n\r\nTested locally with Odin environment to confirm installation and removal work as expected.\r\n\r\nThis is a minor addition and does not affect existing functionality for other environments."
+      },
+      {
+        "number": 5030,
+        "title": "fix: avoid about info clipping on low-resolution displays",
+        "state": "open",
+        "date": "2026-03-16T01:06:32Z",
+        "url": "https://github.com/basecamp/omarchy/pull/5030",
+        "author": "Maverick-666",
+        "body": "## Summary\r\n\r\nThis PR fixes clipped About information on low-resolution displays (for example 1366x768 laptops).\r\n\r\n## What changed\r\n\r\nUpdated `bin/omarchy-launch-about` to detect the focused monitor resolution (via `hyprctl` + `jq`) and:\r\n\r\n- use `fastfetch --logo none` on low-resolution displays (`<= 1366x768`)\r\n- keep existing `fastfetch` behavior on larger displays\r\n\r\n## Why\r\n\r\nOn smaller laptop resolutions, the About screen can be cut off due to logo + content layout.  \r\nHiding the logo only for low-resolution screens improves readability while preserving the original experience on normal/large displays.\r\n\r\n## Scope\r\n\r\n- Minimal, targeted change in one script\r\n- No changes to default behavior for normal resolutions\r\n\r\nCloses #4981\r\n"
+      }
+    ],
+    "openIssues": [
+      {
+        "number": 5097,
+        "title": "Microsoft Edge crashes under Wayland with tile rule on hover",
+        "state": "open",
+        "date": "2026-03-22T18:53:07Z",
+        "url": "https://github.com/basecamp/omarchy/issues/5097",
+        "author": "mihapus"
+      },
+      {
+        "number": 5094,
+        "title": "Super+Ctrl+Backspace still bound to square aspect toggle after v3.4.0 upgrade",
+        "state": "open",
+        "date": "2026-03-22T06:49:13Z",
+        "url": "https://github.com/basecamp/omarchy/issues/5094",
+        "author": "haydenmckay"
+      },
+      {
+        "number": 5093,
+        "title": "Screen saver activates while gaming - lutris, etc",
+        "state": "open",
+        "date": "2026-03-21T23:15:33Z",
+        "url": "https://github.com/basecamp/omarchy/issues/5093",
+        "author": "jesalazaro"
+      },
+      {
+        "number": 5092,
+        "title": "Chromium 146 prevents display sleep via Wayland idle inhibit",
+        "state": "open",
+        "date": "2026-03-21T22:49:59Z",
+        "url": "https://github.com/basecamp/omarchy/issues/5092",
+        "author": "shawnyeager"
+      },
+      {
+        "number": 5087,
+        "title": "Boot failure after fresh install of Omarchy 3.4.2 on ThinkPad X1 Yoga Gen 3 – TPM2 services fail with error 256, leading to watchdog reboot",
+        "state": "open",
+        "date": "2026-03-20T21:48:30Z",
+        "url": "https://github.com/basecamp/omarchy/issues/5087",
+        "author": "jzetterman"
+      },
+      {
+        "number": 5085,
+        "title": "Install script fails due to package mirror 404 error and lacks dependency error handling",
+        "state": "open",
+        "date": "2026-03-20T18:45:45Z",
+        "url": "https://github.com/basecamp/omarchy/issues/5085",
+        "author": "death366"
+      },
+      {
+        "number": 5083,
+        "title": "stable-mirror.omarchy.org: signature file retrieval fails (max file size exceeded)",
+        "state": "open",
+        "date": "2026-03-20T14:27:21Z",
+        "url": "https://github.com/basecamp/omarchy/issues/5083",
+        "author": "osharko"
+      },
+      {
+        "number": 5079,
+        "title": "TTY2 remains used by a useless Xorg instance (SDDM related)",
+        "state": "open",
+        "date": "2026-03-20T09:05:26Z",
+        "url": "https://github.com/basecamp/omarchy/issues/5079",
+        "author": "EFrMG"
+      },
+      {
+        "number": 5078,
+        "title": "Super key stops working after turning on backlight",
+        "state": "open",
+        "date": "2026-03-20T07:39:02Z",
+        "url": "https://github.com/basecamp/omarchy/issues/5078",
+        "author": "jain-arihant-2002"
+      }
+    ],
+    "commitCount": 8,
+    "topContributors": [
+      "dhh"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "basecamp/omarchy"
+  },
+  {
+    "name": "lumon.nvim",
+    "description": "Lumon Industries Neovim Theme",
+    "url": "https://github.com/omacom-io/lumon.nvim",
+    "stars": 7,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 1,
+    "topContributors": [
+      "dhh"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "omacom-io/lumon.nvim"
+  },
+  {
+    "name": "omaterm",
+    "description": "Minimal Terminal Omakase for Arch",
+    "url": "https://github.com/omacom-io/omaterm",
+    "stars": 43,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 3,
+        "title": "Add Omatern skill by default, similar to Omarchy setup",
+        "state": "open",
+        "date": "2026-02-13T08:38:12Z",
+        "url": "https://github.com/omacom-io/omaterm/issues/3",
+        "author": "yamz8"
+      }
+    ],
+    "commitCount": 7,
+    "topContributors": [
+      "dhh"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "omacom-io/omaterm"
+  },
+  {
+    "name": "omarchy-iso",
+    "description": null,
+    "url": "https://github.com/omacom-io/omarchy-iso",
+    "stars": 183,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 69,
+        "title": "Hostname setup (configurator): 2 questions wrt regex",
+        "state": "open",
+        "date": "2025-12-20T11:11:59Z",
+        "url": "https://github.com/omacom-io/omarchy-iso/issues/69",
+        "author": "wolfgangw"
+      },
+      {
+        "number": 64,
+        "title": "Error key \"F0134EE680CAC571\" could not be looked up remotely",
+        "state": "open",
+        "date": "2025-11-21T11:14:06Z",
+        "url": "https://github.com/omacom-io/omarchy-iso/issues/64",
+        "author": "Lixissimus"
+      },
+      {
+        "number": 55,
+        "title": "Add package requirements to README",
+        "state": "open",
+        "date": "2025-10-25T08:50:19Z",
+        "url": "https://github.com/omacom-io/omarchy-iso/issues/55",
+        "author": "danielniccoli"
+      },
+      {
+        "number": 45,
+        "title": "\"failed retrieving file 'rutabaga-ffi-0.1.6-2-x86_64.pkg.tar.zst.sig'\" error when booting a newly made .iso file",
+        "state": "open",
+        "date": "2025-09-26T03:48:03Z",
+        "url": "https://github.com/omacom-io/omarchy-iso/issues/45",
+        "author": "c10r"
+      },
+      {
+        "number": 38,
+        "title": "Remove install media from the list of options",
+        "state": "open",
+        "date": "2025-09-14T18:12:46Z",
+        "url": "https://github.com/omacom-io/omarchy-iso/issues/38",
+        "author": "ryanrhughes"
+      },
+      {
+        "number": 29,
+        "title": "Add a way to dual boot with iso for windows users",
+        "state": "open",
+        "date": "2025-08-28T22:34:48Z",
+        "url": "https://github.com/omacom-io/omarchy-iso/issues/29",
+        "author": "maybejaishkhan"
+      },
+      {
+        "number": 18,
+        "title": "Partition(s) 2, 3 on /dev/sda have been written, but we have been unable to inform the kernel of the change",
+        "state": "open",
+        "date": "2025-08-21T17:29:47Z",
+        "url": "https://github.com/omacom-io/omarchy-iso/issues/18",
+        "author": "w84death"
+      }
+    ],
+    "commitCount": 1,
+    "topContributors": [
+      "dhh"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "omacom-io/omarchy-iso"
+  },
+  {
+    "name": "omadots",
+    "description": "Shared configs for Omacoms",
+    "url": "https://github.com/omacom-io/omadots",
+    "stars": 22,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 2,
+    "topContributors": [
+      "dhh"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "omacom-io/omadots"
+  },
+  {
+    "name": "once-blog",
+    "description": "A blog you own forever. Built with Rails 8, vanilla CSS, and no JavaScript frameworks.",
+    "url": "https://github.com/claudey/once-blog",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 1,
+    "topContributors": [
+      "dhh"
+    ],
+    "demoImages": [],
+    "foreign": true,
+    "fullName": "claudey/once-blog"
+  }
+]

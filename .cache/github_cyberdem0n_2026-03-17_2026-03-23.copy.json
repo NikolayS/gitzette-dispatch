@@ -1,0 +1,71 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Patroni hardens its failover logic and thread lifecycle — eight merges on high-availability fundamentals.",
+  "editionNote": "Eight merged PRs across patroni this week, focusing on race conditions, exception handling, and shutdown ordering.",
+  "articles": [
+    {
+      "repo": "patroni",
+      "headline": "the backoff patroni needed to stop over-eager failovers",
+      "deck": "*A 200ms network hiccup no longer demotes your primary.*",
+      "body": "Patroni used to pull the failover trigger the moment a heartbeat gap appeared, even transient ones. @cyberdem0n's <a href=\"https://github.com/patroni/patroni/pull/3453\">#3453</a> adds a primary race backoff — a delay in the leader race detection path that buys time before declaring the leader dead. The effect is immediate: fleeting network blips that used to trigger unnecessary failovers now get absorbed. For operators running Patroni on commodity infrastructure, this is the difference between a blip and an incident.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a pocket watch showing two hands in near-perfect alignment, engraved style",
+      "illustrate": true
+    },
+    {
+      "repo": "patroni",
+      "headline": "etcd v3's Unavailable exception now handled explicitly",
+      "deck": "*Patroni no longer lets transient etcd exceptions propagate uncaught.*",
+      "body": "When etcd v3 becomes unreachable, it raises an Unavailable exception that Patroni previously didn't intercept. @cyberdem0n's <a href=\"https://github.com/patroni/patroni/pull/3562\">#3562</a> adds explicit exception handling for this case. Instead of surfacing as an unhandled error that could crash or trigger unexpected failover logic, the exception now integrates into Patroni's normal unavailability handling path. The result is more predictable behavior when the DCS is temporarily offline.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a hand catching a falling object mid-air, vintage engraving",
+      "illustrate": true
+    },
+    {
+      "repo": "patroni",
+      "headline": "global thread pool shutdown now respects initialization order",
+      "deck": "*Threads no longer vanish while other components still need them.*",
+      "body": "Patroni's global thread pool was shutting down too early in the lifecycle, leaving other components that depended on it in an inconsistent state. @cyberdem0n's <a href=\"https://github.com/patroni/patroni/pull/3569\">#3569</a> reorders shutdown to happen last, after all other subsystems have finished. This eliminates race conditions during graceful termination and makes Patroni's shutdown behavior more robust under load or during rapid restart cycles.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a queue of workers lined up in order, Victorian woodcut style",
+      "illustrate": false
+    },
+    {
+      "repo": "patroni",
+      "headline": "Python 3.11+ threading internals no longer break Patroni",
+      "deck": "*Compatibility layer now accounts for CPython's threading changes.*",
+      "body": "Python 3.11 modified how the threading module handles certain internal state. Patroni code that worked on 3.10 began failing on 3.11+. @cyberdem0n's <a href=\"https://github.com/patroni/patroni/pull/3526\">#3526</a> adds the compatibility layer needed to abstract over these differences. Operators upgrading to newer Python versions no longer hit unexpected threading-related failures.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "two versions of machinery side by side, one slightly different from the other",
+      "illustrate": false
+    },
+    {
+      "repo": "patroni",
+      "headline": "PostgreSQL config reload now skips custom bootstrap phase",
+      "deck": "*Configuration changes no longer interrupt initialization scripts.*",
+      "body": "During custom bootstrap, reloading PostgreSQL's config file could interfere with the bootstrap process itself, causing initialization to fail or behave unexpectedly. @cyberdem0n's <a href=\"https://github.com/patroni/patroni/pull/3563\">#3563</a> gates config reload to skip it while bootstrap is running. This prevents the bootstrap and config reload subsystems from stepping on each other's work.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a construction site with a barrier preventing entry, line engraving",
+      "illustrate": false
+    },
+    {
+      "repo": "patroni",
+      "headline": "postgresql.parameters configuration now validated as dict",
+      "deck": "*Invalid config types are caught early instead of failing later.*",
+      "body": "@cyberdem0n's <a href=\"https://github.com/patroni/patroni/pull/3568\">#3568</a> adds type validation to ensure postgresql.parameters is a dictionary. Misconfigured Patroni instances that pass a string or list instead of a dict now fail fast with a clear error message rather than silently producing confusing behavior downstream.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a checkpoint or inspection booth with a hand holding a clipboard",
+      "illustrate": false
+    },
+    {
+      "repo": "patroni",
+      "headline": "CitusHandler initialization deferred to prevent early execution",
+      "deck": "*Citus integration now waits until the right moment to run.*",
+      "body": "@cyberdem0n's <a href=\"https://github.com/patroni/patroni/pull/3571\">#3571</a> postpones CitusHandler.run() to avoid executing during initialization when Patroni state may be incomplete. This prevents premature Citus operations from interfering with startup or failover logic.",
+      "tag": "FEATURE",
+      "illustrationPrompt": "a hand stopping a clock or dial from moving too soon",
+      "illustrate": false
+    }
+  ],
+  "closingNote": "Seven production-ready fixes shipped. The backlog still holds five open issues — none trivial."
+}

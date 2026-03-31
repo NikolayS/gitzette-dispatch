@@ -1,0 +1,17 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "One commit, infinite possibilities for next week",
+  "editionNote": "A single commit to file-classifier-backend. Slow weeks build character.",
+  "articles": [
+    {
+      "repo": "file-classifier-backend",
+      "headline": "file-classifier-backend logs one quiet commit",
+      "deck": "The backend repository receives its weekly housekeeping.",
+      "body": "@Apostletree42 logged a single commit to file-classifier-backend this week. No releases, no merged PRs, no open issues demanding attention. Sometimes a repository needs time to think. Sometimes the best work is the work you don't rush.",
+      "tag": "PENDING",
+      "illustrationPrompt": "A single brushstroke on blank canvas, suggesting movement and potential without form.",
+      "illustrate": true
+    }
+  ],
+  "closingNote": "See you next week, when something probably happens."
+}

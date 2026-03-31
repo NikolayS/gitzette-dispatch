@@ -1,0 +1,189 @@
+[
+  {
+    "name": "scroll-stress-test",
+    "description": "randomized stress tests of scrollable cursors on index scans",
+    "url": "https://github.com/tvondra/scroll-stress-test",
+    "stars": 0,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [],
+    "commitCount": 8,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": []
+  },
+  {
+    "name": "IvorySQL",
+    "description": "Open Source Oracle Compatible PostgreSQL.",
+    "url": "https://github.com/IvorySQL/IvorySQL",
+    "stars": 1005,
+    "releases": [],
+    "mergedPRs": [],
+    "openPRs": [],
+    "openIssues": [
+      {
+        "number": 1269,
+        "title": "关于数据库初始化模式参数",
+        "state": "open",
+        "date": "2026-03-20T08:07:35Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1269",
+        "author": "liketoochao"
+      },
+      {
+        "number": 1268,
+        "title": "xml error",
+        "state": "open",
+        "date": "2026-03-20T04:29:32Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1268",
+        "author": "killerwzb"
+      },
+      {
+        "number": 1263,
+        "title": "Make identifier_alpha_transfor.c frontend-safe",
+        "state": "open",
+        "date": "2026-03-19T07:41:20Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1263",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1262,
+        "title": "Keep scanner quote types self-consistent",
+        "state": "open",
+        "date": "2026-03-19T07:40:24Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1262",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1261,
+        "title": "Silence Clang warning in generated psqlplus parser",
+        "state": "open",
+        "date": "2026-03-19T07:39:45Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1261",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1260,
+        "title": "Fix package priority index in pg_dump_sort",
+        "state": "open",
+        "date": "2026-03-19T07:39:06Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1260",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1259,
+        "title": "Initialize fallback command tag for CompileFunctionStmt",
+        "state": "open",
+        "date": "2026-03-19T07:38:16Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1259",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1258,
+        "title": "Add multibyte search_path case conversion coverage",
+        "state": "open",
+        "date": "2026-03-19T07:37:30Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1258",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1253,
+        "title": "Fix output string to create IDENTITY sequence",
+        "state": "open",
+        "date": "2026-03-19T07:27:09Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1253",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1249,
+        "title": "Add --enable-nls to configure step in all CI workflow files to enable Native Language Support testing",
+        "state": "open",
+        "date": "2026-03-19T07:21:19Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1249",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1248,
+        "title": "add gdb debugging support to dev container",
+        "state": "open",
+        "date": "2026-03-19T07:19:23Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1248",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1246,
+        "title": "minimal SYS.V$SESSION view",
+        "state": "open",
+        "date": "2026-03-19T07:17:41Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1246",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1245,
+        "title": "use PostgreSQL mode for meson test initdb template",
+        "state": "open",
+        "date": "2026-03-19T07:14:56Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1245",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1244,
+        "title": "add ASCII SQL function",
+        "state": "open",
+        "date": "2026-03-19T07:13:16Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1244",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1243,
+        "title": "type coercion failure with mixed positional/named parameters in package and subprocedure functions",
+        "state": "open",
+        "date": "2026-03-19T06:58:46Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1243",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1242,
+        "title": "backend/parser/parser.c: improved error message about plisql usage",
+        "state": "open",
+        "date": "2026-03-19T06:47:51Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1242",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1241,
+        "title": "UTL_FILE: Oracle-compatible file I/O support",
+        "state": "open",
+        "date": "2026-03-19T06:44:45Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1241",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1240,
+        "title": "Improve code quality in ivy_guc.c",
+        "state": "open",
+        "date": "2026-03-19T06:40:39Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1240",
+        "author": "yuanyl630"
+      },
+      {
+        "number": 1238,
+        "title": "spell error of constraint",
+        "state": "open",
+        "date": "2026-03-19T06:36:28Z",
+        "url": "https://github.com/IvorySQL/IvorySQL/issues/1238",
+        "author": "yuanyl630"
+      }
+    ],
+    "commitCount": 6,
+    "topContributors": [
+      "tvondra"
+    ],
+    "demoImages": [
+      "https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/ivorysql-ivorysql-0.jpg"
+    ],
+    "foreign": true,
+    "fullName": "IvorySQL/IvorySQL"
+  }
+]

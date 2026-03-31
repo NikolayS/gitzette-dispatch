@@ -1,0 +1,44 @@
+{
+  "masthead": "the dispatch",
+  "tagline": "Quiet week in the mirror galleries: @tvondra tends the PostgreSQL ecosystem in the shadows",
+  "editionNote": "No releases. No merged PRs. Just commit activity across mirror repos and a post-quantum fork still under construction.",
+  "articles": [
+    {
+      "repo": "fortressQL",
+      "headline": "fortressQL inches toward post-quantum PostgreSQL",
+      "deck": "The PostgreSQL 17 fork with ML-KEM and ML-DSA support logged two commits this week.",
+      "body": "@tvondra continues work on fortressQL, his fork of PostgreSQL 17 built around post-quantum cryptography and FIPS 203/204/205 compliance. The fork includes ML-KEM and ML-DSA key encapsulation, transparent data encryption, WAL signing, and hybrid PQC/classical TLS. Two commits landed this week. No release yet, but the infrastructure for bringing cryptographic agility to Postgres continues to solidify.",
+      "tag": "PENDING",
+      "illustrationPrompt": "crystalline lattice structures morphing into database cylinders, soft mathematical light",
+      "illustrate": true
+    },
+    {
+      "repo": "qpdb",
+      "headline": "qpdb sees five commits of quiet development",
+      "deck": "Activity continues on the query processing database project with no public releases or PRs.",
+      "body": "@tvondra committed five times to qpdb this week. No releases, merged PRs, or open issues to report. The project remains in active but opaque development.",
+      "tag": "PENDING",
+      "illustrationPrompt": "abstract query optimizer parsing branches into a tree structure, data flowing downward",
+      "illustrate": false
+    },
+    {
+      "repo": "postgresql-releases",
+      "headline": "postgresql-releases tracks a documentation gap",
+      "deck": "One open issue asks how to statically compile PostgreSQL for portability.",
+      "body": "The postgresql-releases mirror repo surfaced a documentation question this week: how to statically compile PostgreSQL for portability. @tvondra has two commits on the repository. The issue remains open, likely waiting for either a documentation PR or clarification from the upstream PostgreSQL project.",
+      "tag": "COMMUNITY",
+      "illustrationPrompt": "static library archive nestled inside a portable briefcase or shipping container",
+      "illustrate": false
+    },
+    {
+      "repo": "postgres",
+      "headline": "mirror repos tick over with routine sync commits",
+      "deck": "PostgreSQL mirrors under @tvondra's account continue their steady rhythm.",
+      "body": "@tvondra maintains several PostgreSQL mirrors and forks across GitHub. The \"private development repository\" and various \"mirror of official\" repos all logged five commits each this week—standard maintenance for keeping mirrors in sync with upstream. No releases, PRs, or issues to report across the portfolio.",
+      "tag": "PENDING",
+      "illustrationPrompt": "nested mirrors reflecting each other infinitely, PostgreSQL logos fading into distance",
+      "illustrate": false
+    }
+  ],
+  "closingNote": "Silence in the repos. Productivity in the commits. This is how infrastructure gets built."
+}
