@@ -1318,22 +1318,30 @@ function renderArticle(
   // Illustrations float left (text wraps around — newspaper style)
   // Repo screenshots go full-width below the deck
   const isIllustration = img?.includes("gitzette.online/img/");
-  const illustrationHtml = isIllustration && img
-    ? `<img src="${img}" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;shape-outside:url(${img});shape-margin:8px;">`
-    : "";
   const repoImageHtml = !isIllustration && img
     ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
           <img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;max-height:40vh;object-fit:cover;display:block;">
         </div>`
     : "";
 
+  // Plain text body (strip HTML tags) for the shape-wrap-block body-raw span
+  const plainBody = article.body.replace(/<[^>]+>/g, '');
+
+  const bodyHtml = isIllustration && img
+    ? `<div class="shape-wrap-block" data-img="${img}">
+        <img src="${img}" class="shape-img" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;">
+        <span class="body-raw" style="display:none">${plainBody}</span>
+        <div class="body-lines"></div>
+        <div style="clear:both"></div>
+      </div>`
+    : `<p class="body-text">${article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '')}</p>`;
+
   return `
     <div class="article">
       <div class="tag">${article.tag}</div>
       <${level}><a href="${repoData.url}" class="headline-link">${article.headline}</${level}>
       <p class="deck">${article.deck}</p>
-      ${illustrationHtml}<p class="body-text">${article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '')}</p>
-      ${illustrationHtml ? '<div style="clear:both"></div>' : ""}
+      ${bodyHtml}
       ${repoImageHtml}
       ${releaseLinks ? `<div class="release-links">${releaseLinks}</div>` : ""}
       ${prLinks ? `<div class="pr-links">merged: ${prLinks}</div>` : ""}
@@ -1523,6 +1531,67 @@ async function buildHtml(
   /* footer */
   .footer { padding: 12px 24px; border-top: 2px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
 </style>
+<script type="module">
+import { prepareWithSegments, layoutNextLine } from 'https://esm.sh/@chenglou/pretext@latest';
+
+async function shapeWrap(block) {
+  const imgEl = block.querySelector('.shape-img');
+  const rawEl = block.querySelector('.body-raw');
+  const linesEl = block.querySelector('.body-lines');
+  if (!imgEl || !rawEl || !linesEl) return;
+
+  const text = rawEl.textContent || '';
+  const imgSrc = block.dataset.img;
+
+  // Load image and read alpha channel per row
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = imgSrc; });
+
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+
+  // Get display dimensions of the img element
+  const imgRect = imgEl.getBoundingClientRect();
+  const imgDisplayW = imgRect.width;
+  const imgDisplayH = imgRect.height;
+  const containerW = block.parentElement.clientWidth || 600;
+  const columnW = containerW;
+
+  // For each text line row, compute how much width the image occupies
+  const lineHeight = 24;
+  const font = '16px "IBM Plex Serif", Georgia, serif';
+
+  const prepared = prepareWithSegments(text, font);
+  let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+  let y = 0;
+  const lineEls = [];
+
+  while (true) {
+    // How much does image occupy at this y?
+    const imgOccupied = y < imgDisplayH ? (imgDisplayW + 18) : 0; // 18px = margin
+    const availW = columnW - imgOccupied;
+    const line = layoutNextLine(prepared, cursor, Math.max(availW, 100));
+    if (!line) break;
+
+    const div = document.createElement('div');
+    div.textContent = line.text;
+    div.style.cssText = 'position:relative;margin-left:' + imgOccupied + 'px;line-height:' + lineHeight + 'px;font:' + font + ';';
+    linesEl.appendChild(div);
+
+    cursor = line.end;
+    y += lineHeight;
+  }
+}
+
+// Run on all shape-wrap blocks
+document.querySelectorAll('.shape-wrap-block').forEach(block => {
+  shapeWrap(block).catch(console.warn);
+});
+</script>
 </head>
 <body>
 <div class="broadsheet-wrap">

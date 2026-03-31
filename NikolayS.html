@@ -89,6 +89,67 @@
   /* footer */
   .footer { padding: 12px 24px; border-top: 2px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
 </style>
+<script type="module">
+import { prepareWithSegments, layoutNextLine } from 'https://esm.sh/@chenglou/pretext@latest';
+
+async function shapeWrap(block) {
+  const imgEl = block.querySelector('.shape-img');
+  const rawEl = block.querySelector('.body-raw');
+  const linesEl = block.querySelector('.body-lines');
+  if (!imgEl || !rawEl || !linesEl) return;
+
+  const text = rawEl.textContent || '';
+  const imgSrc = block.dataset.img;
+
+  // Load image and read alpha channel per row
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = imgSrc; });
+
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+
+  // Get display dimensions of the img element
+  const imgRect = imgEl.getBoundingClientRect();
+  const imgDisplayW = imgRect.width;
+  const imgDisplayH = imgRect.height;
+  const containerW = block.parentElement.clientWidth || 600;
+  const columnW = containerW;
+
+  // For each text line row, compute how much width the image occupies
+  const lineHeight = 24;
+  const font = '16px "IBM Plex Serif", Georgia, serif';
+
+  const prepared = prepareWithSegments(text, font);
+  let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+  let y = 0;
+  const lineEls = [];
+
+  while (true) {
+    // How much does image occupy at this y?
+    const imgOccupied = y < imgDisplayH ? (imgDisplayW + 18) : 0; // 18px = margin
+    const availW = columnW - imgOccupied;
+    const line = layoutNextLine(prepared, cursor, Math.max(availW, 100));
+    if (!line) break;
+
+    const div = document.createElement('div');
+    div.textContent = line.text;
+    div.style.cssText = 'position:relative;margin-left:' + imgOccupied + 'px;line-height:' + lineHeight + 'px;font:' + font + ';';
+    linesEl.appendChild(div);
+
+    cursor = line.end;
+    y += lineHeight;
+  }
+}
+
+// Run on all shape-wrap blocks
+document.querySelectorAll('.shape-wrap-block').forEach(block => {
+  shapeWrap(block).catch(console.warn);
+});
+</script>
 </head>
 <body>
 <div class="broadsheet-wrap">
@@ -121,8 +182,12 @@
       <div class="tag">RELEASE</div>
       <h1><a href="https://github.com/NikolayS/rpg" class="headline-link">Active Session History arrives in rpg v0.9.0 — /ash charts wait events live and from history</h1>
       <p class="deck">*rpg users can now see what their database is actually waiting on, in real time, with historical depth when pg_ash is installed.*</p>
-      <img src="https://gitzette.online/img/a-hand-adjusting-a-dial-on-an-old-control-panel-with-stacked.png" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;shape-outside:url(https://gitzette.online/img/a-hand-adjusting-a-dial-on-an-old-control-panel-with-stacked.png);shape-margin:8px;"><p class="body-text">rpg v0.9.0 adds <code>/ash</code>, a full-screen TUI that renders active sessions as a stacked-bar timeline grouped by wait event type. The interface is interactive — arrow keys scroll and drill down through wait types, events, and individual queries. When the pg_ash extension is installed on the server, @NikolayS's <a href="https://github.com/NikolayS/rpg/pull/762">#762</a> pre-populates the timeline with historical samples from <code>ash.samples</code> on connect, so you see the full picture immediately instead of waiting for live data to accumulate. The zoom level (<code>←→</code> keys) syncs both the bucket size and the live sampling interval, so coarser views refresh less frequently. The status bar shows the actual data window in seconds — no more guessing whether you're looking at 10 minutes or 600 samples.</p>
-      <div style="clear:both"></div>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-hand-adjusting-a-dial-on-an-old-control-panel-with-stacked.png">
+        <img src="https://gitzette.online/img/a-hand-adjusting-a-dial-on-an-old-control-panel-with-stacked.png" class="shape-img" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;">
+        <span class="body-raw" style="display:none">rpg v0.9.0 adds /ash, a full-screen TUI that renders active sessions as a stacked-bar timeline grouped by wait event type. The interface is interactive — arrow keys scroll and drill down through wait types, events, and individual queries. When the pg_ash extension is installed on the server, @NikolayS's #762 pre-populates the timeline with historical samples from ash.samples on connect, so you see the full picture immediately instead of waiting for live data to accumulate. The zoom level (←→ keys) syncs both the bucket size and the live sampling interval, so coarser views refresh less frequently. The status bar shows the actual data window in seconds — no more guessing whether you're looking at 10 minutes or 600 samples.</span>
+        <div class="body-lines"></div>
+        <div style="clear:both"></div>
+      </div>
       
       <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.9.0" class="release-link">v0.9.0</a> <span class="muted">Sat, Mar 28</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.4" class="release-link">v0.8.4</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.3" class="release-link">v0.8.3</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.2" class="release-link">v0.8.2</a> <span class="muted">Tue, Mar 24</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.1" class="release-link">v0.8.1</a> <span class="muted">Tue, Mar 24</span></div>
       <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/762" class="pr-link">#762</a> <a href="https://github.com/NikolayS/rpg/pull/764" class="pr-link">#764</a> <a href="https://github.com/NikolayS/rpg/pull/763" class="pr-link">#763</a> <a href="https://github.com/NikolayS/rpg/pull/751" class="pr-link">#751</a> <a href="https://github.com/NikolayS/rpg/pull/748" class="pr-link">#748</a></div>
@@ -133,8 +198,12 @@
       <div class="tag">RELEASE</div>
       <h3><a href="https://github.com/NikolayS/sqlever" class="headline-link">sqlever v0.3.0 fixes 10 bugs found by real-world oracle testing against production Sqitch projects</h3>
       <p class="deck">*A real Sqitch deployment with 255 migrations ran byte-for-byte against sqlever. All 10 differences have been fixed.*</p>
-      <img src="https://gitzette.online/img/two-identical-database-snapshots-side-by-side-one-being-cros.png" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;shape-outside:url(https://gitzette.online/img/two-identical-database-snapshots-side-by-side-one-being-cros.png);shape-margin:8px;"><p class="body-text">sqlever was validated against a production Sqitch project (255 migrations, timescaledb, pgaudit, pg_cron, plpython3u, pgvector) by deploying each migration with both tools side-by-side and comparing <code>change_id</code> values. The oracle test found 10 bugs that unit tests missed: trailing newlines in change IDs, <code>name@tag</code> dependency resolution failures, inline comment parsing in include paths, and others. @NikolayS's <a href="https://github.com/NikolayS/sqlever/pull/202">#202</a> adds regression test coverage for all 10 bugs — 43 new tests ensuring they never ship again. Final validation: 255/255 migrations match, zero differences. The v0.3.0 release also includes security hardening (input validation, SQL injection risk fixes) and TypeScript type tightening across the codebase.</p>
-      <div style="clear:both"></div>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/two-identical-database-snapshots-side-by-side-one-being-cros.png">
+        <img src="https://gitzette.online/img/two-identical-database-snapshots-side-by-side-one-being-cros.png" class="shape-img" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;">
+        <span class="body-raw" style="display:none">sqlever was validated against a production Sqitch project (255 migrations, timescaledb, pgaudit, pg_cron, plpython3u, pgvector) by deploying each migration with both tools side-by-side and comparing change_id values. The oracle test found 10 bugs that unit tests missed: trailing newlines in change IDs, name@tag dependency resolution failures, inline comment parsing in include paths, and others. @NikolayS's #202 adds regression test coverage for all 10 bugs — 43 new tests ensuring they never ship again. Final validation: 255/255 migrations match, zero differences. The v0.3.0 release also includes security hardening (input validation, SQL injection risk fixes) and TypeScript type tightening across the codebase.</span>
+        <div class="body-lines"></div>
+        <div style="clear:both"></div>
+      </div>
       
       <div class="release-links"><a href="https://github.com/NikolayS/sqlever/releases/tag/v0.3.0" class="release-link">v0.3.0</a> <span class="muted">Mon, Mar 23</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/sqlever/releases/tag/v0.2.2" class="release-link">v0.2.2</a> <span class="muted">Mon, Mar 23</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/sqlever/releases/tag/v0.2.1" class="release-link">v0.2.1</a> <span class="muted">Mon, Mar 23</span></div>
       <div class="pr-links">merged: <a href="https://github.com/NikolayS/sqlever/pull/204" class="pr-link">#204</a> <a href="https://github.com/NikolayS/sqlever/pull/203" class="pr-link">#203</a> <a href="https://github.com/NikolayS/sqlever/pull/202" class="pr-link">#202</a> <a href="https://github.com/NikolayS/sqlever/pull/201" class="pr-link">#201</a> <a href="https://github.com/NikolayS/sqlever/pull/200" class="pr-link">#200</a></div>
@@ -148,7 +217,6 @@
       <p class="deck">*HA setups using Patroni or pgBouncer can now point rpg at multiple hosts and let it find the primary automatically.*</p>
       <p class="body-text">psql supports failover via <code>-h host1,host2,host3</code>, trying each in order until one accepts the connection. rpg did not. @NikolayS's <a href="https://github.com/NikolayS/rpg/pull/751">#751</a> implements the same libpq semantics — connection strings like <code>postgres://host1:5432,host2:5432/db</code> or <code>rpg -h primary,replica -p 5432</code> now work correctly. Per-host ports are supported (<code>-p 5432,5433</code>), and when all hosts fail, rpg reports which hosts were tried and why each one failed, matching psql's error reporting.</p>
       
-      
       <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.9.0" class="release-link">v0.9.0</a> <span class="muted">Sat, Mar 28</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.4" class="release-link">v0.8.4</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.3" class="release-link">v0.8.3</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.2" class="release-link">v0.8.2</a> <span class="muted">Tue, Mar 24</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.1" class="release-link">v0.8.1</a> <span class="muted">Tue, Mar 24</span></div>
       <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/762" class="pr-link">#762</a> <a href="https://github.com/NikolayS/rpg/pull/764" class="pr-link">#764</a> <a href="https://github.com/NikolayS/rpg/pull/763" class="pr-link">#763</a> <a href="https://github.com/NikolayS/rpg/pull/751" class="pr-link">#751</a> <a href="https://github.com/NikolayS/rpg/pull/748" class="pr-link">#748</a></div>
       <div class="pending-note">1 open PR: <a href="https://github.com/NikolayS/rpg/pull/759">#759 feat(wasm): compile rpg to wasm32-unknown-unknown for browser use</a></div>
@@ -159,7 +227,6 @@
       <h2><a href="https://github.com/NikolayS/rpg" class="headline-link">shell commands in prompts — PROMPT1 and PROMPT2 now execute backtick-quoted scripts</h2>
       <p class="deck">*Dynamic prompts like `[`git branch`] %/ #` now work in rpg, matching psql behavior that power users depend on.*</p>
       <p class="body-text">psql allows prompt customization via backtick-delimited shell commands: <code>PROMPT1='</code>hostname<code>:\u@\h:\d> '</code> executes <code>hostname</code> on each prompt render and substitutes the output. rpg was rendering backticks literally. @NikolayS's <a href="https://github.com/NikolayS/rpg/pull/748">#748</a> adds the same behavior — backticks in PROMPT1 and PROMPT2 are now executed via shell, with stdout trimmed and substituted. Failed commands or empty output substitute an empty string without crashing.</p>
-      
       
       <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.9.0" class="release-link">v0.9.0</a> <span class="muted">Sat, Mar 28</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.4" class="release-link">v0.8.4</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.3" class="release-link">v0.8.3</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.2" class="release-link">v0.8.2</a> <span class="muted">Tue, Mar 24</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.1" class="release-link">v0.8.1</a> <span class="muted">Tue, Mar 24</span></div>
       <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/762" class="pr-link">#762</a> <a href="https://github.com/NikolayS/rpg/pull/764" class="pr-link">#764</a> <a href="https://github.com/NikolayS/rpg/pull/763" class="pr-link">#763</a> <a href="https://github.com/NikolayS/rpg/pull/751" class="pr-link">#751</a> <a href="https://github.com/NikolayS/rpg/pull/748" class="pr-link">#748</a></div>
@@ -189,7 +256,6 @@
       <p class="deck">*Deploying old migrations on a fresh database now uses file versions from when the migration was written, not current HEAD.*</p>
       <p class="body-text">Every migration tool that supports <code>\i</code> includes has a dangerous assumption: included files are always read from HEAD, not from the version that existed when the migration was written. This means deploying historical migrations silently picks up modifications to shared files, potentially introducing security vulnerabilities or data corruption with no error. @NikolayS's <a href="https://github.com/NikolayS/sqlever/pull/201">#201</a> adds a live demo proving the problem — two migrations share a <code>row_level_security.sql</code> file, and modifying it in subsequent commits changes the behavior of earlier migrations on a fresh database. sqlever's default behavior is to snapshot includes at migration write time, and the PR includes 8 test scenarios demonstrating the difference between snapshot (safe) and <code>--no-snapshot</code> (dangerous) behavior.</p>
       
-      
       <div class="release-links"><a href="https://github.com/NikolayS/sqlever/releases/tag/v0.3.0" class="release-link">v0.3.0</a> <span class="muted">Mon, Mar 23</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/sqlever/releases/tag/v0.2.2" class="release-link">v0.2.2</a> <span class="muted">Mon, Mar 23</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/sqlever/releases/tag/v0.2.1" class="release-link">v0.2.1</a> <span class="muted">Mon, Mar 23</span></div>
       <div class="pr-links">merged: <a href="https://github.com/NikolayS/sqlever/pull/204" class="pr-link">#204</a> <a href="https://github.com/NikolayS/sqlever/pull/203" class="pr-link">#203</a> <a href="https://github.com/NikolayS/sqlever/pull/202" class="pr-link">#202</a> <a href="https://github.com/NikolayS/sqlever/pull/201" class="pr-link">#201</a> <a href="https://github.com/NikolayS/sqlever/pull/200" class="pr-link">#200</a></div>
       <div class="pending-note">1 open PR: <a href="https://github.com/NikolayS/sqlever/pull/206">#206 spec: offline schema diff, safe mode, verify-with-rewrites (v1.0)</a></div>
@@ -201,7 +267,6 @@
       <p class="deck">*An AI testing output in a PR comment exposed a pgMustard API key. Detection and rotation took hours.*</p>
       <p class="body-text">During testing of the new <code>\explain share pgmustard</code> feature in rpg v0.8.0, an AI agent posted test output as a PR comment that included a pgMustard API key in plaintext. @NikolayS spotted this via regex scanning and rotated the key the same day. No production use was compromised. This is a cautionary example of the risk when testing against real third-party APIs in open repositories — even with private keys, they can leak through test output, logs, and error messages.</p>
       
-      
       <div class="release-links"><a href="https://github.com/NikolayS/rpg/releases/tag/v0.9.0" class="release-link">v0.9.0</a> <span class="muted">Sat, Mar 28</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.4" class="release-link">v0.8.4</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.3" class="release-link">v0.8.3</a> <span class="muted">Wed, Mar 25</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.2" class="release-link">v0.8.2</a> <span class="muted">Tue, Mar 24</span> &nbsp;·&nbsp; <a href="https://github.com/NikolayS/rpg/releases/tag/v0.8.1" class="release-link">v0.8.1</a> <span class="muted">Tue, Mar 24</span></div>
       <div class="pr-links">merged: <a href="https://github.com/NikolayS/rpg/pull/762" class="pr-link">#762</a> <a href="https://github.com/NikolayS/rpg/pull/764" class="pr-link">#764</a> <a href="https://github.com/NikolayS/rpg/pull/763" class="pr-link">#763</a> <a href="https://github.com/NikolayS/rpg/pull/751" class="pr-link">#751</a> <a href="https://github.com/NikolayS/rpg/pull/748" class="pr-link">#748</a></div>
       <div class="pending-note">1 open PR: <a href="https://github.com/NikolayS/rpg/pull/759">#759 feat(wasm): compile rpg to wasm32-unknown-unknown for browser use</a></div>
@@ -212,7 +277,6 @@
       <h3><a href="https://github.com/NikolayS/gitzette-dispatch" class="headline-link">dispatch articles can now reference linked GitHub issues for richer context</h3>
       <p class="deck">*The generator now performs a two-pass scan — finding issues linked to merged PRs and weaving their details into articles.*</p>
       <p class="body-text">@NikolayS's <a href="https://github.com/NikolayS/gitzette-dispatch/pull/3">#3</a> adds a two-pass generation mode that enriches article descriptions. When a merged PR links to an issue, the generator fetches the issue title and body on a second pass, allowing the article to explain the problem the PR solved rather than just the code change itself. This lets readers understand the 'before' context without leaving the dispatch.</p>
-      
       
       
       <div class="pr-links">merged: <a href="https://github.com/NikolayS/gitzette-dispatch/pull/3" class="pr-link">#3</a></div>
