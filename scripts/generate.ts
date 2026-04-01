@@ -1398,6 +1398,23 @@ async function buildHtml(
         leadArticle.illustrationPrompt = `a single mechanical object related to "${leadArticle.headline.slice(0, 40)}", drawn as a 1920s technical engraving — one clear physical object, no abstract symbols`;
       }
     }
+    // Ensure at least 3 articles are flagged for illustration
+    const flagged = copy.articles.filter((a: any) => a.illustrate === true);
+    if (flagged.length < 3) {
+      // Pick unflagged articles from different repos to reach 3
+      const flaggedRepos = new Set(flagged.map((a: any) => a.repo));
+      for (const a of copy.articles) {
+        if (flagged.length >= 3) break;
+        if (!(a as any).illustrate && !flaggedRepos.has(a.repo)) {
+          (a as any).illustrate = true;
+          if (!(a as any).illustrationPrompt) {
+            (a as any).illustrationPrompt = `an ornate Victorian-era scientific instrument related to measurement or precision`;
+          }
+          flaggedRepos.add(a.repo);
+          flagged.push(a);
+        }
+      }
+    }
     const toIllustrate = copy.articles.filter((a: any) => a.illustrate === true).slice(0, 3);
     if (toIllustrate.length > 0) {
       console.log(`generating ${toIllustrate.length} illustration(s)...`);
