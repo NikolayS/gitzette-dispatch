@@ -1325,13 +1325,12 @@ function renderArticle(
           .join(", ")}</div>`
       : "";
 
-  const img = repoData.demoImages[imageIndex];
-  // Illustrations float left (text wraps around — newspaper style)
-  // Repo screenshots go full-width below the deck
-  const isIllustration = img?.includes("gitzette.online/img/");
-  const repoImageHtml = !isIllustration && img
+  // Find illustration (from gitzette.online/img/) and repo screenshot separately
+  const illustration = repoData.demoImages.find(u => u?.includes("gitzette.online/img/"));
+  const repoScreenshot = repoData.demoImages.find(u => u && !u.includes("gitzette.online/img/"));
+  const repoImageHtml = repoScreenshot
     ? `<div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
-          <img src="${img}" alt="" style="width:100%;max-width:100%;height:auto;max-height:40vh;object-fit:cover;display:block;">
+          <img src="${repoScreenshot}" alt="" style="width:100%;max-width:100%;height:auto;max-height:40vh;object-fit:cover;display:block;">
         </div>`
     : "";
 
@@ -1340,9 +1339,9 @@ function renderArticle(
   const bodyContent = article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '');
 
   const floatMargin = imgAlign === 'left' ? 'margin:4px 18px 12px 0' : 'margin:4px 0 12px 18px';
-  const bodyHtml = isIllustration && img
-    ? `<div class="shape-wrap-block" data-img="${img}" data-align="${imgAlign}">
-        <img src="${img}" class="shape-img" crossorigin="anonymous" alt="" style="float:${imgAlign};width:42%;max-width:220px;height:auto;${floatMargin};display:block;">
+  const bodyHtml = illustration
+    ? `<div class="shape-wrap-block" data-img="${illustration}" data-align="${imgAlign}">
+        <img src="${illustration}" class="shape-img" crossorigin="anonymous" alt="" style="float:${imgAlign};width:42%;max-width:220px;height:auto;${floatMargin};display:block;">
         <p class="body-text shape-wrap-fallback">${bodyContent}</p>
         <div style="clear:both"></div>
       </div>`
@@ -1453,15 +1452,14 @@ async function buildHtml(
         repoImageIdx.set(a.repo, imgIdx + 1);
         repoImageCount++;
       }
-      // build a per-article demoImages array:
-      // - if LLM flagged for illustration: use GPT illustration (prefer over repo screenshot)
-      // - else if repo has a screenshot: use that
+      // Build per-article image list:
+      // - AI illustration goes first (used for shape-wrap)
+      // - Repo screenshot is ALSO included (shown full-width below body text)
+      // Both can coexist — illustration for visual flair, screenshot for actual UI
       const illustrationUrl = illustrationCache[a.headline];
-      const articleImages = illustrationUrl
-        ? [illustrationUrl]
-        : hasRepoImg
-          ? [repo.demoImages[imgIdx]!]
-          : [];
+      const articleImages: string[] = [];
+      if (illustrationUrl) articleImages.push(illustrationUrl);
+      if (hasRepoImg) articleImages.push(repo.demoImages[imgIdx]!);
       const articleRepo = { ...repo, demoImages: articleImages };
       // Only show release/PR metadata on first article per repo
       const showMeta = !repoMetaShown.has(a.repo);
