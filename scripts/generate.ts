@@ -607,23 +607,35 @@ async function generateIllustration(subject: string, cacheKey?: string): Promise
         const threshold = async (buf: Buffer): Promise<Buffer | null> => {
           const { data, info } = await sharp(buf).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
           const { width, height, channels } = info;
-          // Reject if corners are dark — means GPT painted a dark background
+          // Reject if corners are dark AND opaque — means GPT painted a dark background.
+          // Transparent corners (alpha=0) are fine — that's what we asked for.
           const cornerSamples = [
             [20,20],[width-20,20],[20,height-20],[width-20,height-20],
             [100,100],[width-100,100],[100,height-100],[width-100,height-100],
           ];
-          const cornerLums = cornerSamples.map(([x,y]) => {
+          const opaqueCorners = cornerSamples.filter(([x,y]) => {
             const o=(y*width+x)*channels;
-            return 0.299*data[o]+0.587*data[o+1]+0.114*data[o+2];
+            return channels < 4 || data[o+3] > 20; // only count opaque corners
           });
-          const avgCornerLum = cornerLums.reduce((a,b)=>a+b,0)/cornerLums.length;
-          if (avgCornerLum < 180) return null; // dark background — reject
+          if (opaqueCorners.length > 0) {
+            const cornerLums = opaqueCorners.map(([x,y]) => {
+              const o=(y*width+x)*channels;
+              return 0.299*data[o]+0.587*data[o+1]+0.114*data[o+2];
+            });
+            const avgCornerLum = cornerLums.reduce((a,b)=>a+b,0)/cornerLums.length;
+            if (avgCornerLum < 180) return null; // dark opaque background — reject
+          }
           const total = width * height;
           for (let i = 0; i < total; i++) {
             const o = i * channels;
             const lum = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
-            if (lum > 170) { data[o + 3] = 0; }
-            else { const v = Math.round(lum * 0.6); data[o] = v; data[o + 1] = v; data[o + 2] = v; data[o + 3] = 255; }
+            if (lum > 160) { data[o + 3] = 0; } // light → transparent (white space)
+            else if (lum < 80) { data[o] = 15; data[o + 1] = 15; data[o + 2] = 15; data[o + 3] = 255; } // dark → near-black ink
+            else { // mid-tone → scale to preserve cross-hatching detail without crushing to dark
+              const v = Math.round(lum * 0.8);
+              data[o] = v; data[o + 1] = v; data[o + 2] = v;
+              data[o + 3] = Math.round(255 * (1 - (lum - 80) / 80)); // fade mid-tones
+            }
           }
           return sharp(data, { raw: { width, height, channels } }).png({ compressionLevel: 8 }).toBuffer();
         };
@@ -634,7 +646,7 @@ async function generateIllustration(subject: string, cacheKey?: string): Promise
           const retry = await fetch("https://api.openai.com/v1/images/generations", {
             method: "POST",
             headers: { "Authorization": `Bearer ${openaiKey}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: "gpt-image-1", prompt, size: "1024x1024", quality: "low", output_format: "png" }),
+            body: JSON.stringify({ model: "gpt-image-1", prompt, size: "1024x1024", quality: "low", background: "transparent", output_format: "png" }),
           });
           const r2 = await retry.json() as any;
           if (r2?.data?.[0]?.b64_json) {
@@ -893,7 +905,7 @@ Return a JSON object with this exact structure:
       "deck": "one-sentence italic subheading expanding on the headline",
       "body": "2-4 sentence article body. Reference specific features/PRs from the data. Mention pending work if notable.",
       "tag": "RELEASE | FEATURE | SECURITY | PENDING | COMMUNITY",
-      "illustrationPrompt": "simple concrete subject for a stark black-and-white woodcut (8-12 words). ONE clear focal object or scene. Avoid tangled cables, complex networks, abstract patterns. Good examples: 'a hand turning a large gear', 'two server towers facing each other', 'a padlock resting on a stack of disks'. No text, signs, or labels.",
+      "illustrationPrompt": "a single CONCRETE PHYSICAL OBJECT with an IRREGULAR NON-RECTANGULAR SILHOUETTE for a Victorian woodcut engraving (8-12 words). The object MUST have protruding parts, curves, or asymmetric edges — NOT a box, rectangle, or simple geometric shape. Good: 'an ornate hourglass on a wrought-iron stand with scrollwork legs', 'a gnarled oak tree with sprawling bare branches', 'a Victorian gentleman holding a pocket watch on a chain', 'an octopus wrapping tentacles around an anchor'. Bad: 'a stack of books', 'a server rack', 'a balance scale' (too rectangular). No screens, dashboards, monitors, or UI elements. No text, signs, or labels.",
       "illustrate": false
     }
   ],
@@ -902,7 +914,7 @@ Return a JSON object with this exact structure:
 
 Order articles by newsworthiness (releases > big features > pending work).
 Maximum 8 articles total — pick the most newsworthy, drop the rest.
-For "illustrate": set true on at most 2 articles that would most benefit visually — prefer the lead story (h1) and one other with a vivid, illustrable subject. Articles that already have a README screenshot don't need it (but you don't know which ones do, so use editorial judgment: releases and security incidents tend to have good screenshots; abstract tools/pending work benefit more from illustration).
+For "illustrate": set true on at most 3 articles that would most benefit visually — prefer the lead story (h1) and two others with vivid, illustrable subjects. Articles that already have a README screenshot don't need it (but you don't know which ones do, so use editorial judgment: releases and security incidents tend to have good screenshots; abstract tools/pending work benefit more from illustration).
 Return ONLY the JSON object, no markdown fences.`;
 
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -1292,22 +1304,22 @@ function renderArticle(
   article: { repo: string; headline: string; deck: string; body: string; tag: string },
   repoData: RepoData,
   level: "h1" | "h2" | "h3",
-  imageIndex: number = 0 // which demo image to use (if any)
+  imageIndex: number = 0, // which demo image to use (if any)
+  showMeta: boolean = true, // false = skip release/PR links (already shown for this repo)
 ): string {
-  const releaseLinks = repoData.releases
+  const releaseLinks = showMeta ? repoData.releases
     .map(
       (r) =>
         `<a href="${r.url}" class="release-link">${r.tag}</a> <span class="muted">${formatDate(r.date)}</span>`
     )
-    .join(" &nbsp;·&nbsp; ");
+    .join(" &nbsp;·&nbsp; ") : "";
 
-  const prLinks = repoData.mergedPRs
+  const prLinks = showMeta ? repoData.mergedPRs
     .slice(0, 5)
     .map((p) => `<a href="${p.url}" class="pr-link">#${p.number}</a>`)
-    .join(" ");
+    .join(" ") : "";
 
-  const openPRNote =
-    repoData.openPRs.length > 0
+  const openPRNote = showMeta && repoData.openPRs.length > 0
       ? `<div class="pending-note">${repoData.openPRs.length} open PR${repoData.openPRs.length > 1 ? "s" : ""}: ${repoData.openPRs
           .slice(0, 3)
           .map((p) => `<a href="${p.url}">#${p.number} ${p.title}</a>`)
@@ -1386,11 +1398,11 @@ async function buildHtml(
         leadArticle.illustrationPrompt = `a single mechanical object related to "${leadArticle.headline.slice(0, 40)}", drawn as a 1920s technical engraving — one clear physical object, no abstract symbols`;
       }
     }
-    const toIllustrate = copy.articles.filter((a: any) => a.illustrate === true).slice(0, 2);
+    const toIllustrate = copy.articles.filter((a: any) => a.illustrate === true).slice(0, 3);
     if (toIllustrate.length > 0) {
       console.log(`generating ${toIllustrate.length} illustration(s)...`);
       for (const a of toIllustrate) {
-        const illustrationPrompt = (a as any).illustrationPrompt ?? `abstract editorial scene related to ${a.repo} software project`;
+        const illustrationPrompt = (a as any).illustrationPrompt ?? `an ornate Victorian-era scientific instrument related to measurement or precision`;
         process.stdout.write(`  illustration for "${a.headline}"... `);
         // Use headline as cache key so changing the prompt style clears correctly
         const url = await generateIllustration(illustrationPrompt, a.headline);
@@ -1408,6 +1420,9 @@ async function buildHtml(
   const repoImageIdx = new Map<string, number>(); // repo → next image index to use
   let repoImageCount = 0;
   const splitAt = Math.ceil(copy.articles.length / 2); // ~half on each page
+
+  // Track which repos have already shown release/PR metadata (dedup)
+  const repoMetaShown = new Set<string>();
 
   const renderedArticles = copy.articles.map((a, i) => {
       const repo = repoMap[a.repo];
@@ -1430,7 +1445,10 @@ async function buildHtml(
           ? [repo.demoImages[imgIdx]!]
           : [];
       const articleRepo = { ...repo, demoImages: articleImages };
-      return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0);
+      // Only show release/PR metadata on first article per repo
+      const showMeta = !repoMetaShown.has(a.repo);
+      if (showMeta) repoMetaShown.add(a.repo);
+      return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0, showMeta);
     });
 
   // Split page-1 articles into two balanced columns using pretext height measurement.
@@ -1471,6 +1489,10 @@ async function buildHtml(
     .broadsheet-wrap { display: flex; align-items: flex-start; gap: 0; max-width: 1900px; margin: 32px auto; }
     .broadsheet-wrap .paper { max-width: none; flex: 1; margin: 0; box-shadow: 0 4px 24px rgba(0,0,0,.2); }
     .broadsheet-wrap .paper.page-2 { display: block; border-left: 3px double var(--rule); margin-left: -1px; }
+    .broadsheet-wrap .paper.page-2 .body { display: grid; grid-template-columns: 3fr 2fr; gap: 0 24px; }
+    .broadsheet-wrap .paper.page-2 .body > .articles-p2 { grid-column: 1; }
+    .broadsheet-wrap .paper.page-2 .body > .data-graphics-wrap { grid-column: 2; grid-row: 1 / span 3; }
+    .broadsheet-wrap .paper.page-2 .body > .repo-index-wrap { grid-column: 1 / -1; }
     /* on broadsheet, hide p2 articles from page 1 (they move to page 2) */
     .broadsheet-wrap .paper:first-child .articles-p2 { display: none; }
     /* grid-2 stays two-column on broadsheet (both cols have articles) */
@@ -1514,8 +1536,8 @@ async function buildHtml(
   .headline-link:hover { text-decoration: underline; }
   .deck { font-family: 'IBM Plex Serif', serif; font-style: italic; font-size: 14px; line-height: 1.55; color: #333; margin-bottom: 10px; }
   .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; }
-  .body-text a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
-  .body-text a:hover { border-bottom-color: var(--ink); }
+  .body-text a { color: var(--link); text-decoration: none; border-bottom: 1px solid var(--link); }
+  .body-text a:hover { border-bottom-color: var(--ink); color: var(--ink); }
   .body-text code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 2px; }
   .release-links, .pr-links { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
   .release-link { font-weight: 600; color: var(--ink); }
@@ -1618,14 +1640,14 @@ async function shapeWrap(block) {
   } catch { return; } // tainted canvas → keep float fallback
 
   // Scan alpha contour per row
-  const profile = scanContourProfile(imageData.data, canvas.width, canvas.height, 10);
+  const profile = scanContourProfile(imageData.data, canvas.width, canvas.height, 30);
 
   // Get display dimensions
   const imgRect = imgEl.getBoundingClientRect();
   const imgDisplayW = imgRect.width;
   const imgDisplayH = imgRect.height;
   const containerW = block.parentElement.clientWidth || 600;
-  const gap = 18;
+  const gap = 28;
 
   // Lay out text line by line with per-row contour widths
   const prepared = prepareWithSegments(plainText, font);
@@ -1812,8 +1834,8 @@ document.fonts.ready.then(() => {
   </div>
   <div class="body">
     <div class="articles-p2">${articlesPage2}</div>
-    ${buildDataGraphics(reposData, from, to)}
-    <div style="padding-top:24px;border-top:2px solid var(--ink);margin-top:8px;">
+    <div class="data-graphics-wrap">${buildDataGraphics(reposData, from, to)}</div>
+    <div class="repo-index-wrap" style="padding-top:24px;border-top:2px solid var(--ink);margin-top:8px;">
       <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
         <span>repo index</span>
         <span style="flex:1;border-top:1px solid var(--rule);display:inline-block;"></span>
