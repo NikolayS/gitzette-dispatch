@@ -912,7 +912,7 @@ Return a JSON object with this exact structure:
 
 Order articles by newsworthiness (releases > big features > pending work).
 Maximum 8 articles total — pick the most newsworthy, drop the rest.
-For "illustrate": set true on at most 3 articles that would most benefit visually — prefer the lead story (h1) and two others with vivid, illustrable subjects. Articles that already have a README screenshot don't need it (but you don't know which ones do, so use editorial judgment: releases and security incidents tend to have good screenshots; abstract tools/pending work benefit more from illustration).
+For "illustrate": set true on EXACTLY 3 articles. Always illustrate the lead story (h1) plus two others with vivid, illustrable subjects. Every dispatch needs visual variety — never skip this.
 Return ONLY the JSON object, no markdown fences.`;
 
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -1575,8 +1575,10 @@ function scanContourProfile(rgba, width, height, threshold) {
     raw[y] = rightmost;
   }
   // Dilate: each row takes the max of ±radius neighbors.
-  // This fills gaps in thin cross-hatching (tripod legs, watch chains).
-  const radius = Math.max(10, Math.round(height * 0.01));
+  // This fills gaps in thin cross-hatching (tripod legs, watch chains, coat edges).
+  // 3% of image height ≈ 30px for 1024px images ≈ ~8px at display size — enough to
+  // bridge cross-hatching gaps without over-expanding the contour.
+  const radius = Math.max(20, Math.round(height * 0.03));
   const profile = new Array(height);
   for (let y = 0; y < height; y++) {
     let mx = raw[y];
