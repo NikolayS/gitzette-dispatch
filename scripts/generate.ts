@@ -1660,12 +1660,18 @@ async function shapeWrap(block) {
   let charPos = 0;
   const lines = [];
 
+  let pastImage = false;
   while (true) {
-    const occupied = getOccupiedWidthForBand(
+    const occupied = pastImage ? 0 : getOccupiedWidthForBand(
       profile, y, y + lineHeight,
       imgDisplayW, imgDisplayH,
       canvas.width, canvas.height, gap
     );
+    if (occupied === 0 && !pastImage) pastImage = true;
+    if (pastImage) {
+      // Once past the image, stop — remaining text will be a normal reflowing paragraph
+      break;
+    }
     const availW = Math.max(containerW - occupied, 80);
     const line = layoutNextLine(prepared, cursor, availW);
     if (!line) break;
@@ -1710,6 +1716,27 @@ async function shapeWrap(block) {
 
     div.innerHTML = lineHtml;
     linesContainer.appendChild(div);
+  }
+
+  // Remaining text (below the image) goes into a normal reflowing paragraph
+  if (segIdx < segments.length || segCharIdx > 0) {
+    let remainingHtml = '';
+    // Partial current text segment
+    if (segCharIdx > 0 && segIdx < segments.length && segments[segIdx].type === 'text') {
+      remainingHtml += segments[segIdx].content.slice(segCharIdx);
+      segIdx++; segCharIdx = 0;
+    }
+    // All remaining segments
+    for (; segIdx < segments.length; segIdx++) {
+      remainingHtml += segments[segIdx].content;
+    }
+    if (remainingHtml.trim()) {
+      const p = document.createElement('p');
+      p.className = 'body-text';
+      p.style.cssText = 'clear:both;';
+      p.innerHTML = remainingHtml.trim();
+      linesContainer.appendChild(p);
+    }
   }
 
   // Replace fallback paragraph with positioned lines
