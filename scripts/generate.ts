@@ -1576,17 +1576,31 @@ function scanContourProfile(rgba, width, height, threshold) {
   }
   // Dilate: each row takes the max of ±radius neighbors.
   // This fills gaps in thin cross-hatching (tripod legs, watch chains, coat edges).
-  // 3% of image height ≈ 30px for 1024px images ≈ ~8px at display size — enough to
-  // bridge cross-hatching gaps without over-expanding the contour.
-  const radius = Math.max(20, Math.round(height * 0.03));
-  const profile = new Array(height);
+  const radius = Math.max(20, Math.round(height * 0.04));
+  const dilated = new Array(height);
   for (let y = 0; y < height; y++) {
     let mx = raw[y];
     for (let dy = -radius; dy <= radius; dy++) {
       const ny = y + dy;
       if (ny >= 0 && ny < height && raw[ny] > mx) mx = raw[ny];
     }
-    profile[y] = mx;
+    dilated[y] = mx;
+  }
+  // Vertical fill: if rows above AND below a gap have content, fill the gap.
+  // This prevents contour from dropping to 0 between e.g. a table top and its legs.
+  const profile = [...dilated];
+  let lastOccupied = -1;
+  for (let y = 0; y < height; y++) {
+    if (profile[y] > 0) {
+      // Fill any gap between lastOccupied and here
+      if (lastOccupied >= 0 && y - lastOccupied > 1) {
+        const fillW = Math.max(profile[lastOccupied], profile[y]);
+        for (let fy = lastOccupied + 1; fy < y; fy++) {
+          profile[fy] = Math.max(profile[fy], fillW);
+        }
+      }
+      lastOccupied = y;
+    }
   }
   return profile;
 }
