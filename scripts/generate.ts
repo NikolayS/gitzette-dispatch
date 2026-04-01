@@ -1658,9 +1658,27 @@ async function shapeWrap(block) {
     imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   } catch { return; } // tainted canvas → keep float fallback
 
-  // Scan alpha contour per row
-  const profile = scanContourProfile(imageData.data, canvas.width, canvas.height, 5);
   const align = block.dataset.align || 'left';
+  // Scan alpha contour per row.
+  // For right-aligned images, we need to scan from the right edge inward (leftmost opaque pixel).
+  // Flip the image data horizontally so scanContourProfile still finds "rightmost" but in mirror.
+  let scanData = imageData.data;
+  if (align === 'right') {
+    scanData = new Uint8ClampedArray(imageData.data);
+    const w = canvas.width, h = canvas.height;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < Math.floor(w / 2); x++) {
+        const l = (y * w + x) * 4;
+        const r = (y * w + (w - 1 - x)) * 4;
+        for (let c = 0; c < 4; c++) {
+          const tmp = scanData[l + c];
+          scanData[l + c] = scanData[r + c];
+          scanData[r + c] = tmp;
+        }
+      }
+    }
+  }
+  const profile = scanContourProfile(scanData, canvas.width, canvas.height, 5);
 
   // Get display dimensions
   const imgRect = imgEl.getBoundingClientRect();
