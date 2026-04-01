@@ -1559,7 +1559,7 @@ import { prepareWithSegments, layoutNextLine } from 'https://esm.sh/@chenglou/pr
 
 // ── Per-row alpha contour scan (same logic as scripts/shape-wrap.ts) ──
 function scanContourProfile(rgba, width, height, threshold) {
-  const profile = new Array(height);
+  const raw = new Array(height);
   for (let y = 0; y < height; y++) {
     let rightmost = 0;
     const rowOffset = y * width * 4;
@@ -1569,7 +1569,19 @@ function scanContourProfile(rgba, width, height, threshold) {
         break;
       }
     }
-    profile[y] = rightmost;
+    raw[y] = rightmost;
+  }
+  // Dilate: each row takes the max of ±radius neighbors.
+  // This fills gaps in thin cross-hatching (tripod legs, watch chains).
+  const radius = Math.max(10, Math.round(height * 0.01));
+  const profile = new Array(height);
+  for (let y = 0; y < height; y++) {
+    let mx = raw[y];
+    for (let dy = -radius; dy <= radius; dy++) {
+      const ny = y + dy;
+      if (ny >= 0 && ny < height && raw[ny] > mx) mx = raw[ny];
+    }
+    profile[y] = mx;
   }
   return profile;
 }
