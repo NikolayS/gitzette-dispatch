@@ -1307,6 +1307,7 @@ function renderArticle(
   level: "h1" | "h2" | "h3",
   imageIndex: number = 0, // which demo image to use (if any)
   showMeta: boolean = true, // false = skip release/PR links (already shown for this repo)
+  imgAlign: "left" | "right" = "left", // alternate illustration alignment
 ): string {
   const releaseLinks = showMeta ? repoData.releases
     .map(
@@ -1337,13 +1338,14 @@ function renderArticle(
         </div>`
     : "";
 
-  // Shape-wrap: illustration floats left, JS progressively enhances with contour-following.
+  // Shape-wrap: illustration floats left or right, JS progressively enhances with contour-following.
   // Fallback: regular float layout (text always visible even if JS fails).
   const bodyContent = article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '');
 
+  const floatMargin = imgAlign === 'left' ? 'margin:4px 18px 12px 0' : 'margin:4px 0 12px 18px';
   const bodyHtml = isIllustration && img
-    ? `<div class="shape-wrap-block" data-img="${img}">
-        <img src="${img}" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 12px 0;display:block;">
+    ? `<div class="shape-wrap-block" data-img="${img}" data-align="${imgAlign}">
+        <img src="${img}" class="shape-img" crossorigin="anonymous" alt="" style="float:${imgAlign};width:42%;max-width:220px;height:auto;${floatMargin};display:block;">
         <p class="body-text shape-wrap-fallback">${bodyContent}</p>
         <div style="clear:both"></div>
       </div>`
@@ -1424,6 +1426,7 @@ async function buildHtml(
 
   // Track which repos have already shown release/PR metadata (dedup)
   const repoMetaShown = new Set<string>();
+  let illustrationAlignIdx = 0; // alternates left/right for AI illustrations
 
   const renderedArticles = copy.articles.map((a, i) => {
       const repo = repoMap[a.repo];
@@ -1449,7 +1452,10 @@ async function buildHtml(
       // Only show release/PR metadata on first article per repo
       const showMeta = !repoMetaShown.has(a.repo);
       if (showMeta) repoMetaShown.add(a.repo);
-      return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0, showMeta);
+      // Alternate left/right alignment for AI illustrations
+      const isIllustrated = !!illustrationCache[a.headline];
+      const align: "left" | "right" = isIllustrated ? (illustrationAlignIdx++ % 2 === 0 ? "left" : "right") : "left";
+      return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0, showMeta, align);
     });
 
   // Split page-1 articles into two balanced columns using pretext height measurement.
@@ -1654,6 +1660,7 @@ async function shapeWrap(block) {
 
   // Scan alpha contour per row
   const profile = scanContourProfile(imageData.data, canvas.width, canvas.height, 5);
+  const align = block.dataset.align || 'left';
 
   // Get display dimensions
   const imgRect = imgEl.getBoundingClientRect();
@@ -1697,7 +1704,8 @@ async function shapeWrap(block) {
 
   for (const lineInfo of lines) {
     const div = document.createElement('div');
-    div.style.cssText = 'margin-left:' + lineInfo.occupied + 'px;line-height:' + lineHeight + 'px;font:' + font + ';';
+    const marginProp = align === 'right' ? 'margin-right' : 'margin-left';
+    div.style.cssText = marginProp + ':' + lineInfo.occupied + 'px;line-height:' + lineHeight + 'px;font:' + font + ';';
 
     let lineHtml = '';
     let remaining = lineInfo.text.length;
@@ -1751,7 +1759,8 @@ async function shapeWrap(block) {
   fallbackEl.style.display = 'none';
   imgEl.style.position = 'absolute';
   imgEl.style.top = '0';
-  imgEl.style.left = '0';
+  if (align === 'right') { imgEl.style.right = '0'; imgEl.style.left = 'auto'; }
+  else { imgEl.style.left = '0'; }
   block.style.position = 'relative';
   block.insertBefore(linesContainer, fallbackEl);
   block.style.minHeight = Math.max(imgDisplayH, y) + 'px';
