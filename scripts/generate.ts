@@ -627,13 +627,9 @@ async function generateIllustration(subject: string, cacheKey?: string): Promise
             const o = i * channels;
             const lum = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
             if (channels >= 4 && data[o + 3] < 20) { data[o + 3] = 0; continue; } // already transparent — keep it
-            if (lum > 160) { data[o + 3] = 0; } // light → transparent (white space)
-            else if (lum < 80) { data[o] = 15; data[o + 1] = 15; data[o + 2] = 15; data[o + 3] = 255; } // dark → near-black ink
-            else { // mid-tone → fade proportionally
-              const v = Math.round(lum * 0.8);
-              data[o] = v; data[o + 1] = v; data[o + 2] = v;
-              data[o + 3] = Math.round(255 * (1 - (lum - 80) / 80));
-            }
+            // Hard cutoff — no semi-transparent gradients. Clean edges for contour detection.
+            if (lum > 145) { data[o + 3] = 0; } // light → fully transparent
+            else { data[o] = 15; data[o + 1] = 15; data[o + 2] = 15; data[o + 3] = 255; } // dark/mid → fully opaque black ink
           }
           return sharp(data, { raw: { width, height, channels } }).png({ compressionLevel: 8 }).toBuffer();
         };
