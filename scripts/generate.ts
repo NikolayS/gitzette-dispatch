@@ -1696,17 +1696,71 @@ async function shapeWrap(block) {
   imgEl.style.left = '0';
   block.style.position = 'relative';
   block.insertBefore(linesContainer, fallbackEl);
-  // Set min-height so container fits both image and text
   block.style.minHeight = Math.max(imgDisplayH, y) + 'px';
-  // Remove the clear:both div since we're using absolute positioning for img
   const clearDiv = block.querySelector('[style*="clear:both"]');
   if (clearDiv) clearDiv.remove();
+
+  // Store data for relayout on resize
+  block._shapeWrapData = { profile, canvas, segments, plainText, font, lineHeight, gap, linesContainer, fallbackEl, imgEl };
+}
+
+function relayout(block) {
+  const d = block._shapeWrapData;
+  if (!d) return;
+  const imgRect = d.imgEl.getBoundingClientRect();
+  const imgDisplayW = imgRect.width;
+  const imgDisplayH = imgRect.height;
+  const containerW = block.parentElement.clientWidth || 600;
+
+  const prepared = prepareWithSegments(d.plainText, d.font);
+  let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+  let y = 0;
+  const lines = [];
+  while (true) {
+    const occupied = getOccupiedWidthForBand(d.profile, y, y + d.lineHeight, imgDisplayW, imgDisplayH, d.canvas.width, d.canvas.height, d.gap);
+    const availW = Math.max(containerW - occupied, 80);
+    const line = layoutNextLine(prepared, cursor, availW);
+    if (!line) break;
+    lines.push({ text: line.text, occupied, y });
+    cursor = line.end;
+    y += d.lineHeight;
+  }
+  d.linesContainer.innerHTML = '';
+  let segIdx = 0, segCharIdx = 0;
+  for (const lineInfo of lines) {
+    const div = document.createElement('div');
+    div.style.cssText = 'margin-left:' + lineInfo.occupied + 'px;line-height:' + d.lineHeight + 'px;font:' + d.font + ';';
+    let lineHtml = '';
+    let remaining = lineInfo.text.length;
+    while (remaining > 0 && segIdx < d.segments.length) {
+      const seg = d.segments[segIdx];
+      if (seg.type === 'tag') { lineHtml += seg.content; segIdx++; }
+      else {
+        const avail = seg.content.length - segCharIdx;
+        const take = Math.min(avail, remaining);
+        lineHtml += seg.content.slice(segCharIdx, segCharIdx + take);
+        segCharIdx += take; remaining -= take;
+        if (segCharIdx >= seg.content.length) { segIdx++; segCharIdx = 0; }
+      }
+    }
+    while (segIdx < d.segments.length && d.segments[segIdx].type === 'tag') { lineHtml += d.segments[segIdx].content; segIdx++; }
+    div.innerHTML = lineHtml;
+    d.linesContainer.appendChild(div);
+  }
+  block.style.minHeight = Math.max(imgDisplayH, y) + 'px';
 }
 
 // Run on all shape-wrap blocks after fonts are loaded
 document.fonts.ready.then(() => {
   document.querySelectorAll('.shape-wrap-block').forEach(block => {
     shapeWrap(block).catch(err => console.warn('shape-wrap failed, using float fallback:', err));
+  });
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      document.querySelectorAll('.shape-wrap-block').forEach(block => relayout(block));
+    }, 150);
   });
 });
 </script>
