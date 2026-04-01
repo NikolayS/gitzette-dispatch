@@ -1641,14 +1641,14 @@ async function shapeWrap(block) {
   } catch { return; } // tainted canvas → keep float fallback
 
   // Scan alpha contour per row
-  const profile = scanContourProfile(imageData.data, canvas.width, canvas.height, 30);
+  const profile = scanContourProfile(imageData.data, canvas.width, canvas.height, 5);
 
   // Get display dimensions
   const imgRect = imgEl.getBoundingClientRect();
   const imgDisplayW = imgRect.width;
   const imgDisplayH = imgRect.height;
   const containerW = block.parentElement.clientWidth || 600;
-  const gap = 28;
+  const gap = 36;
 
   // Lay out text line by line with per-row contour widths
   const prepared = prepareWithSegments(plainText, font);
