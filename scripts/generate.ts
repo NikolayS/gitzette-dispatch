@@ -1660,18 +1660,14 @@ async function shapeWrap(block) {
   let charPos = 0;
   const lines = [];
 
-  let pastImage = false;
   while (true) {
-    const occupied = pastImage ? 0 : getOccupiedWidthForBand(
+    const occupied = getOccupiedWidthForBand(
       profile, y, y + lineHeight,
       imgDisplayW, imgDisplayH,
       canvas.width, canvas.height, gap
     );
-    if (occupied === 0 && !pastImage) pastImage = true;
-    if (pastImage) {
-      // Once past the image, stop — remaining text will be a normal reflowing paragraph
-      break;
-    }
+    // Only stop shape-wrapping when we're truly past the image bottom
+    if (y >= imgDisplayH && occupied === 0) break;
     const availW = Math.max(containerW - occupied, 80);
     const line = layoutNextLine(prepared, cursor, availW);
     if (!line) break;
