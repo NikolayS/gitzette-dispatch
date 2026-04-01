@@ -613,18 +613,15 @@ async function generateIllustration(subject: string, cacheKey?: string): Promise
             [20,20],[width-20,20],[20,height-20],[width-20,height-20],
             [100,100],[width-100,100],[100,height-100],[width-100,height-100],
           ];
-          const opaqueCorners = cornerSamples.filter(([x,y]) => {
+          // Only reject if MOST corners are opaque AND dark (a real dark background).
+          // A few dark corners from illustration content near edges is OK.
+          const darkOpaqueCount = cornerSamples.filter(([x,y]) => {
             const o=(y*width+x)*channels;
-            return channels < 4 || data[o+3] > 20; // only count opaque corners
-          });
-          if (opaqueCorners.length > 0) {
-            const cornerLums = opaqueCorners.map(([x,y]) => {
-              const o=(y*width+x)*channels;
-              return 0.299*data[o]+0.587*data[o+1]+0.114*data[o+2];
-            });
-            const avgCornerLum = cornerLums.reduce((a,b)=>a+b,0)/cornerLums.length;
-            if (avgCornerLum < 180) return null; // dark opaque background — reject
-          }
+            const isOpaque = channels < 4 || data[o+3] > 20;
+            const lum = 0.299*data[o]+0.587*data[o+1]+0.114*data[o+2];
+            return isOpaque && lum < 100;
+          }).length;
+          if (darkOpaqueCount >= 6) return null; // 6+ of 8 corners dark+opaque = dark background
           const total = width * height;
           for (let i = 0; i < total; i++) {
             const o = i * channels;
@@ -1452,9 +1449,9 @@ async function buildHtml(
       // Only show release/PR metadata on first article per repo
       const showMeta = !repoMetaShown.has(a.repo);
       if (showMeta) repoMetaShown.add(a.repo);
-      // Alternate left/right alignment for AI illustrations
-      const isIllustrated = !!illustrationCache[a.headline];
-      const align: "left" | "right" = isIllustrated ? (illustrationAlignIdx++ % 2 === 0 ? "left" : "right") : "left";
+      // TODO: re-enable right-align once shape-wrap contour scanning is fixed (issue #7)
+      // For now, always left-align — right-align has text overlap bugs
+      const align: "left" | "right" = "left";
       return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0, showMeta, align);
     });
 
