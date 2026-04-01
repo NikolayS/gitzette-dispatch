@@ -1801,7 +1801,10 @@ async function shapeWrap(block) {
     if (remainingHtml.trim()) {
       const p = document.createElement('p');
       p.className = 'body-text';
-      p.style.cssText = 'clear:both;';
+      // The shaped divs may not extend to the image bottom (image is position:absolute).
+      // Add padding to push this paragraph below the image.
+      const extraPad = Math.max(0, imgDisplayH - y);
+      p.style.cssText = 'clear:both;' + (extraPad > 0 ? 'padding-top:' + Math.ceil(extraPad) + 'px;' : '');
       p.innerHTML = remainingHtml.trim();
       linesContainer.appendChild(p);
     }
