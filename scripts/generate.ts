@@ -629,12 +629,13 @@ async function generateIllustration(subject: string, cacheKey?: string): Promise
           for (let i = 0; i < total; i++) {
             const o = i * channels;
             const lum = 0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2];
+            if (channels >= 4 && data[o + 3] < 20) { data[o + 3] = 0; continue; } // already transparent — keep it
             if (lum > 160) { data[o + 3] = 0; } // light → transparent (white space)
             else if (lum < 80) { data[o] = 15; data[o + 1] = 15; data[o + 2] = 15; data[o + 3] = 255; } // dark → near-black ink
-            else { // mid-tone → scale to preserve cross-hatching detail without crushing to dark
+            else { // mid-tone → fade proportionally
               const v = Math.round(lum * 0.8);
               data[o] = v; data[o + 1] = v; data[o + 2] = v;
-              data[o + 3] = Math.round(255 * (1 - (lum - 80) / 80)); // fade mid-tones
+              data[o + 3] = Math.round(255 * (1 - (lum - 80) / 80));
             }
           }
           return sharp(data, { raw: { width, height, channels } }).png({ compressionLevel: 8 }).toBuffer();
