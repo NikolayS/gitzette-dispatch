@@ -1617,6 +1617,16 @@ function scanContourProfile(rgba, width, height, threshold) {
       lastOccupied = y;
     }
   }
+  // Bottom padding: extend the contour below the last detected row.
+  // Illustrations have fading cross-hatching at the bottom that pixel detection
+  // always misses. Add 8% of image height as extra protected rows.
+  if (lastOccupied > 0) {
+    const bottomPad = Math.round(height * 0.08);
+    const padWidth = profile[lastOccupied];
+    for (let y = lastOccupied + 1; y < Math.min(height, lastOccupied + bottomPad); y++) {
+      profile[y] = Math.max(profile[y], padWidth);
+    }
+  }
   return profile;
 }
 
