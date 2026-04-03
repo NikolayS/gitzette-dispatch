@@ -1757,7 +1757,7 @@ async function shapeWrap(block) {
   for (const lineInfo of lines) {
     const div = document.createElement('div');
     const marginProp = align === 'right' ? 'margin-right' : 'margin-left';
-    div.style.cssText = marginProp + ':' + lineInfo.occupied + 'px;line-height:' + lineHeight + 'px;font:' + font + ';';
+    div.style.cssText = marginProp + ':' + lineInfo.occupied + 'px;font:' + font + ';line-height:' + lineHeight + 'px;';
 
     let lineHtml = '';
     let remaining = lineInfo.text.length;
@@ -1851,7 +1851,7 @@ function relayout(block) {
   let segIdx = 0, segCharIdx = 0;
   for (const lineInfo of lines) {
     const div = document.createElement('div');
-    div.style.cssText = 'margin-left:' + lineInfo.occupied + 'px;line-height:' + d.lineHeight + 'px;font:' + d.font + ';';
+    div.style.cssText = 'margin-left:' + lineInfo.occupied + 'px;font:' + d.font + ';line-height:' + d.lineHeight + 'px;';
     let lineHtml = '';
     let remaining = lineInfo.text.length;
     while (remaining > 0 && segIdx < d.segments.length) {
