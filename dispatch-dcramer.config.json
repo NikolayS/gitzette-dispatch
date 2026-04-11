@@ -1,0 +1,13 @@
+{
+  "owner": "dcramer",
+  "model": "anthropic/claude-haiku-4-5",
+  "imageGen": {
+    "style": "Victorian-era woodcut engraving with detailed cross-hatching. PORTRAIT orientation \u2014 taller than wide. Pure black ink lines on pure white background. NO background shading, NO dark fills, NO border, NO frame, NO text or labels. CRITICAL: the object must have a COMPLEX IRREGULAR SILHOUETTE \u2014 protruding parts, curves, asymmetry. NOT a rectangle or simple box shape. The silhouette edge must be interesting and non-rectangular so text can wrap around it. Subject: "
+  },
+  "output": "dcramer.html",
+  "knownIncidents": [],
+  "knownIncidentsByWeek": {},
+  "repos": {
+    "exclude": []
+  }
+}

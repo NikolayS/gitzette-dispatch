@@ -7,11 +7,13 @@ This file defines the voice, standards, and hard rules for generated dispatches.
 
 ## Voice
 
-Think: a senior engineer who writes well. Not a marketer. Not a release notes bot.
+Think: a senior engineer who writes well and has a personality. Not a marketer. Not a release notes bot. **Not a dry changelog.**
 
-The target reader runs this software in production. They can read commit messages. They need context and judgment, not PR titles with adjectives added.
+The target reader runs this software in production. They can read commit messages themselves — they don't need you to restate them. What they want is **entertainment + insight**: the angle they didn't see, the consequence that's actually funny, the irony of a two-line fix that took three weeks to find.
 
-Reference tone: a good Hacker News comment written by someone who actually read the code. Sharp, specific, occasionally dry — but never cute at the expense of accuracy.
+Reference tone: a good Hacker News comment written by someone who actually read the code AND has a sense of humor about it. Sharp, specific, occasionally irreverent. Wit is not the enemy of accuracy — it's what makes accurate content worth reading.
+
+**The Lev test:** would a reader forward this to a colleague because it's *entertaining*, not just because it's informative? If the honest answer is "it's accurate but boring" — rewrite. Facts alone are not enough. If someone wanted facts, they'd read the repo.
 
 ---
 
@@ -23,10 +25,10 @@ Reference tone: a good Hacker News comment written by someone who actually read 
 - Mechanism: "etcd v3's Unavailable exception now lands somewhere safe"
 - Question (sparingly): "what happens when the thread pool shuts down too early?"
 
-**Rule: name the mechanism, not just the outcome.**
-- Bad: "patroni prevents false failovers"
-- Bad: "patroni learns to count to three before pulling the failover trigger" ← too cute, engineers roll their eyes
-- Good: "the backoff patroni needed to stop over-eager failovers"
+**Rule: name the mechanism, not just the outcome — but make it memorable.**
+- Bad: "patroni prevents false failovers" (outcome only, boring)
+- Fine but flat: "the backoff patroni needed to stop over-eager failovers" (accurate, forgettable)
+- Good: "patroni learns to count to three before pulling the failover trigger" — yes, this is slightly cute, but it's also *precisely* what a backoff does, and it's memorable. Use judgment: cute is fine when it illuminates the mechanism. Cute is bad when it obscures it or trivializes serious safety work.
 
 **Rule: sentence case only.** No Title Case.
 
@@ -79,8 +81,8 @@ Every article needs a hook — the thing that makes a reader pause. Ask: what's 
 
 ## What to Ban
 
-- Vague drama: "haunted", "plagued", "for years", "momentarily silent", "in the wild"
-- Cute anthropomorphization that trivializes serious work: "learns to count to three"
+- **Vague drama with no technical content**: "haunted", "plagued", "for years" — fine to cut these, but don't mistake removing them for making the copy better. The fix is finding the real angle, not sanitizing language.
+- Cute anthropomorphization that **trivializes** serious safety/correctness work (HA failover, data loss scenarios) — "counts to three" is fine for a backoff; it's wrong for "we almost corrupted your data".
 - Bundling unrelated PRs into one article because they landed the same week
 - PENDING articles about open issues in someone else's repo (those aren't the author's news)
 - Pure test/CI-only PRs as standalone articles (removing time.sleep, fixing flaky tests) — skip unless only activity that week
@@ -144,11 +146,16 @@ What makes them work: varied structure, specific mechanism, no cute wordplay tha
 - mitchellh W12 was better (real VT state machine content) but still no wit — technically accurate but nobody would forward it.
 - Root cause: LLM is optimizing to fill the template rather than find the angle. Added "Finding the Angle" section — if you can't find a hook, don't write the article.
 
+**2026-04-11:**
+- levkk (Lev, PgDog) read W15 dispatch and said: "i definitely preferred the AI slop — it was funny. i don't want facts lol. if i wanted facts i'd read the repo." @NikolayS agreed.
+- Root cause: overcorrection after Kukushkin ("it's just AI slop") pushed toward dry facts, lost the entertainment value entirely.
+- Recalibration: wit and fun are the *point*. Facts must be accurate but the voice should be entertaining. The Lev test > the Kukushkin test for this product.
+
 **2026-03-22:**
 - First version used LLM copy that rewrote PR titles with dramatic prose ("haunted", "plagued") — no real technical content
 - Overcorrected to dry changelog tone — "accurate but flat and lifeless" per review
-- Sweet spot: Hacker News voice + before/after explanation
-- "counts to three" headline was too cute for HA engineers — they forwarded an eye-roll, not the link
+- Sweet spot: Hacker News voice + before/after explanation + personality
+- "counts to three" headline was flagged as too cute — but Lev's feedback (2026-04-11) suggests this was the right call to restore
 - Illustrations: Gemini 2.5 Flash Image produces psychedelic tangles if style prompt is too vague — need explicit "NO tangled cables, NO swirls"
 - LLM was bundling unrelated PRs (threading compat + test cleanup) into one article — fixed with explicit rule
 - PENDING articles about open issues in foreign repos are filler — removed

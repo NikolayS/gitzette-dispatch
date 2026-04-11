@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>the dispatch — Vol. 1, No. 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink: #0f0f0f; --paper: #f7f4ee; --rule: #c8c2b4;
+    --muted: #666; --tag-bg: #0f0f0f; --tag-fg: #f7f4ee;
+    --link: #1a1a8c;
+  }
+  body { background: #e8e4dc; font-family: 'IBM Plex Sans', sans-serif; color: var(--ink); font-size: 15px; line-height: 1.6; }
+  a { color: var(--ink); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .muted { color: var(--muted); }
+  .paper { max-width: 960px; margin: 24px auto; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 2px 12px rgba(0,0,0,.15); overflow-x: hidden; }
+  .paper img { max-width: 100%; height: auto; display: block; }
+  /* broadsheet: two pages side by side on very wide screens */
+  .page-2 { display: block; }
+  /* articles-p2: always visible on page 1; moves to page 2 in broadsheet */
+  .articles-p2 { display: block; }
+  @media (min-width: 1400px) {
+    body { background: #d8d4cc; }
+    .broadsheet-wrap { display: flex; align-items: flex-start; gap: 0; max-width: 1900px; margin: 32px auto; }
+    .broadsheet-wrap .paper { max-width: none; flex: 1; margin: 0; box-shadow: 0 4px 24px rgba(0,0,0,.2); }
+    .broadsheet-wrap .paper.page-2 { display: block; border-left: 3px double var(--rule); margin-left: -1px; }
+    .broadsheet-wrap .paper.page-2 .body { display: grid; grid-template-columns: 3fr 2fr; gap: 0 24px; }
+    .broadsheet-wrap .paper.page-2 .body > .articles-p2 { grid-column: 1; }
+    .broadsheet-wrap .paper.page-2 .body > .data-graphics-wrap { grid-column: 2; grid-row: 1 / span 3; }
+    .broadsheet-wrap .paper.page-2 .body > .repo-index-wrap { grid-column: 1 / -1; }
+    /* on broadsheet, hide p2 articles from page 1 (they move to page 2) */
+    .broadsheet-wrap .paper:first-child .articles-p2 { display: none; }
+    /* grid-2 stays two-column on broadsheet (both cols have articles) */
+  }
+
+  /* header */
+  .header { padding: 20px 24px 14px; border-bottom: 3px solid var(--ink); }
+  .header-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--rule); padding-bottom: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; overflow: hidden; }
+  .header-kicker .kicker-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .header-kicker .kicker-date { white-space: nowrap; flex-shrink: 0; color: var(--muted); font-weight: 400; }
+  .header-kicker a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); }
+  .header-kicker a:hover { color: var(--link); border-color: var(--link); }
+  .header-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; overflow: hidden; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .header-meta .meta-left { white-space: nowrap; }
+  .header-meta .meta-right { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+  .masthead { line-height: 1; display: flex; align-items: baseline; gap: 6px; }
+  .masthead .mh-the { font-family: 'IBM Plex Serif', serif; font-style: italic; font-weight: 400; font-size: clamp(16px,3vw,28px); color: var(--muted); }
+  .masthead .mh-title { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(34px,7.5vw,68px); letter-spacing: -.03em; color: var(--ink); }
+  .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .edition-bar { margin-top: 12px; padding: 6px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .05em; display: flex; flex-wrap: nowrap; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .edition-bar::-webkit-scrollbar { display: none; }
+  .edition-bar span { white-space: nowrap; padding: 0 16px 0 0; }
+  .edition-bar span::before { content: "▸ "; color: var(--muted); }
+
+  /* body */
+  .body { padding: 0 24px 32px; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 0; }
+  @media (min-width: 640px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-2-1 { grid-template-columns: 3fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
+  .col { padding: 20px 20px 0 0; }
+  .col:last-child { padding-right: 0; }
+  @media (min-width: 640px) { .col { border-right: 1px solid var(--rule); } .col:last-child { border-right: none; padding-left: 20px; } .grid-3 .col { padding: 20px 16px 0; } .grid-3 .col:first-child { padding-left: 0; } .grid-3 .col:last-child { padding-right: 0; } }
+
+  /* tags */
+  .tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; background: var(--tag-bg); color: var(--tag-fg); padding: 2px 7px; margin-bottom: 8px; }
+
+  /* articles */
+  .article { margin-bottom: 24px; }
+  .article-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+  .repo-chip { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; color: var(--muted); text-decoration: none; letter-spacing: .04em; border-bottom: 1px solid var(--rule); }
+  .repo-chip:hover { color: var(--ink); border-bottom-color: var(--ink); }
+  .article-date { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); margin-left: auto; white-space: nowrap; }
+  h1 { font-family: 'IBM Plex Serif', serif; font-size: clamp(22px,4vw,36px); font-weight: 700; line-height: 1.1; margin-bottom: 8px; }
+  h2 { font-family: 'IBM Plex Serif', serif; font-size: clamp(16px,3vw,22px); font-weight: 700; line-height: 1.15; margin-bottom: 6px; }
+  h3 { font-family: 'IBM Plex Serif', serif; font-size: 15px; font-weight: 700; line-height: 1.2; margin-bottom: 4px; }
+  .headline-link { color: var(--ink); text-decoration: none; }
+  .headline-link:hover { text-decoration: underline; }
+  .deck { font-family: 'IBM Plex Serif', serif; font-style: italic; font-size: 14px; line-height: 1.55; color: #333; margin-bottom: 10px; }
+  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; text-align: justify; }
+  .body-text a { color: var(--link); text-decoration: none; border-bottom: 1px solid var(--link); }
+  .body-text a:hover { border-bottom-color: var(--ink); color: var(--ink); }
+  .body-text code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 2px; }
+  .release-links, .pr-links { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .release-link { font-weight: 600; color: var(--ink); }
+  .pending-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; border-left: 2px solid var(--rule); padding-left: 8px; }
+
+  /* infographics */
+  .infographic { margin-bottom: 4px; }
+  .infographic-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+
+  /* rule */
+  .rule { border: none; border-top: 1px solid var(--rule); margin: 0 0 0; }
+
+  /* footer */
+  .footer { padding: 12px 24px; border-top: 2px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+</style>
+<script type="module">
+import { prepareWithSegments, layoutNextLine } from 'https://esm.sh/@chenglou/pretext@0.0.3';
+
+// ── Per-row alpha contour scan (same logic as scripts/shape-wrap.ts) ──
+function scanContourProfile(rgba, width, height, threshold) {
+  const raw = new Array(height);
+  for (let y = 0; y < height; y++) {
+    let rightmost = 0;
+    const rowOffset = y * width * 4;
+    for (let x = width - 1; x >= 0; x--) {
+      if (rgba[rowOffset + x * 4 + 3] > threshold) {
+        rightmost = x + 1;
+        break;
+      }
+    }
+    raw[y] = rightmost;
+  }
+  // Dilate: each row takes the max of ±radius neighbors.
+  // This fills gaps in thin cross-hatching (tripod legs, watch chains, coat edges).
+  const radius = Math.max(20, Math.round(height * 0.04));
+  const dilated = new Array(height);
+  for (let y = 0; y < height; y++) {
+    let mx = raw[y];
+    for (let dy = -radius; dy <= radius; dy++) {
+      const ny = y + dy;
+      if (ny >= 0 && ny < height && raw[ny] > mx) mx = raw[ny];
+    }
+    dilated[y] = mx;
+  }
+  // Vertical fill: if rows above AND below a gap have content, fill the gap.
+  // This prevents contour from dropping to 0 between e.g. a table top and its legs.
+  const profile = [...dilated];
+  let lastOccupied = -1;
+  for (let y = 0; y < height; y++) {
+    if (profile[y] > 0) {
+      // Fill any gap between lastOccupied and here
+      if (lastOccupied >= 0 && y - lastOccupied > 1) {
+        const fillW = Math.max(profile[lastOccupied], profile[y]);
+        for (let fy = lastOccupied + 1; fy < y; fy++) {
+          profile[fy] = Math.max(profile[fy], fillW);
+        }
+      }
+      lastOccupied = y;
+    }
+  }
+  // Bottom padding: extend the contour below the last detected row.
+  // Illustrations have fading cross-hatching at the bottom that pixel detection
+  // always misses. Add 8% of image height as extra protected rows.
+  if (lastOccupied > 0) {
+    const bottomPad = Math.round(height * 0.15);
+    const padWidth = profile[lastOccupied];
+    for (let y = lastOccupied + 1; y < Math.min(height, lastOccupied + bottomPad); y++) {
+      profile[y] = Math.max(profile[y], padWidth);
+    }
+  }
+  return profile;
+}
+
+function getOccupiedWidthForBand(profile, bandTopPx, bandBottomPx, imgDisplayW, imgDisplayH, imgNaturalW, imgNaturalH, gap) {
+  if (bandTopPx >= imgDisplayH) return 0;
+  const scale = imgNaturalH / imgDisplayH;
+  const startRow = Math.floor(bandTopPx * scale);
+  const endRow = Math.min(Math.ceil(Math.min(bandBottomPx, imgDisplayH) * scale), profile.length);
+  let maxNatural = 0;
+  for (let row = startRow; row < endRow; row++) {
+    if (profile[row] > maxNatural) maxNatural = profile[row];
+  }
+  if (maxNatural === 0) return 0;
+  return Math.round(maxNatural * (imgDisplayW / imgNaturalW) + gap);
+}
+
+// ── HTML tag/text splitting for preserving inline links ──
+function splitTextAndTags(html) {
+  if (!html) return [];
+  const segments = [];
+  const re = /<\/?[a-zA-Z][^>]*\/?>/g;
+  let last = 0, m;
+  while ((m = re.exec(html)) !== null) {
+    if (m.index > last) segments.push({ type: 'text', content: html.slice(last, m.index) });
+    segments.push({ type: 'tag', content: m[0] });
+    last = re.lastIndex;
+  }
+  if (last < html.length) segments.push({ type: 'text', content: html.slice(last) });
+  return segments;
+}
+
+async function shapeWrap(block) {
+  const imgEl = block.querySelector('.shape-img');
+  const fallbackEl = block.querySelector('.shape-wrap-fallback');
+  if (!imgEl || !fallbackEl) return;
+
+  const htmlBody = fallbackEl.innerHTML;
+  const segments = splitTextAndTags(htmlBody);
+  const plainText = segments.filter(s => s.type === 'text').map(s => s.content).join('');
+  if (!plainText.trim()) return;
+
+  // Wait for font to be ready
+  await document.fonts.ready;
+
+  // Read font from CSS computed style (matches .body-text exactly)
+  const cs = getComputedStyle(fallbackEl);
+  const fontSize = parseFloat(cs.fontSize) || 14;
+  const lineHeight = parseFloat(cs.lineHeight) || fontSize * 1.65;
+  const font = fontSize + 'px "IBM Plex Serif", Georgia, serif';
+
+  // Load image into canvas for alpha scanning
+  const imgSrc = block.dataset.img;
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  try {
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = imgSrc; });
+  } catch { return; } // CORS or network fail → keep float fallback
+
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+
+  let imageData;
+  try {
+    imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  } catch { return; } // tainted canvas → keep float fallback
+
+  const align = block.dataset.align || 'left';
+  // Scan alpha contour per row.
+  // For right-aligned images, we need to scan from the right edge inward (leftmost opaque pixel).
+  // Flip the image data horizontally so scanContourProfile still finds "rightmost" but in mirror.
+  let scanData = imageData.data;
+  if (align === 'right') {
+    scanData = new Uint8ClampedArray(imageData.data);
+    const w = canvas.width, h = canvas.height;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < Math.floor(w / 2); x++) {
+        const l = (y * w + x) * 4;
+        const r = (y * w + (w - 1 - x)) * 4;
+        for (let c = 0; c < 4; c++) {
+          const tmp = scanData[l + c];
+          scanData[l + c] = scanData[r + c];
+          scanData[r + c] = tmp;
+        }
+      }
+    }
+  }
+  const profile = scanContourProfile(scanData, canvas.width, canvas.height, 5);
+
+  // Get display dimensions
+  const imgRect = imgEl.getBoundingClientRect();
+  const imgDisplayW = imgRect.width;
+  const imgDisplayH = imgRect.height;
+  const containerW = block.parentElement.clientWidth || 600;
+  const gap = 36;
+
+  // Lay out text line by line with per-row contour widths
+  const prepared = prepareWithSegments(plainText, font);
+  let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+  let y = 0;
+  const linesContainer = document.createElement('div');
+
+  // Track character position for HTML tag reinsertion
+  let charPos = 0;
+  const lines = [];
+
+  while (true) {
+    const occupied = getOccupiedWidthForBand(
+      profile, y, y + lineHeight,
+      imgDisplayW, imgDisplayH,
+      canvas.width, canvas.height, gap
+    );
+    // Only stop shape-wrapping when we're truly past the image bottom
+    if (y >= imgDisplayH && occupied === 0) break;
+    const availW = Math.max(containerW - occupied - 20, 80);
+    const line = layoutNextLine(prepared, cursor, availW);
+    if (!line) break;
+
+    lines.push({ text: line.text, occupied, y });
+    cursor = line.end;
+    y += lineHeight;
+    charPos += line.text.length;
+  }
+
+  // Rebuild lines with HTML tags reinserted
+  let globalCharIdx = 0;
+  let segIdx = 0;
+  let segCharIdx = 0; // position within current text segment
+
+  for (const lineInfo of lines) {
+    const div = document.createElement('div');
+    const marginProp = align === 'right' ? 'margin-right' : 'margin-left';
+    div.style.cssText = marginProp + ':' + lineInfo.occupied + 'px;font:' + font + ';line-height:' + lineHeight + 'px;';
+
+    let lineHtml = '';
+    let remaining = lineInfo.text.length;
+
+    while (remaining > 0 && segIdx < segments.length) {
+      const seg = segments[segIdx];
+      if (seg.type === 'tag') {
+        lineHtml += seg.content;
+        segIdx++;
+      } else {
+        const avail = seg.content.length - segCharIdx;
+        const take = Math.min(avail, remaining);
+        lineHtml += seg.content.slice(segCharIdx, segCharIdx + take);
+        segCharIdx += take;
+        remaining -= take;
+        if (segCharIdx >= seg.content.length) { segIdx++; segCharIdx = 0; }
+      }
+    }
+    // Flush any tags at end of text
+    while (segIdx < segments.length && segments[segIdx].type === 'tag') {
+      lineHtml += segments[segIdx].content;
+      segIdx++;
+    }
+
+    div.innerHTML = lineHtml;
+    linesContainer.appendChild(div);
+  }
+
+  // Remaining text (below the image) goes into a normal reflowing paragraph
+  if (segIdx < segments.length || segCharIdx > 0) {
+    let remainingHtml = '';
+    // Partial current text segment
+    if (segCharIdx > 0 && segIdx < segments.length && segments[segIdx].type === 'text') {
+      remainingHtml += segments[segIdx].content.slice(segCharIdx);
+      segIdx++; segCharIdx = 0;
+    }
+    // All remaining segments
+    for (; segIdx < segments.length; segIdx++) {
+      remainingHtml += segments[segIdx].content;
+    }
+    if (remainingHtml.trim()) {
+      const p = document.createElement('p');
+      p.className = 'body-text';
+      // The shaped divs may not extend to the image bottom (image is position:absolute).
+      // Add padding to push this paragraph below the image.
+      const extraPad = Math.max(0, imgDisplayH - y);
+      p.style.cssText = 'clear:both;' + (extraPad > 0 ? 'padding-top:' + Math.ceil(extraPad) + 'px;' : '');
+      p.innerHTML = remainingHtml.trim();
+      linesContainer.appendChild(p);
+    }
+  }
+
+  // Replace fallback paragraph with positioned lines
+  fallbackEl.style.display = 'none';
+  imgEl.style.position = 'absolute';
+  imgEl.style.top = '0';
+  if (align === 'right') { imgEl.style.right = '0'; imgEl.style.left = 'auto'; }
+  else { imgEl.style.left = '0'; }
+  block.style.position = 'relative';
+  block.insertBefore(linesContainer, fallbackEl);
+  block.style.minHeight = Math.max(imgDisplayH, y) + 'px';
+  const clearDiv = block.querySelector('[style*="clear:both"]');
+  if (clearDiv) clearDiv.remove();
+
+  // Store data for relayout on resize
+  block._shapeWrapData = { profile, canvas, segments, plainText, font, lineHeight, gap, linesContainer, fallbackEl, imgEl };
+}
+
+function relayout(block) {
+  const d = block._shapeWrapData;
+  if (!d) return;
+  const imgRect = d.imgEl.getBoundingClientRect();
+  const imgDisplayW = imgRect.width;
+  const imgDisplayH = imgRect.height;
+  const containerW = block.parentElement.clientWidth || 600;
+
+  const prepared = prepareWithSegments(d.plainText, d.font);
+  let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+  let y = 0;
+  const lines = [];
+  while (true) {
+    const occupied = getOccupiedWidthForBand(d.profile, y, y + d.lineHeight, imgDisplayW, imgDisplayH, d.canvas.width, d.canvas.height, d.gap);
+    const availW = Math.max(containerW - occupied - 20, 80);
+    const line = layoutNextLine(prepared, cursor, availW);
+    if (!line) break;
+    lines.push({ text: line.text, occupied, y });
+    cursor = line.end;
+    y += d.lineHeight;
+  }
+  d.linesContainer.innerHTML = '';
+  let segIdx = 0, segCharIdx = 0;
+  for (const lineInfo of lines) {
+    const div = document.createElement('div');
+    div.style.cssText = 'margin-left:' + lineInfo.occupied + 'px;font:' + d.font + ';line-height:' + d.lineHeight + 'px;';
+    let lineHtml = '';
+    let remaining = lineInfo.text.length;
+    while (remaining > 0 && segIdx < d.segments.length) {
+      const seg = d.segments[segIdx];
+      if (seg.type === 'tag') { lineHtml += seg.content; segIdx++; }
+      else {
+        const avail = seg.content.length - segCharIdx;
+        const take = Math.min(avail, remaining);
+        lineHtml += seg.content.slice(segCharIdx, segCharIdx + take);
+        segCharIdx += take; remaining -= take;
+        if (segCharIdx >= seg.content.length) { segIdx++; segCharIdx = 0; }
+      }
+    }
+    while (segIdx < d.segments.length && d.segments[segIdx].type === 'tag') { lineHtml += d.segments[segIdx].content; segIdx++; }
+    div.innerHTML = lineHtml;
+    d.linesContainer.appendChild(div);
+  }
+  block.style.minHeight = Math.max(imgDisplayH, y) + 'px';
+}
+
+// Run on all shape-wrap blocks after fonts are loaded
+document.fonts.ready.then(() => {
+  document.querySelectorAll('.shape-wrap-block').forEach(block => {
+    shapeWrap(block).catch(err => console.warn('shape-wrap failed, using float fallback:', err));
+  });
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      document.querySelectorAll('.shape-wrap-block').forEach(block => relayout(block));
+    }, 150);
+  });
+});
+</script>
+</head>
+<body>
+<div class="broadsheet-wrap">
+<div class="paper">
+  <div class="header">
+    <div class="header-kicker">
+      <span class="kicker-text"><a href="https://github.com/simonw" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@simonw</a></span>
+      <span style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
+        <button onclick="document.getElementById('dark-modal').style.display='flex'" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--ink);color:var(--ink);cursor:pointer;padding:2px 7px;border-radius:2px;" title="switch theme">◑ DARK</button>
+        <span class="kicker-date">April 3 – April 10, 2026</span>
+      </span>
+    </div>
+    <div class="header-meta">
+      <span class="meta-left">Vol. 1, No. 5</span>
+      <span class="meta-right"><a href="https://github.com/simonw" style="color:var(--muted);">github.com/simonw</a></span>
+    </div>
+    <div class="masthead"><span class="mh-the">the</span><span class="mh-title">dispatch</span></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px;">open-source digest</div>
+    <div class="tagline">secrets don't redact themselves — now they do</div>
+    <div class="edition-bar">
+      <span>62 commits</span>
+      <span>4 PRs</span>
+      <span>15 releases</span>
+      <span>10 repos</span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="grid grid-2">
+      <div class="col">
+        <p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">Four releases shipped in three days. One of them is a utility that nearly didn't exist.</p>
+        
+    <div class="article">
+      <div class="article-meta"><a href="https://github.com/simonw/scan-for-secrets" class="repo-chip">scan-for-secrets</a><span class="article-date">Apr 6</span></div>
+      <div class="tag">RELEASE</div>
+      <h1><a href="https://github.com/simonw/scan-for-secrets" class="headline-link">scan-for-secrets goes from finder to fixer</h1>
+      <p class="deck">*A tool that detects credential leaks now redacts them in place — no copy-paste required.*</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-hand-holding-a-rubber-eraser-hovering-over-a-sheet-of-pape.png" data-align="left">
+        <img src="https://gitzette.online/img/a-hand-holding-a-rubber-eraser-hovering-over-a-sheet-of-pape.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">Finding secrets hiding in your code is only half the battle; the other half is actually removing them without mangling the escaping. @simonw's scan-for-secrets v0.2 and v0.3 (released within hours of each other on April 5–6) solved the harder problem: streaming results as they're found, then redacting matches in place while respecting escape sequences like JSON, shell, and repr. The CLI now accepts multiple directories and individual files, and exposes a Python API for both iterator and non-iterator workflows. The real win: you can now run <code>scan-for-secrets -r</code>, eyeball the matches it found, confirm them, and have it replace every one with <code>REDACTED</code> — all in one pass. No manual find-and-replace, no risk of leaving a credential half-escaped.</p>
+        <div style="clear:both"></div>
+      </div>
+
+      <div class="release-links"><a href="https://github.com/simonw/scan-for-secrets/releases/tag/0.3" class="release-link">0.3</a> <span class="muted">Sun, Apr 5</span> &nbsp;·&nbsp; <a href="https://github.com/simonw/scan-for-secrets/releases/tag/0.2" class="release-link">0.2</a> <span class="muted">Sat, Apr 4</span> &nbsp;·&nbsp; <a href="https://github.com/simonw/scan-for-secrets/releases/tag/0.1.1" class="release-link">0.1.1</a> <span class="muted">Sat, Apr 4</span> &nbsp;·&nbsp; <a href="https://github.com/simonw/scan-for-secrets/releases/tag/0.1" class="release-link">0.1</a> <span class="muted">Sat, Apr 4</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/simonw/scan-for-secrets/pull/1" class="pr-link">#1</a></div>
+      
+    </div>
+      </div>
+      <div class="col">
+    <div class="article">
+      <div class="article-meta"><a href="https://github.com/datasette/datasette-ports" class="repo-chip">datasette-ports</a><span class="article-date">Apr 6</span></div>
+      <div class="tag">RELEASE</div>
+      <h2><a href="https://github.com/datasette/datasette-ports" class="headline-link">datasette-ports untethers itself from datasette</h2>
+      <p class="deck">*A tool that lists running Datasette instances now works standalone — no Datasette installation required.*</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-cord-being-unplugged-from-a-wall-socket-still-held-in-a-ha.png" data-align="left">
+        <img src="https://gitzette.online/img/a-cord-being-unplugged-from-a-wall-socket-still-held-in-a-ha.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">v0.2 flips the plugin architecture: <code>datasette-ports</code> still works as a Datasette plugin (giving you <code>datasette ports</code>), but now you can also run it naked via <code>uvx datasette-ports</code> without any Datasette dependency at all. Useful if you're just trying to audit what's running on a box and don't want to drag in the whole framework. Tiny but elegant unbundling.</p>
+        <div style="clear:both"></div>
+      </div>
+
+      <div class="release-links"><a href="https://github.com/datasette/datasette-ports/releases/tag/0.2" class="release-link">0.2</a> <span class="muted">Sun, Apr 5</span> &nbsp;·&nbsp; <a href="https://github.com/datasette/datasette-ports/releases/tag/0.1" class="release-link">0.1</a> <span class="muted">Sun, Apr 5</span></div>
+      
+      
+    </div>
+
+    <div class="article">
+      <div class="article-meta"><a href="https://github.com/simonw/asgi-gzip" class="repo-chip">asgi-gzip</a><span class="article-date">Apr 9</span></div>
+      <div class="tag">RELEASE</div>
+      <h2><a href="https://github.com/simonw/asgi-gzip" class="headline-link">asgi-gzip stops compressing streams that hate compression</h2>
+      <p class="deck">*Event-stream responses now bypass gzip — because framing and chunking don't play well together.*</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-river-flowing-around-a-large-rock-water-splitting-and-rejo.png" data-align="left">
+        <img src="https://gitzette.online/img/a-river-flowing-around-a-large-rock-water-splitting-and-rejo.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">Compressing a <code>text/event-stream</code> response is a footgun: the client expects Server-Sent Events to arrive as discrete frames, but gzip buffers data for compression efficiency, delaying or coalescing events. @simonw's v0.3 adds a content-type check to skip compression on <code>text/event-stream</code> entirely. datasette-gzip v0.3 follows immediately with a dependency bump to pick up the fix. It's a small exemption with outsized importance for real-time applications.</p>
+        <div style="clear:both"></div>
+      </div>
+
+      <div class="release-links"><a href="https://github.com/simonw/asgi-gzip/releases/tag/0.3" class="release-link">0.3</a> <span class="muted">Wed, Apr 8</span></div>
+      
+      <div class="pending-note">1 open PR: <a href="https://github.com/simonw/asgi-gzip/pull/8">#8 Update Starlette reference from setup.py to pyproject.toml</a></div>
+    </div></div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Four plugins upgraded to track Datasette 1.0 alphas in a single day. Boring? Yes. Necessary? Also yes.</span>
+    <span>2026 &copy; AISlopMedia, Inc.</span>
+  </div>
+</div><!-- /paper page 1 -->
+
+<!-- page 2: stats + index (only visible as separate page on broadsheet layout) -->
+<div class="paper page-2">
+  <div class="header" style="border-bottom:none;">
+    <div class="header-meta" style="margin-bottom:0;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+      <span class="meta-left">the dispatch — Vol. 1, No. 5</span>
+      <span class="meta-right">April 3 – April 10, 2026</span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="articles-p2">
+    <div class="article">
+      <div class="article-meta"><a href="https://github.com/simonw/datasette-graphql" class="repo-chip">datasette-graphql</a><span class="article-date">Apr 8</span></div>
+      <div class="tag">RELEASE</div>
+      <h3><a href="https://github.com/simonw/datasette-graphql" class="headline-link">datasette-graphql aligns with datasette 1.0a20</h3>
+      <p class="deck">*Plugin bumped for compatibility with the latest Datasette alpha.*</p>
+      <p class="body-text">v3.0a1 updates datasette-graphql to work with Datasette 1.0a20, catching up on API changes without losing ground. No user-facing feature work, but necessary housekeeping for the alpha track.</p>
+      
+      <div class="release-links"><a href="https://github.com/simonw/datasette-graphql/releases/tag/3.0a1" class="release-link">3.0a1</a> <span class="muted">Wed, Apr 8</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/simonw/datasette-graphql/pull/103" class="pr-link">#103</a></div>
+      
+    </div>
+
+    <div class="article">
+      <div class="article-meta"><a href="https://github.com/simonw/datasette-atom" class="repo-chip">datasette-atom</a><span class="article-date">Apr 8</span></div>
+      <div class="tag">RELEASE</div>
+      <h3><a href="https://github.com/simonw/datasette-atom" class="headline-link">datasette-atom feeds from the 1.0 alpha</h3>
+      <p class="deck">*v0.10a0 updates the Atom output plugin for Datasette 1.0 alphas.*</p>
+      <p class="body-text">datasette-atom v0.10a0 is the Atom feed plugin's answer to the Datasette 1.0 alpha: it builds, it works, it ships. Straightforward compatibility bump.</p>
+      
+      <div class="release-links"><a href="https://github.com/simonw/datasette-atom/releases/tag/0.10a0" class="release-link">0.10a0</a> <span class="muted">Wed, Apr 8</span></div>
+      <div class="pr-links">merged: <a href="https://github.com/simonw/datasette-atom/pull/17" class="pr-link">#17</a></div>
+      
+    </div>
+
+    <div class="article">
+      <div class="article-meta"><a href="https://github.com/dogsheep/dogsheep-beta" class="repo-chip">dogsheep-beta</a><span class="article-date">Apr 8</span></div>
+      <div class="tag">RELEASE</div>
+      <h3><a href="https://github.com/dogsheep/dogsheep-beta" class="headline-link">dogsheep-beta hunts for datasette 1.0 compatibility</h3>
+      <p class="deck">*The full-text search indexer updates for Datasette 1.0 alphas.*</p>
+      <p class="body-text">v0.11 brings dogsheep-beta into the Datasette 1.0 alpha fold. The faceted search tool still works as expected; it's just ready for the next major version.</p>
+      
+      <div class="release-links"><a href="https://github.com/dogsheep/dogsheep-beta/releases/tag/0.11" class="release-link">0.11</a> <span class="muted">Wed, Apr 8</span></div>
+      
+      
+    </div></div>
+    <div class="data-graphics-wrap">
+<div style="padding:20px 0 0;border-top:3px double var(--ink);">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+    <span>stats corner</span>
+    <span style="flex:1;border-top:1px solid var(--rule);display:inline-block;"></span>
+  </div>
+  
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule);margin-bottom:20px;">
+    
+      <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">62</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">commits</div>
+      </div>
+      <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">4</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">pull requests</div>
+      </div>
+      <div style="padding:14px 10px 12px;text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">15</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">releases</div>
+      </div>
+  </div>
+  
+  <div style="margin-bottom:20px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">commits by repo</div>
+    <svg width="100%" viewBox="0 0 382 272" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" letter-spacing="1">REPO</text>
+      <text x="382" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" text-anchor="end" letter-spacing="1">COMMITS</text>
+      <line x1="0" y1="14" x2="382" y2="14" stroke="#e8e4dc" stroke-width="0.5"/>
+      
+    <text x="104" y="32" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333" font-weight="600">scan-for-secrets</text>
+    <rect x="110" y="18" width="240" height="18" fill="#555" rx="1"/>
+    <text x="355" y="32" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="600">19</text>
+    <text x="104" y="57" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">datasette.io</text>
+    <rect x="110" y="43" width="126" height="18" fill="#888" rx="1"/>
+    <text x="241" y="57" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">10</text>
+    <text x="104" y="82" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">research-llm-apis</text>
+    <rect x="110" y="68" width="76" height="18" fill="#999" rx="1"/>
+    <text x="191" y="82" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">6</text>
+    <text x="104" y="107" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">datasette-turnstile</text>
+    <rect x="110" y="93" width="63" height="18" fill="#aaa" rx="1"/>
+    <text x="178" y="107" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">5</text>
+    <text x="104" y="132" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">datasette-ports</text>
+    <rect x="110" y="118" width="51" height="18" fill="#bbb" rx="1"/>
+    <text x="166" y="132" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">4</text>
+    <text x="104" y="157" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">datasette-graphql</text>
+    <rect x="110" y="143" width="51" height="18" fill="#ccc" rx="1"/>
+    <text x="166" y="157" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">4</text>
+    <text x="104" y="182" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">datasette-gzip</text>
+    <rect x="110" y="168" width="51" height="18" fill="#ddd" rx="1"/>
+    <text x="166" y="182" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">4</text>
+    <text x="104" y="207" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">asgi-gzip</text>
+    <rect x="110" y="193" width="51" height="18" fill="#ddd" rx="1"/>
+    <text x="166" y="207" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">4</text>
+    <text x="104" y="232" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">dogsheep-beta</text>
+    <rect x="110" y="218" width="51" height="18" fill="#ddd" rx="1"/>
+    <text x="166" y="232" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">4</text>
+    <text x="104" y="257" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">datasette-atom</text>
+    <rect x="110" y="243" width="25" height="18" fill="#ddd" rx="1"/>
+    <text x="140" y="257" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">2</text>
+    </svg>
+  </div>
+  
+  <div style="margin-bottom:20px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">github stars</div>
+    <table style="width:100%;border-collapse:collapse;">
+      <tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/dogsheep/dogsheep-beta" style="color:var(--ink);text-decoration:none;">dogsheep-beta</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:100%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">200</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/simonw/datasette.io" style="color:var(--ink);text-decoration:none;">datasette.io</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:66%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">132</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/simonw/datasette-graphql" style="color:var(--ink);text-decoration:none;">datasette-graphql</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:55%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">109</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/simonw/scan-for-secrets" style="color:var(--ink);text-decoration:none;">scan-for-secrets</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:43%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">86</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/simonw/research-llm-apis" style="color:var(--ink);text-decoration:none;">research-llm-apis</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:12%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">24</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/simonw/datasette-atom" style="color:var(--ink);text-decoration:none;">datasette-atom</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:7%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">14</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/simonw/asgi-gzip" style="color:var(--ink);text-decoration:none;">asgi-gzip</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:6%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">12</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/simonw/datasette-gzip" style="color:var(--ink);text-decoration:none;">datasette-gzip</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:5%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">9</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/datasette/datasette-ports" style="color:var(--ink);text-decoration:none;">datasette-ports</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:2%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">4</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/simonw/datasette-turnstile" style="color:var(--ink);text-decoration:none;">datasette-turnstile</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:1%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">2</td>
+    </tr>
+    </table>
+  </div>
+  
+  <div style="margin-bottom:4px;overflow:hidden;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">release timeline</div>
+    <svg width="100%" viewBox="0 0 400 162" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+      <line x1="30" y1="140" x2="370" y2="140" stroke="#0f0f0f" stroke-width="1.5"/>
+      <line x1="30" y1="136" x2="30" y2="144" stroke="#aaa" stroke-width="1"/><text x="30" y="158" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">FRI</text>
+      <line x1="79" y1="136" x2="79" y2="144" stroke="#aaa" stroke-width="1"/><text x="79" y="158" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SAT</text>
+      <line x1="127" y1="136" x2="127" y2="144" stroke="#aaa" stroke-width="1"/><text x="127" y="158" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SUN</text>
+      <line x1="176" y1="136" x2="176" y2="144" stroke="#aaa" stroke-width="1"/><text x="176" y="158" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">MON</text>
+      <line x1="224" y1="136" x2="224" y2="144" stroke="#aaa" stroke-width="1"/><text x="224" y="158" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">TUE</text>
+      <line x1="273" y1="136" x2="273" y2="144" stroke="#aaa" stroke-width="1"/><text x="273" y="158" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">WED</text>
+      <line x1="321" y1="136" x2="321" y2="144" stroke="#aaa" stroke-width="1"/><text x="321" y="158" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">THU</text>
+      <line x1="370" y1="136" x2="370" y2="144" stroke="#aaa" stroke-width="1"/><text x="370" y="158" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">FRI</text>
+      <!-- SAT Apr 4: research-llm-apis, scan-for-secrets 0.1, 0.1.1, 0.2 — lanes 0-3 -->
+      <line x1="79" y1="140" x2="79" y2="127" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="79" cy="140" r="4" fill="#0f0f0f"/><circle cx="79" cy="120" r="3" fill="#0f0f0f"/><text x="79" y="115" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">research-llm-apis 04-04</text>
+      <line x1="79" y1="140" x2="79" y2="105" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="79" cy="140" r="4" fill="#0f0f0f"/><circle cx="79" cy="98" r="3" fill="#0f0f0f"/><text x="79" y="93" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">scan-for-secrets 0.1</text>
+      <line x1="79" y1="140" x2="79" y2="83" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="79" cy="140" r="4" fill="#0f0f0f"/><circle cx="79" cy="76" r="3" fill="#0f0f0f"/><text x="79" y="71" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">scan-for-secrets 0.1.1</text>
+      <line x1="79" y1="140" x2="79" y2="61" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="79" cy="140" r="4" fill="#0f0f0f"/><circle cx="79" cy="54" r="3" fill="#0f0f0f"/><text x="79" y="49" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">scan-for-secrets 0.2</text>
+      <!-- SUN Apr 5: datasette-ports 0.1, 0.2, scan-for-secrets 0.3 — lanes 0-2 -->
+      <line x1="127" y1="140" x2="127" y2="127" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="127" cy="140" r="4" fill="#0f0f0f"/><circle cx="127" cy="120" r="3" fill="#0f0f0f"/><text x="127" y="115" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">datasette-ports 0.1</text>
+      <line x1="127" y1="140" x2="127" y2="105" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="127" cy="140" r="4" fill="#0f0f0f"/><circle cx="127" cy="98" r="3" fill="#0f0f0f"/><text x="127" y="93" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">datasette-ports 0.2</text>
+      <line x1="127" y1="140" x2="127" y2="83" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="127" cy="140" r="4" fill="#0f0f0f"/><circle cx="127" cy="76" r="3" fill="#0f0f0f"/><text x="127" y="71" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">scan-for-secrets 0.3</text>
+      <!-- TUE Apr 7: datasette-turnstile 0.1a1, 0.1a2, 0.1a3 — lanes 0-2 -->
+      <line x1="224" y1="140" x2="224" y2="127" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="224" cy="140" r="4" fill="#0f0f0f"/><circle cx="224" cy="120" r="3" fill="#0f0f0f"/><text x="224" y="115" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">datasette-turnstile 0.1a1</text>
+      <line x1="224" y1="140" x2="224" y2="105" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="224" cy="140" r="4" fill="#0f0f0f"/><circle cx="224" cy="98" r="3" fill="#0f0f0f"/><text x="224" y="93" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">datasette-turnstile 0.1a2</text>
+      <line x1="224" y1="140" x2="224" y2="83" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="224" cy="140" r="4" fill="#0f0f0f"/><circle cx="224" cy="76" r="3" fill="#0f0f0f"/><text x="224" y="71" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">datasette-turnstile 0.1a3</text>
+      <!-- WED Apr 8: datasette-graphql, datasette-atom, dogsheep-beta, asgi-gzip, datasette-gzip — lanes 0-4 -->
+      <line x1="273" y1="140" x2="273" y2="127" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="273" cy="140" r="4" fill="#0f0f0f"/><circle cx="273" cy="120" r="3" fill="#0f0f0f"/><text x="273" y="115" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">datasette-graphql 3.0a1</text>
+      <line x1="273" y1="140" x2="273" y2="105" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="273" cy="140" r="4" fill="#0f0f0f"/><circle cx="273" cy="98" r="3" fill="#0f0f0f"/><text x="273" y="93" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">datasette-atom 0.10a0</text>
+      <line x1="273" y1="140" x2="273" y2="83" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="273" cy="140" r="4" fill="#0f0f0f"/><circle cx="273" cy="76" r="3" fill="#0f0f0f"/><text x="273" y="71" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">dogsheep-beta 0.11</text>
+      <line x1="273" y1="140" x2="273" y2="61" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="273" cy="140" r="4" fill="#0f0f0f"/><circle cx="273" cy="54" r="3" fill="#0f0f0f"/><text x="273" y="49" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">asgi-gzip 0.3</text>
+      <line x1="273" y1="140" x2="273" y2="39" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/><circle cx="273" cy="140" r="4" fill="#0f0f0f"/><circle cx="273" cy="32" r="3" fill="#0f0f0f"/><text x="273" y="27" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">datasette-gzip 0.3</text>
+    </svg>
+  </div>
+</div></div>
+    <div class="repo-index-wrap" style="padding-top:24px;border-top:2px solid var(--ink);margin-top:8px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+        <span>repo index</span>
+        <span style="flex:1;border-top:1px solid var(--rule);display:inline-block;"></span>
+      </div>
+      <ul style="list-style:none;">
+        <li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/simonw/scan-for-secrets" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">scan-for-secrets</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Scan for secrets in files you plan to share</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">19 commits · 4 releases · ★ 86</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/simonw/datasette-turnstile" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">datasette-turnstile</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Configurable CAPTCHAs for Datasette paths using Cloudflare Turnstile</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">5 commits · 3 releases · ★ 2</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/simonw/datasette.io" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">datasette.io</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">The official project website for Datasette</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">10 commits · 0 releases · ★ 132</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/datasette/datasette-ports" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">datasette-ports</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Find all currently running Datasette instances and list their ports</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">4 commits · 2 releases · ★ 4</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/simonw/research-llm-apis" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">research-llm-apis</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Research into the HTTP APIs from various LLM providers.</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">6 commits · 1 release · ★ 24</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/simonw/datasette-graphql" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">datasette-graphql</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Datasette plugin providing an automatic GraphQL API for your SQLite databases</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">4 commits · 1 release · ★ 109</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/simonw/datasette-gzip" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">datasette-gzip</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Add gzip compression to Datasette</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">4 commits · 1 release · ★ 9</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/simonw/asgi-gzip" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">asgi-gzip</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">gzip middleware for ASGI applications, extracted from Starlette</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">4 commits · 1 release · ★ 12</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/dogsheep/dogsheep-beta" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">dogsheep-beta</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Build a search index across content from multiple SQLite database tables and run faceted searches against it using Datasette</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">4 commits · 1 release · ★ 200</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/simonw/datasette-atom" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">datasette-atom</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Datasette plugin that adds a .atom output format</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">2 commits · 1 release · ★ 14</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">
+    <span>the dispatch is generated weekly from live GitHub data</span>
+    <span>2026 &copy; AISlopMedia, Inc.</span>
+  </div>
+</div><!-- /paper page 2 -->
+
+</div><!-- /broadsheet-wrap -->
+
+<!-- dark mode modal -->
+<div id="dark-modal" style="display:none;position:fixed;inset:0;background:rgba(15,15,15,.75);z-index:9999;align-items:center;justify-content:center;padding:24px;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#f7f4ee;max-width:380px;width:100%;padding:32px 28px 28px;font-family:'IBM Plex Mono',monospace;border:1px solid #c8c2b4;position:relative;">
+    <div style="font-size:28px;margin-bottom:14px;line-height:1;">🖨️</div>
+    <p style="font-size:13px;font-weight:700;line-height:1.5;margin-bottom:10px;">dark mode would consume too much ink.</p>
+    <p style="font-size:11px;line-height:1.75;color:#666;margin-bottom:22px;">we're a print publication. rendering dark backgrounds requires significantly more ink per page. we'd love to support it, but we need donations first.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="https://github.com/NikolayS/gitzette" target="_blank" rel="noopener" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;background:#0f0f0f;color:#f7f4ee;padding:10px 18px;text-decoration:none;white-space:nowrap;">donate to ink fund →</a>
+      <button onclick="document.getElementById('dark-modal').style.display='none'" style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:none;border:1px solid #c8c2b4;padding:10px 18px;cursor:pointer;color:#555;white-space:nowrap;">keep it light ☀</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -422,7 +422,7 @@ document.fonts.ready.then(() => {
 <div class="paper">
   <div class="header">
     <div class="header-kicker">
-      <span class="kicker-text"><a href="https://github.com/levkk" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@levkk</a></span>
+      <span class="kicker-text"><a href="https://github.com/torvalds" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@torvalds</a></span>
       <span style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
         <button onclick="document.getElementById('dark-modal').style.display='flex'" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--ink);color:var(--ink);cursor:pointer;padding:2px 7px;border-radius:2px;" title="switch theme">◑ DARK</button>
         <span class="kicker-date">April 4 – April 11, 2026</span>
@@ -430,45 +430,33 @@ document.fonts.ready.then(() => {
     </div>
     <div class="header-meta">
       <span class="meta-left">Vol. 1, No. 5</span>
-      <span class="meta-right"><a href="https://github.com/levkk" style="color:var(--muted);">github.com/levkk</a></span>
+      <span class="meta-right"><a href="https://github.com/torvalds" style="color:var(--muted);">github.com/torvalds</a></span>
     </div>
     <div class="masthead"><span class="mh-the">the</span><span class="mh-title">dispatch</span></div>
     <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px;">open-source digest</div>
-    <div class="tagline">oid is u32, not i32 — someone finally checked</div>
+    <div class="tagline">32 commits across six mirrors of the same repo — distributed version control doing exactly what it says on the tin</div>
     <div class="edition-bar">
-      <span>32 commits</span>
-      <span>25 PRs</span>
-      <span>3 releases</span>
-      <span>5 repos</span>
+      <span>205 commits</span>
+      <span>0 PRs</span>
+      <span>0 releases</span>
+      <span>10 repos</span>
     </div>
   </div>
   <div class="body">
     <div class="grid grid-2">
       <div class="col">
-        <p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">Two billion OIDs seemed like plenty until it wasn't.</p>
+        <p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">Linus pushed commits to linux. Also to linux. And to the other linux. It's mirrors all the way down.</p>
         
     <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/pgdog" class="repo-chip">pgdog</a><span class="article-date">Apr 9</span></div>
-      <div class="tag">RELEASE</div>
-      <h1><a href="https://github.com/pgdogdev/pgdog/pull/873" class="headline-link">pgdog learns to count past 2.2 billion</h1>
-      <p class="deck">A signed integer masquerading as unsigned finally caught up with databases that have seen some churn.</p>
-      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-warehouse-worker-moving-identical-wooden-crates-along-a-co.png" data-align="left">
-        <img src="https://gitzette.online/img/a-warehouse-worker-moving-identical-wooden-crates-along-a-co.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
-        <p class="body-text shape-wrap-fallback">Postgres OIDs are unsigned 32-bit integers. pgdog was treating them as signed. For most databases, this distinction is academic — until your schema has churned through enough objects that OIDs exceed 2.2 billion, at which point pgdog's type coercion turned valid OIDs into negative garbage. <a href="https://github.com/pgdogdev/pgdog/pull/873">#873</a> swaps <code>i32</code> for <code>u32</code>. The kind of fix that's one line to write and years to discover. Also in v0.1.36: <code>count(*)</code> was returning the wrong type when aggregating across shards (<a href="https://github.com/pgdogdev/pgdog/pull/872">#872</a>), and streaming replication was quietly dropping child table rows during resharding (<a href="https://github.com/pgdogdev/pgdog/pull/880">#880</a>). Three data integrity bugs, one release.</p>
+      <div class="article-meta"><a href="https://github.com/torvalds/linux" class="repo-chip">linux</a><span class="article-date">Apr 11</span></div>
+      <div class="tag">COMMUNITY</div>
+      <h1><a href="https://github.com/hitmanssavi45-spec/linux" class="headline-link">the kernel keeps moving, even when GitHub can't tell you why</h1>
+      <p class="deck">32 commits land in the main linux tree — the merge window marches on.</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-weathered-lighthouse-beam-sweeping-across-a-stormy-sea-wit.png" data-align="left">
+        <img src="https://gitzette.online/img/a-weathered-lighthouse-beam-sweeping-across-a-stormy-sea-wit.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">The linux repo saw 32 commits this week from @torvalds, which is about as surprising as the sun rising. No PRs, no releases tagged on GitHub — because the real action happens on the mailing list and git.kernel.org, not here. GitHub's just the mirror that lets the rest of us pretend we're keeping up. If you want the actual changelog, LKML awaits. If you want to watch numbers go up, refresh the commit count.</p>
         <div style="clear:both"></div>
       </div>
-      
-      
-      
-      
-    </div>
-
-    <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/pgdog" class="repo-chip">pgdog</a><span class="article-date">Apr 10</span></div>
-      <div class="tag">FEATURE</div>
-      <h3><a href="https://github.com/pgdogdev/pgdog/pull/889" class="headline-link">the parser now knows when to stay asleep</h3>
-      <p class="deck">A regex trigger lets simple queries skip the full parse.</p>
-      <p class="body-text">Not every query needs a full SQL parse — most are simple enough that a regex can determine routing. <a href="https://github.com/pgdogdev/pgdog/pull/889">#889</a> adds a trigger that only wakes the full parser when the regex suggests complexity. Less CPU burned on <code>SELECT 1</code>, more headroom for the queries that actually need analysis. The optimization is invisible until you're pushing enough QPS that parsing overhead starts showing up in flame graphs.</p>
       
       
       
@@ -477,29 +465,13 @@ document.fonts.ready.then(() => {
       </div>
       <div class="col">
     <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/pgdog" class="repo-chip">pgdog</a><span class="article-date">Apr 8</span></div>
-      <div class="tag">FEATURE</div>
-      <h2><a href="https://github.com/pgdogdev/pgdog/pull/879" class="headline-link">SELECT FOR UPDATE hiding in a CTE still goes to replicas</h2>
-      <p class="deck">The parser wasn't walking all the way down.</p>
-      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-detective-examining-nested-russian-nesting-dolls-with-a-ma.png" data-align="left">
-        <img src="https://gitzette.online/img/a-detective-examining-nested-russian-nesting-dolls-with-a-ma.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
-        <p class="body-text shape-wrap-fallback">Wrap a <code>SELECT ... FOR UPDATE</code> in a CTE, and pgdog's query router used to miss it entirely — sending your locking query to a read-only replica, which responds with error 25006 and a polite refusal. The detection logic wasn't recursive. <a href="https://github.com/pgdogdev/pgdog/pull/879">#879</a> teaches it to descend into CTEs. Straightforward fix once you realize the parser was only looking at the outer query. The <a href="https://github.com/pgdogdev/pgdog/issues/878">issue</a> came from production, naturally.</p>
-        <div style="clear:both"></div>
-      </div>
-      
-      
-      
-      
-    </div>
-
-    <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/pgdog" class="repo-chip">pgdog</a><span class="article-date">Apr 8</span></div>
-      <div class="tag">FEATURE</div>
-      <h2><a href="https://github.com/pgdogdev/pgdog/pull/858" class="headline-link">JavaScript can't count past 53 bits, so now pgdog doesn't either</h2>
-      <p class="deck">A new ID generator for apps that pass primary keys straight to the browser.</p>
-      <div class="shape-wrap-block" data-img="https://gitzette.online/img/an-ornate-abacus-with-beads-carved-as-tiny-globes-on-brass-r.png" data-align="left">
-        <img src="https://gitzette.online/img/an-ornate-abacus-with-beads-carved-as-tiny-globes-on-brass-r.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
-        <p class="body-text shape-wrap-fallback">JavaScript's Number type loses precision past 2^53. If your sharded IDs are 64-bit integers that get JSON-serialized to a frontend, you're rolling the dice every time. <a href="https://github.com/pgdogdev/pgdog/pull/858">#858</a> adds a 53-bit unique ID generator — still globally unique across shards, but safe for JavaScript's unfortunate numeric limitations. There's also a new <code>pgdog.install_sharded_sequence()</code> function (<a href="https://github.com/pgdogdev/pgdog/pull/881">#881</a>) that works cross-shard, so you can set this up from any node without coordinating manually.</p>
+      <div class="article-meta"><a href="https://github.com/RobertCNelson/linux-stable-rcn-ee" class="repo-chip">linux-stable-rcn-ee</a> <a href="https://github.com/jeffmerkey/leaf-linux" class="repo-chip">leaf-linux</a><span class="article-date">Apr 11</span></div>
+      <div class="tag">COMMUNITY</div>
+      <h2><a href="https://github.com/RobertCNelson/linux-stable-rcn-ee" class="headline-link">downstream forks sync up, as downstream forks do</h2>
+      <p class="deck">linux-stable-rcn-ee and leaf-linux both pulled in 32 commits — the ecosystem doing its job.</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/an-intricate-mechanical-clockwork-with-exposed-gears-and-a-w.png" data-align="left">
+        <img src="https://gitzette.online/img/an-intricate-mechanical-clockwork-with-exposed-gears-and-a-w.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">The downstream forks tracked upstream this week: linux-stable-rcn-ee (Robert Nelson's BeagleBone-friendly stable tree) and leaf-linux both show 32 commits landing. This is the unglamorous plumbing that keeps embedded distros and specialty kernels from drifting into the void. No drama, no CVEs — just the merge machinery humming along. The kind of work that only gets noticed when it stops.</p>
         <div style="clear:both"></div>
       </div>
       
@@ -510,7 +482,7 @@ document.fonts.ready.then(() => {
     </div>
   </div>
   <div class="footer">
-    <span>17 commits to pgdog, 3 data bugs fixed, 1 new chart. The OID thing had been there the whole time.</span>
+    <span>Quiet week on GitHub. Loud week on LKML, presumably. As intended.</span>
     <span>2026 &copy; AISlopMedia, Inc.</span>
   </div>
 </div><!-- /paper page 1 -->
@@ -526,38 +498,18 @@ document.fonts.ready.then(() => {
   <div class="body">
     <div class="articles-p2">
     <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/pgdog" class="repo-chip">pgdog</a> <a href="https://github.com/pgdogdev/helm" class="repo-chip">helm</a><span class="article-date">Apr 10</span></div>
-      <div class="tag">FEATURE</div>
-      <h3><a href="https://github.com/pgdogdev/pgdog/pull/882" class="headline-link">one user, many passwords — pgdog stops forcing credential rotation chaos</h3>
-      <p class="deck">Rolling credentials no longer means coordinated downtime.</p>
-      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-heavy-iron-ring-threaded-with-two-keys-an-old-worn-skeleto.png" data-align="left">
-        <img src="https://gitzette.online/img/a-heavy-iron-ring-threaded-with-two-keys-an-old-worn-skeleto.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
-        <p class="body-text shape-wrap-fallback">Rotating database passwords used to require updating pgdog and all clients simultaneously, or accepting a window where some connections fail. <a href="https://github.com/pgdogdev/pgdog/pull/882">#882</a> lets you configure multiple valid passwords per user — the old credential keeps working while you roll the new one out. The helm chart picked up support in <a href="https://github.com/pgdogdev/helm/releases/tag/v0.50">v0.50</a>. Credential rotation is now a Tuesday, not an incident.</p>
+      <div class="article-meta"><a href="https://github.com/monosans/proxy-list" class="repo-chip">proxy-list</a> <a href="https://github.com/dootss/shodan-dorks" class="repo-chip">shodan-dorks</a><span class="article-date">Apr 11</span></div>
+      <div class="tag">COMMUNITY</div>
+      <h2><a href="https://github.com/monosans/proxy-list" class="headline-link">the automated repos tick over, one commit at a time</h2>
+      <p class="deck">proxy-list and shodan-dorks each logged a single commit — the bots are awake.</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-victorian-automaton-writing-with-a-quill-pen-at-a-small-wo.png" data-align="left">
+        <img src="https://gitzette.online/img/a-victorian-automaton-writing-with-a-quill-pen-at-a-small-wo.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">One commit to proxy-list, one to shodan-dorks. These are auto-updating repos that scrape and aggregate data hourly — the commits are the exhaust fumes of automation, not hand-crafted code. If you're here looking for @torvalds's thoughts on SOCKS5 geolocation, you've taken a wrong turn somewhere. The bots are fine. The bots are always fine.</p>
+        <div style="clear:both"></div>
       </div>
-
-    </div>
-
-    <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/helm-ee" class="repo-chip">helm-ee</a><span class="article-date">Apr 6</span></div>
-      <div class="tag">RELEASE</div>
-      <h3><a href="https://github.com/pgdogdev/helm-ee/releases/tag/0.1.10" class="headline-link">pgdog enterprise gets a control plane</h3>
-      <p class="deck">The initial helm-ee chart lands, ready for managed deployments.</p>
-      <p class="body-text">The <a href="https://github.com/pgdogdev/helm-ee">helm-ee</a> repo now exists with <a href="https://github.com/pgdogdev/helm-ee/releases/tag/0.1.10">0.1.10</a>, the first release of the enterprise control plane chart. It's the scaffolding for managed pgdog deployments — separate from the core pooler chart, purpose-built for orchestration at scale. Initial commit energy: one PR, one release, all the YAML you'd expect.</p>
-      
-      <div class="release-links"><a href="https://github.com/pgdogdev/helm-ee/releases/tag/0.1.10" class="release-link">0.1.10</a> <span class="muted">Mon, Apr 6</span></div>
-      <div class="pr-links">merged: <a href="https://github.com/pgdogdev/helm-ee/pull/1" class="pr-link">#1</a></div>
-      
-    </div>
-
-    <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/docs" class="repo-chip">docs</a><span class="article-date">Apr 9</span></div>
-      <div class="tag">FEATURE</div>
-      <h3><a href="https://github.com/pgdogdev/docs/pull/63" class="headline-link">documentation catches up to the sharding features</h3>
-      <p class="deck">Schema manager functions and sharded sequences now have pages.</p>
-      <p class="body-text">The 53-bit ID generator and <code>pgdog.install_sharded_sequence()</code> are now documented (<a href="https://github.com/pgdogdev/docs/pull/63">#63</a>, <a href="https://github.com/pgdogdev/docs/pull/64">#64</a>). Schema manager functions have their own section. The docs repo saw 6 commits this week, mostly @levkk keeping prose in sync with the feature velocity. Unsexy but necessary — features that aren't documented don't get used.</p>
       
       
-      <div class="pr-links">merged: <a href="https://github.com/pgdogdev/docs/pull/64" class="pr-link">#64</a> <a href="https://github.com/pgdogdev/docs/pull/63" class="pr-link">#63</a> <a href="https://github.com/pgdogdev/docs/pull/62" class="pr-link">#62</a></div>
+      
       
     </div></div>
     <div class="data-graphics-wrap">
@@ -570,41 +522,56 @@ document.fonts.ready.then(() => {
   <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule);margin-bottom:20px;">
     
       <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">32</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">205</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">commits</div>
       </div>
       <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">25</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">0</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">pull requests</div>
       </div>
       <div style="padding:14px 10px 12px;text-align:center;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">3</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">0</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">releases</div>
       </div>
   </div>
   
   <div style="margin-bottom:20px;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">commits by repo</div>
-    <svg width="100%" viewBox="0 0 382 147" xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" viewBox="0 0 382 272" xmlns="http://www.w3.org/2000/svg">
       <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" letter-spacing="1">REPO</text>
       <text x="382" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" text-anchor="end" letter-spacing="1">COMMITS</text>
       <line x1="0" y1="14" x2="382" y2="14" stroke="#e8e4dc" stroke-width="0.5"/>
       
-    <text x="104" y="32" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333" font-weight="600">pgdog</text>
+    <text x="104" y="32" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333" font-weight="600">linux</text>
     <rect x="110" y="18" width="240" height="18" fill="#555" rx="1"/>
-    <text x="355" y="32" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="600">17</text>
-    <text x="104" y="57" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">docs</text>
-    <rect x="110" y="43" width="85" height="18" fill="#888" rx="1"/>
-    <text x="200" y="57" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">6</text>
-    <text x="104" y="82" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">pgdog</text>
-    <rect x="110" y="68" width="85" height="18" fill="#999" rx="1"/>
-    <text x="200" y="82" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">6</text>
-    <text x="104" y="107" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">helm-ee</text>
-    <rect x="110" y="93" width="28" height="18" fill="#aaa" rx="1"/>
-    <text x="143" y="107" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">2</text>
-    <text x="104" y="132" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">helm</text>
-    <rect x="110" y="118" width="14" height="18" fill="#bbb" rx="1"/>
-    <text x="129" y="132" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    <text x="355" y="32" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="600">32</text>
+    <text x="104" y="57" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">linux-stable-rcn-ee</text>
+    <rect x="110" y="43" width="240" height="18" fill="#888" rx="1"/>
+    <text x="355" y="57" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">32</text>
+    <text x="104" y="82" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">linux</text>
+    <rect x="110" y="68" width="240" height="18" fill="#999" rx="1"/>
+    <text x="355" y="82" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">32</text>
+    <text x="104" y="107" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">leaf-linux</text>
+    <rect x="110" y="93" width="240" height="18" fill="#aaa" rx="1"/>
+    <text x="355" y="107" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">32</text>
+    <text x="104" y="132" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">DC-linux</text>
+    <rect x="110" y="118" width="240" height="18" fill="#bbb" rx="1"/>
+    <text x="355" y="132" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">32</text>
+    <text x="104" y="157" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">linux</text>
+    <rect x="110" y="143" width="240" height="18" fill="#ccc" rx="1"/>
+    <text x="355" y="157" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">32</text>
+    <text x="104" y="182" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">DemonKingSwarn</text>
+    <rect x="110" y="168" width="53" height="18" fill="#ddd" rx="1"/>
+    <text x="168" y="182" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">7</text>
+    <text x="104" y="207" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">sahil9001.github.io</text>
+    <rect x="110" y="193" width="30" height="18" fill="#ddd" rx="1"/>
+    <text x="145" y="207" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">4</text>
+    <text x="104" y="232" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">proxy-list</text>
+    <rect x="110" y="218" width="8" height="18" fill="#ddd" rx="1"/>
+    <text x="123" y="232" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    <text x="104" y="257" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">shodan-dorks</text>
+    <rect x="110" y="243" width="8" height="18" fill="#ddd" rx="1"/>
+    <text x="123" y="257" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
     </svg>
   </div>
   
@@ -612,50 +579,65 @@ document.fonts.ready.then(() => {
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">github stars</div>
     <table style="width:100%;border-collapse:collapse;">
       <tr style="border-bottom:1px solid var(--rule);">
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/pgdogdev/pgdog" style="color:var(--ink);text-decoration:none;">pgdog</a></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/torvalds/linux" style="color:var(--ink);text-decoration:none;">linux</a></td>
       <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
         <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
           <div style="background:var(--ink);border-radius:2px;height:6px;width:100%;"></div>
         </div>
       </td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">4,270</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">228,064</td>
     </tr><tr style="border-bottom:1px solid var(--rule);">
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/pgdogdev/helm" style="color:var(--ink);text-decoration:none;">helm</a></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/monosans/proxy-list" style="color:var(--ink);text-decoration:none;">proxy-list</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:1%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">1,400</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/dootss/shodan-dorks" style="color:var(--ink);text-decoration:none;">shodan-dorks</a></td>
       <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
         <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
           <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
         </div>
       </td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">12</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">337</td>
     </tr><tr style="border-bottom:1px solid var(--rule);">
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/pgdogdev/docs" style="color:var(--ink);text-decoration:none;">docs</a></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/RobertCNelson/linux-stable-rcn-ee" style="color:var(--ink);text-decoration:none;">linux-stable-rcn-ee</a></td>
       <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
         <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
           <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
         </div>
       </td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">5</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">16</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/DC-DeepComputing/DC-linux" style="color:var(--ink);text-decoration:none;">DC-linux</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">11</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/PKRoma/linux" style="color:var(--ink);text-decoration:none;">linux</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">4</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/jeffmerkey/leaf-linux" style="color:var(--ink);text-decoration:none;">leaf-linux</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">3</td>
     </tr>
     </table>
   </div>
   
-  <div style="margin-bottom:4px;overflow:hidden;">
-    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">release timeline</div>
-    <svg width="100%" viewBox="0 0 400 80" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
-      <line x1="30" y1="58" x2="370" y2="58" stroke="#0f0f0f" stroke-width="1.5"/>
-      <line x1="30" y1="54" x2="30" y2="62" stroke="#aaa" stroke-width="1"/><text x="30" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SAT</text><line x1="79" y1="54" x2="79" y2="62" stroke="#aaa" stroke-width="1"/><text x="79" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SUN</text><line x1="127" y1="54" x2="127" y2="62" stroke="#aaa" stroke-width="1"/><text x="127" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">MON</text><line x1="176" y1="54" x2="176" y2="62" stroke="#aaa" stroke-width="1"/><text x="176" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">TUE</text><line x1="224" y1="54" x2="224" y2="62" stroke="#aaa" stroke-width="1"/><text x="224" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">WED</text><line x1="273" y1="54" x2="273" y2="62" stroke="#aaa" stroke-width="1"/><text x="273" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">THU</text><line x1="321" y1="54" x2="321" y2="62" stroke="#aaa" stroke-width="1"/><text x="321" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">FRI</text><line x1="370" y1="54" x2="370" y2="62" stroke="#aaa" stroke-width="1"/><text x="370" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SAT</text>
-      
-        <line x1="136" y1="44" x2="136" y2="58" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
-        <circle cx="136" cy="38" r="5" fill="#0f0f0f"/>
-        <text x="136" y="31" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">helm-ee 0.1.10</text>
-        <line x1="284" y1="22" x2="284" y2="58" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
-        <circle cx="284" cy="16" r="5" fill="#0f0f0f"/>
-        <text x="284" y="9" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">pgdog v0.1.36</text>
-        <line x1="329" y1="0" x2="329" y2="58" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
-        <circle cx="329" cy="-6" r="5" fill="#0f0f0f"/>
-        <text x="329" y="-13" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">helm v0.50</text>
-    </svg>
-  </div>
 </div></div>
     <div class="repo-index-wrap" style="padding-top:24px;border-top:2px solid var(--ink);margin-top:8px;">
       <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
@@ -664,25 +646,45 @@ document.fonts.ready.then(() => {
       </div>
       <ul style="list-style:none;">
         <li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/pgdogdev/pgdog" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">pgdog</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">PostgreSQL connection pooler, load balancer and database sharder.</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">17 commits · 1 release · ★ 4270</div>
+          <a href="https://github.com/torvalds/linux" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">linux</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Linux kernel source tree</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">32 commits · 0 releases · ★ 228064</div>
         </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/pgdogdev/helm" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">helm</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Helm chart for deploying PgDog.</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 1 release · ★ 12</div>
+          <a href="https://github.com/RobertCNelson/linux-stable-rcn-ee" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">linux-stable-rcn-ee</a>
+          
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">32 commits · 0 releases · ★ 16</div>
         </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/pgdogdev/docs" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">docs</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">PgDog documentation.</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">6 commits · 0 releases · ★ 5</div>
+          <a href="https://github.com/PKRoma/linux" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">linux</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Linux—mirror of git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">32 commits · 0 releases · ★ 4</div>
         </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/excalibase/pgdog" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">pgdog</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">PgDog fork with Postgres-backed config and NATS reload for Excalibase platform</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">6 commits · 0 releases · ★ 0</div>
+          <a href="https://github.com/jeffmerkey/leaf-linux" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">leaf-linux</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Leaf Linux Distribution Kernel Sources (Leaf Linux is an approved trademark sublicense granted by the Linux Foundation). </div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">32 commits · 0 releases · ★ 3</div>
         </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/pgdogdev/helm-ee" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">helm-ee</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">PgDog Enterprise control plane Helm chart.</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">2 commits · 1 release · ★ 0</div>
+          <a href="https://github.com/DC-DeepComputing/DC-linux" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">DC-linux</a>
+          
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">32 commits · 0 releases · ★ 11</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/hitmanssavi45-spec/linux" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">linux</a>
+          
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">32 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/DemonKingSwarn/DemonKingSwarn" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">DemonKingSwarn</a>
+          
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">7 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/sahil9001/sahil9001.github.io" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">sahil9001.github.io</a>
+          
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">4 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/monosans/proxy-list" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">proxy-list</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Lists of HTTP, SOCKS4, SOCKS5 proxies with geolocation info. Updated every hour.</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 1400</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/dootss/shodan-dorks" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">shodan-dorks</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">An auto-updating list of shodan dorks with info on the amount of results they return!</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 337</div>
         </li>
       </ul>
     </div>

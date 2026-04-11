@@ -48,9 +48,8 @@
   .header-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; overflow: hidden; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
   .header-meta .meta-left { white-space: nowrap; }
   .header-meta .meta-right { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
-  .masthead { line-height: 1; display: flex; align-items: baseline; gap: 6px; }
-  .masthead .mh-the { font-family: 'IBM Plex Serif', serif; font-style: italic; font-weight: 400; font-size: clamp(16px,3vw,28px); color: var(--muted); }
-  .masthead .mh-title { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(34px,7.5vw,68px); letter-spacing: -.03em; color: var(--ink); }
+  .masthead { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(32px,7vw,64px); letter-spacing: -.03em; line-height: 1; }
+  .masthead span { color: var(--muted); font-weight: 400; }
   .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .edition-bar { margin-top: 12px; padding: 6px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .05em; display: flex; flex-wrap: nowrap; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   .edition-bar::-webkit-scrollbar { display: none; }
@@ -80,7 +79,7 @@
   .headline-link { color: var(--ink); text-decoration: none; }
   .headline-link:hover { text-decoration: underline; }
   .deck { font-family: 'IBM Plex Serif', serif; font-style: italic; font-size: 14px; line-height: 1.55; color: #333; margin-bottom: 10px; }
-  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; text-align: justify; }
+  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; }
   .body-text a { color: var(--link); text-decoration: none; border-bottom: 1px solid var(--link); }
   .body-text a:hover { border-bottom-color: var(--ink); color: var(--ink); }
   .body-text code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 2px; }
@@ -269,7 +268,7 @@ async function shapeWrap(block) {
     );
     // Only stop shape-wrapping when we're truly past the image bottom
     if (y >= imgDisplayH && occupied === 0) break;
-    const availW = Math.max(containerW - occupied - 20, 80);
+    const availW = Math.max(containerW - occupied, 80);
     const line = layoutNextLine(prepared, cursor, availW);
     if (!line) break;
 
@@ -370,7 +369,7 @@ function relayout(block) {
   const lines = [];
   while (true) {
     const occupied = getOccupiedWidthForBand(d.profile, y, y + d.lineHeight, imgDisplayW, imgDisplayH, d.canvas.width, d.canvas.height, d.gap);
-    const availW = Math.max(containerW - occupied - 20, 80);
+    const availW = Math.max(containerW - occupied, 80);
     const line = layoutNextLine(prepared, cursor, availW);
     if (!line) break;
     lines.push({ text: line.text, occupied, y });
@@ -422,54 +421,41 @@ document.fonts.ready.then(() => {
 <div class="paper">
   <div class="header">
     <div class="header-kicker">
-      <span class="kicker-text"><a href="https://github.com/levkk" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@levkk</a></span>
-      <span style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
-        <button onclick="document.getElementById('dark-modal').style.display='flex'" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--ink);color:var(--ink);cursor:pointer;padding:2px 7px;border-radius:2px;" title="switch theme">◑ DARK</button>
-        <span class="kicker-date">April 4 – April 11, 2026</span>
-      </span>
+      <span class="kicker-text"><a href="https://github.com/steipete" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@steipete</a> <span style="font-weight:400;letter-spacing:.12em;">— open-source digest</span></span>
+      <span class="kicker-date">April 5 – April 8, 2026</span>
     </div>
     <div class="header-meta">
       <span class="meta-left">Vol. 1, No. 5</span>
-      <span class="meta-right"><a href="https://github.com/levkk" style="color:var(--muted);">github.com/levkk</a></span>
+      <span class="meta-right">github.com/steipete</span>
     </div>
-    <div class="masthead"><span class="mh-the">the</span><span class="mh-title">dispatch</span></div>
-    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px;">open-source digest</div>
-    <div class="tagline">oid is u32, not i32 — someone finally checked</div>
+    <div class="masthead">the <span>dispatch</span></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(13px,2.5vw,18px);font-weight:700;letter-spacing:.06em;margin-top:4px;"><a href="https://github.com/steipete" style="color:var(--ink);text-decoration:none;">@steipete</a></div>
+    <div class="tagline">Three releases, a media generation stack, and the week openclaw learned to make music videos</div>
     <div class="edition-bar">
-      <span>32 commits</span>
-      <span>25 PRs</span>
-      <span>3 releases</span>
-      <span>5 repos</span>
+      <span>899 commits</span>
+      <span>4 PRs</span>
+      <span>4 releases</span>
+      <span>10 repos</span>
     </div>
   </div>
   <div class="body">
     <div class="grid grid-2">
       <div class="col">
-        <p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">Two billion OIDs seemed like plenty until it wasn't.</p>
+        <p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">Three openclaw releases in 72 hours, summarize ships local video slides, and 600+ commits land across ten repos.</p>
         
     <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/pgdog" class="repo-chip">pgdog</a><span class="article-date">Apr 9</span></div>
+      <div class="article-meta"><a href="https://github.com/openclaw/openclaw" class="repo-chip">openclaw</a><span class="article-date">Apr 6</span></div>
       <div class="tag">RELEASE</div>
-      <h1><a href="https://github.com/pgdogdev/pgdog/pull/873" class="headline-link">pgdog learns to count past 2.2 billion</h1>
-      <p class="deck">A signed integer masquerading as unsigned finally caught up with databases that have seen some churn.</p>
-      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-warehouse-worker-moving-identical-wooden-crates-along-a-co.png" data-align="left">
-        <img src="https://gitzette.online/img/a-warehouse-worker-moving-identical-wooden-crates-along-a-co.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
-        <p class="body-text shape-wrap-fallback">Postgres OIDs are unsigned 32-bit integers. pgdog was treating them as signed. For most databases, this distinction is academic — until your schema has churned through enough objects that OIDs exceed 2.2 billion, at which point pgdog's type coercion turned valid OIDs into negative garbage. <a href="https://github.com/pgdogdev/pgdog/pull/873">#873</a> swaps <code>i32</code> for <code>u32</code>. The kind of fix that's one line to write and years to discover. Also in v0.1.36: <code>count(*)</code> was returning the wrong type when aggregating across shards (<a href="https://github.com/pgdogdev/pgdog/pull/872">#872</a>), and streaming replication was quietly dropping child table rows during resharding (<a href="https://github.com/pgdogdev/pgdog/pull/880">#880</a>). Three data integrity bugs, one release.</p>
+      <h1><a href="https://github.com/raonslab2/openclaw" class="headline-link">openclaw breaks its own config, on purpose, with a migration path</h1>
+      <p class="deck">Legacy config aliases like 'talk.voiceId' and 'browser.ssrfPolicy.allowPrivateNetwork' are gone — but 'openclaw doctor --fix' will rewrite your config for you.</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-victorian-hand-pulling-an-old-brass-lever-on-an-elaborate-.png" data-align="left">
+        <img src="https://gitzette.online/img/a-victorian-hand-pulling-an-old-brass-lever-on-an-elaborate-.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">Config sprawl accumulates quietly: aliases that made sense three versions ago stick around because nobody wants to break existing deployments. v2026.4.5 finally rips out a batch of them — 'talk.voiceId', 'talk.apiKey', 'agents.*.sandbox.perSession', 'hooks.internal.handlers', and the channel/group/room 'allow' toggles all resolve to their canonical paths now. The breaking change ships with load-time compatibility shims and an 'openclaw doctor --fix' migration command (#60726, thanks @vincentkoc), so existing configs won't hard-fail on upgrade. The same release also lands built-in 'video_generate' and 'music_generate' tools with bundled Google Lyria and MiniMax providers, plus a ComfyUI workflow plugin for local image/video/music generation — turning openclaw into something closer to a media production router than a chatbot.</p>
         <div style="clear:both"></div>
       </div>
-      
-      
-      
-      
-    </div>
-
-    <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/pgdog" class="repo-chip">pgdog</a><span class="article-date">Apr 10</span></div>
-      <div class="tag">FEATURE</div>
-      <h3><a href="https://github.com/pgdogdev/pgdog/pull/889" class="headline-link">the parser now knows when to stay asleep</h3>
-      <p class="deck">A regex trigger lets simple queries skip the full parse.</p>
-      <p class="body-text">Not every query needs a full SQL parse — most are simple enough that a regex can determine routing. <a href="https://github.com/pgdogdev/pgdog/pull/889">#889</a> adds a trigger that only wakes the full parser when the regex suggests complexity. Less CPU burned on <code>SELECT 1</code>, more headroom for the queries that actually need analysis. The optimization is invisible until you're pushing enough QPS that parsing overhead starts showing up in flame graphs.</p>
-      
+      <div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
+          <img src="https://gitzette.online/img/raonslab2-openclaw-0.jpg" alt="" style="width:100%;max-width:100%;height:auto;max-height:40vh;object-fit:cover;display:block;">
+        </div>
       
       
       
@@ -477,13 +463,13 @@ document.fonts.ready.then(() => {
       </div>
       <div class="col">
     <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/pgdog" class="repo-chip">pgdog</a><span class="article-date">Apr 8</span></div>
-      <div class="tag">FEATURE</div>
-      <h2><a href="https://github.com/pgdogdev/pgdog/pull/879" class="headline-link">SELECT FOR UPDATE hiding in a CTE still goes to replicas</h2>
-      <p class="deck">The parser wasn't walking all the way down.</p>
-      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-detective-examining-nested-russian-nesting-dolls-with-a-ma.png" data-align="left">
-        <img src="https://gitzette.online/img/a-detective-examining-nested-russian-nesting-dolls-with-a-ma.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
-        <p class="body-text shape-wrap-fallback">Wrap a <code>SELECT ... FOR UPDATE</code> in a CTE, and pgdog's query router used to miss it entirely — sending your locking query to a read-only replica, which responds with error 25006 and a polite refusal. The detection logic wasn't recursive. <a href="https://github.com/pgdogdev/pgdog/pull/879">#879</a> teaches it to descend into CTEs. Straightforward fix once you realize the parser was only looking at the outer query. The <a href="https://github.com/pgdogdev/pgdog/issues/878">issue</a> came from production, naturally.</p>
+      <div class="article-meta"><a href="https://github.com/openclaw/openclaw" class="repo-chip">openclaw</a><span class="article-date">Apr 8</span></div>
+      <div class="tag">RELEASE</div>
+      <h2><a href="https://github.com/raonslab2/openclaw" class="headline-link">every bundled channel was importing from paths that don't exist after npm install</h2>
+      <p class="deck">Telegram, Slack, Matrix, Teams, and eight other channels all tried to load from 'dist/extensions/*/src/*' — a path only present in development builds.</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-postman-delivering-a-bundle-of-misaddressed-letters-to-the.png" data-align="left">
+        <img src="https://gitzette.online/img/a-postman-delivering-a-bundle-of-misaddressed-letters-to-the.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">If you installed openclaw via npm rather than running from source, gateway startup could fail silently because bundled channel plugins were importing setup and secret contracts from development-only paths like 'dist/extensions/telegram/src/*'. v2026.4.7 and v2026.4.8 fix this across the board — Telegram first, then BlueBubbles, Feishu, Google Chat, IRC, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Slack, and Zalo — by routing those imports through packaged top-level sidecars. Separately, v2026.4.7 introduces 'openclaw infer', a first-class CLI hub for provider-backed inference across model, media, web, and embedding tasks, and adds pluggable compaction providers (#56224) so you can replace the built-in summarization pipeline entirely.</p>
         <div style="clear:both"></div>
       </div>
       
@@ -493,15 +479,11 @@ document.fonts.ready.then(() => {
     </div>
 
     <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/pgdog" class="repo-chip">pgdog</a><span class="article-date">Apr 8</span></div>
-      <div class="tag">FEATURE</div>
-      <h2><a href="https://github.com/pgdogdev/pgdog/pull/858" class="headline-link">JavaScript can't count past 53 bits, so now pgdog doesn't either</h2>
-      <p class="deck">A new ID generator for apps that pass primary keys straight to the browser.</p>
-      <div class="shape-wrap-block" data-img="https://gitzette.online/img/an-ornate-abacus-with-beads-carved-as-tiny-globes-on-brass-r.png" data-align="left">
-        <img src="https://gitzette.online/img/an-ornate-abacus-with-beads-carved-as-tiny-globes-on-brass-r.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
-        <p class="body-text shape-wrap-fallback">JavaScript's Number type loses precision past 2^53. If your sharded IDs are 64-bit integers that get JSON-serialized to a frontend, you're rolling the dice every time. <a href="https://github.com/pgdogdev/pgdog/pull/858">#858</a> adds a 53-bit unique ID generator — still globally unique across shards, but safe for JavaScript's unfortunate numeric limitations. There's also a new <code>pgdog.install_sharded_sequence()</code> function (<a href="https://github.com/pgdogdev/pgdog/pull/881">#881</a>) that works cross-shard, so you can set this up from any node without coordinating manually.</p>
-        <div style="clear:both"></div>
-      </div>
+      <div class="article-meta"><a href="https://github.com/openclaw/openclaw" class="repo-chip">openclaw</a><span class="article-date">Apr 8</span></div>
+      <div class="tag">RELEASE</div>
+      <h2><a href="https://github.com/raonslab2/openclaw" class="headline-link">Slack's socket mode now respects your proxy — no monkey patch required</h2>
+      <p class="deck">Proxy-only deployments had to patch around openclaw's WebSocket connections; ambient HTTP(S)_PROXY and NO_PROXY settings are finally honored.</p>
+      <p class="body-text">Deploying openclaw behind a corporate proxy meant Slack's Socket Mode WebSocket connections ignored ambient proxy settings entirely, forcing operators to monkey-patch the connection layer. v2026.4.8 (#62878, thanks @mjamiv) threads HTTP(S)_PROXY and NO_PROXY through Socket Mode properly. The same release fixes a subtler Slack issue: when bot tokens used SecretRef-backed config, 'downloadFile' was re-reading raw config instead of using the already-resolved token, causing file downloads to fail (#62097, thanks @martingarramon). Both fixes land alongside a network-layer change that skips DNS pinning when a trusted env-proxy is active (#59007), letting sandbox environments delegate host resolution to the proxy.</p>
       
       
       
@@ -510,8 +492,8 @@ document.fonts.ready.then(() => {
     </div>
   </div>
   <div class="footer">
-    <span>17 commits to pgdog, 3 data bugs fixed, 1 new chart. The OID thing had been there the whole time.</span>
-    <span>2026 &copy; AISlopMedia, Inc.</span>
+    <span>600 commits across ten repos, and @steipete still found time to file the local-video slide PR personally — priorities.</span>
+    <span>generated 2026-04-10</span>
   </div>
 </div><!-- /paper page 1 -->
 
@@ -520,44 +502,50 @@ document.fonts.ready.then(() => {
   <div class="header" style="border-bottom:none;">
     <div class="header-meta" style="margin-bottom:0;padding-bottom:10px;border-bottom:1px solid var(--rule);">
       <span class="meta-left">the dispatch — Vol. 1, No. 5</span>
-      <span class="meta-right">April 4 – April 11, 2026</span>
+      <span class="meta-right">April 5 – April 8, 2026</span>
     </div>
   </div>
   <div class="body">
     <div class="articles-p2">
     <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/pgdog" class="repo-chip">pgdog</a> <a href="https://github.com/pgdogdev/helm" class="repo-chip">helm</a><span class="article-date">Apr 10</span></div>
-      <div class="tag">FEATURE</div>
-      <h3><a href="https://github.com/pgdogdev/pgdog/pull/882" class="headline-link">one user, many passwords — pgdog stops forcing credential rotation chaos</h3>
-      <p class="deck">Rolling credentials no longer means coordinated downtime.</p>
-      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-heavy-iron-ring-threaded-with-two-keys-an-old-worn-skeleto.png" data-align="left">
-        <img src="https://gitzette.online/img/a-heavy-iron-ring-threaded-with-two-keys-an-old-worn-skeleto.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
-        <p class="body-text shape-wrap-fallback">Rotating database passwords used to require updating pgdog and all clients simultaneously, or accepting a window where some connections fail. <a href="https://github.com/pgdogdev/pgdog/pull/882">#882</a> lets you configure multiple valid passwords per user — the old credential keeps working while you roll the new one out. The helm chart picked up support in <a href="https://github.com/pgdogdev/helm/releases/tag/v0.50">v0.50</a>. Credential rotation is now a Tuesday, not an incident.</p>
-      </div>
-
-    </div>
-
-    <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/helm-ee" class="repo-chip">helm-ee</a><span class="article-date">Apr 6</span></div>
+      <div class="article-meta"><a href="https://github.com/steipete/summarize" class="repo-chip">summarize</a><span class="article-date">Apr 7</span></div>
       <div class="tag">RELEASE</div>
-      <h3><a href="https://github.com/pgdogdev/helm-ee/releases/tag/0.1.10" class="headline-link">pgdog enterprise gets a control plane</h3>
-      <p class="deck">The initial helm-ee chart lands, ready for managed deployments.</p>
-      <p class="body-text">The <a href="https://github.com/pgdogdev/helm-ee">helm-ee</a> repo now exists with <a href="https://github.com/pgdogdev/helm-ee/releases/tag/0.1.10">0.1.10</a>, the first release of the enterprise control plane chart. It's the scaffolding for managed pgdog deployments — separate from the core pooler chart, purpose-built for orchestration at scale. Initial commit energy: one PR, one release, all the YAML you'd expect.</p>
+      <h3><a href="https://github.com/steipete/summarize" class="headline-link">summarize v0.13.0 extracts slides from local video files, not just URLs</h3>
+      <p class="deck">The '--slides' flag now works on files sitting on your disk — no upload required, no fake 'Downloading audio' progress bar.</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-vintage-film-projector-casting-light-onto-a-nearby-stack-o.png" data-align="left">
+        <img src="https://gitzette.online/img/a-vintage-film-projector-casting-light-onto-a-nearby-stack-o.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">The slide extraction pipeline in summarize only worked with remote URLs, so local conference recordings or screen captures had to be uploaded somewhere first. v0.13.0 (#149, by @steipete) routes local video files through the same slide-aware flow, fixing the awkward 'Downloading audio' progress text that appeared even when nothing was being downloaded. The release also adds GitHub Copilot as a first-class model provider — 'github-copilot/gpt-5.4' and friends authenticate via GITHUB_TOKEN — and adds OpenCode as a CLI provider alongside existing OpenClaw support. GPT-5.4 family routing got a quiet fix too: requests were hitting a stale generic parser instead of direct provider APIs, and GitHub Models shorthand inference was pinning old prefixes instead of normalizing newer model IDs like 'o5' and 'claude-opus-4.6'.</p>
+        <div style="clear:both"></div>
+      </div>
+      <div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
+          <img src="https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/steipete-summarize-0.jpg" alt="" style="width:100%;max-width:100%;height:auto;max-height:40vh;object-fit:cover;display:block;">
+        </div>
+      <div class="release-links"><a href="https://github.com/steipete/summarize/releases/tag/v0.13.0" class="release-link">v0.13.0</a> <span class="muted">Tue, Apr 7</span></div>
       
-      <div class="release-links"><a href="https://github.com/pgdogdev/helm-ee/releases/tag/0.1.10" class="release-link">0.1.10</a> <span class="muted">Mon, Apr 6</span></div>
-      <div class="pr-links">merged: <a href="https://github.com/pgdogdev/helm-ee/pull/1" class="pr-link">#1</a></div>
+      <div class="pending-note">3 open PRs: <a href="https://github.com/steipete/summarize/pull/191">#191 [codex] fix generated CLI wrapper permissions</a>, <a href="https://github.com/steipete/summarize/pull/190">#190 chore(deps-dev): bump the dependencies group with 2 updates</a>, <a href="https://github.com/steipete/summarize/pull/189">#189 fix: isolate chat history by URL instead of just tabId</a></div>
+    </div>
+
+    <div class="article">
+      <div class="article-meta"><a href="https://github.com/openclaw/openclaw" class="repo-chip">openclaw</a><span class="article-date">Apr 8</span></div>
+      <div class="tag">FEATURE</div>
+      <h3><a href="https://github.com/raonslab2/openclaw" class="headline-link">session compaction gets checkpoints — and a UI to rewind them</h3>
+      <p class="deck">Operators can now inspect and restore pre-compaction session state instead of trusting the summarizer got it right.</p>
+      <p class="body-text">Long-running agent sessions get compacted to keep context windows manageable, but once the summarization ran, the original state was gone. v2026.4.7 (#62146, thanks @scoootscooob) adds persisted compaction checkpoints with branch/restore actions in the Sessions UI. If a compaction mangled important context, operators can roll back. This pairs with the new pluggable compaction provider registry (#56224) — if the built-in LLM summarization isn't good enough, you can swap in your own pipeline and still have checkpoint safety underneath.</p>
+      
+      
+      
       
     </div>
 
     <div class="article">
-      <div class="article-meta"><a href="https://github.com/pgdogdev/docs" class="repo-chip">docs</a><span class="article-date">Apr 9</span></div>
-      <div class="tag">FEATURE</div>
-      <h3><a href="https://github.com/pgdogdev/docs/pull/63" class="headline-link">documentation catches up to the sharding features</h3>
-      <p class="deck">Schema manager functions and sharded sequences now have pages.</p>
-      <p class="body-text">The 53-bit ID generator and <code>pgdog.install_sharded_sequence()</code> are now documented (<a href="https://github.com/pgdogdev/docs/pull/63">#63</a>, <a href="https://github.com/pgdogdev/docs/pull/64">#64</a>). Schema manager functions have their own section. The docs repo saw 6 commits this week, mostly @levkk keeping prose in sync with the feature velocity. Unsexy but necessary — features that aren't documented don't get used.</p>
+      <div class="article-meta"><a href="https://github.com/openclaw/openclaw" class="repo-chip">openclaw</a><span class="article-date">Apr 8</span></div>
+      <div class="tag">RELEASE</div>
+      <h3><a href="https://github.com/raonslab2/openclaw" class="headline-link">the exec tool was lying about its sandbox policy</h3>
+      <p class="deck">'host=auto' sessions reported stale stricter defaults instead of the actual host-aware fallback — 'full/off' on gateway, 'deny/off' on sandbox.</p>
+      <p class="body-text">The '/exec' endpoint's current-default reporting was out of sync with real runtime behavior. When 'host=auto' was configured, the tool surfaced an older, stricter default policy instead of the actual fallback: 'full/off' on gateway or node hosts, 'deny/off' on sandbox hosts. v2026.4.8 corrects the reporting so operators debugging exec permissions see what's actually enforced, not what used to be enforced. A small fix, but the kind of silent lie that burns an hour of debugging when a sandbox exec call fails and the reported policy says it shouldn't.</p>
       
       
-      <div class="pr-links">merged: <a href="https://github.com/pgdogdev/docs/pull/64" class="pr-link">#64</a> <a href="https://github.com/pgdogdev/docs/pull/63" class="pr-link">#63</a> <a href="https://github.com/pgdogdev/docs/pull/62" class="pr-link">#62</a></div>
+      
       
     </div></div>
     <div class="data-graphics-wrap">
@@ -570,41 +558,56 @@ document.fonts.ready.then(() => {
   <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule);margin-bottom:20px;">
     
       <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">32</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">899</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">commits</div>
       </div>
       <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">25</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">4</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">pull requests</div>
       </div>
       <div style="padding:14px 10px 12px;text-align:center;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">3</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">4</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">releases</div>
       </div>
   </div>
   
   <div style="margin-bottom:20px;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">commits by repo</div>
-    <svg width="100%" viewBox="0 0 382 147" xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" viewBox="0 0 382 272" xmlns="http://www.w3.org/2000/svg">
       <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" letter-spacing="1">REPO</text>
       <text x="382" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" text-anchor="end" letter-spacing="1">COMMITS</text>
       <line x1="0" y1="14" x2="382" y2="14" stroke="#e8e4dc" stroke-width="0.5"/>
       
-    <text x="104" y="32" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333" font-weight="600">pgdog</text>
+    <text x="104" y="32" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333" font-weight="600">openclaw</text>
     <rect x="110" y="18" width="240" height="18" fill="#555" rx="1"/>
-    <text x="355" y="32" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="600">17</text>
-    <text x="104" y="57" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">docs</text>
-    <rect x="110" y="43" width="85" height="18" fill="#888" rx="1"/>
-    <text x="200" y="57" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">6</text>
-    <text x="104" y="82" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">pgdog</text>
-    <rect x="110" y="68" width="85" height="18" fill="#999" rx="1"/>
-    <text x="200" y="82" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">6</text>
-    <text x="104" y="107" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">helm-ee</text>
-    <rect x="110" y="93" width="28" height="18" fill="#aaa" rx="1"/>
-    <text x="143" y="107" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">2</text>
-    <text x="104" y="132" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">helm</text>
-    <rect x="110" y="118" width="14" height="18" fill="#bbb" rx="1"/>
-    <text x="129" y="132" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    <text x="355" y="32" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="600">100</text>
+    <text x="104" y="57" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">openclawcode</text>
+    <rect x="110" y="43" width="240" height="18" fill="#888" rx="1"/>
+    <text x="355" y="57" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">100</text>
+    <text x="104" y="82" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">engram-openclaw</text>
+    <rect x="110" y="68" width="240" height="18" fill="#999" rx="1"/>
+    <text x="355" y="82" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">100</text>
+    <text x="104" y="107" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">agent-smith-os</text>
+    <rect x="110" y="93" width="240" height="18" fill="#aaa" rx="1"/>
+    <text x="355" y="107" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">100</text>
+    <text x="104" y="132" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">openclaw-custom</text>
+    <rect x="110" y="118" width="240" height="18" fill="#bbb" rx="1"/>
+    <text x="355" y="132" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">100</text>
+    <text x="104" y="157" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">gods-eye</text>
+    <rect x="110" y="143" width="240" height="18" fill="#ccc" rx="1"/>
+    <text x="355" y="157" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">100</text>
+    <text x="104" y="182" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">openclaw</text>
+    <rect x="110" y="168" width="240" height="18" fill="#ddd" rx="1"/>
+    <text x="355" y="182" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">100</text>
+    <text x="104" y="207" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">OpenClaw</text>
+    <rect x="110" y="193" width="240" height="18" fill="#ddd" rx="1"/>
+    <text x="355" y="207" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">100</text>
+    <text x="104" y="232" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">clawsocial</text>
+    <rect x="110" y="218" width="134" height="18" fill="#ddd" rx="1"/>
+    <text x="249" y="232" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">56</text>
+    <text x="104" y="257" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">summarize</text>
+    <rect x="110" y="243" width="103" height="18" fill="#ddd" rx="1"/>
+    <text x="218" y="257" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">43</text>
     </svg>
   </div>
   
@@ -612,48 +615,59 @@ document.fonts.ready.then(() => {
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">github stars</div>
     <table style="width:100%;border-collapse:collapse;">
       <tr style="border-bottom:1px solid var(--rule);">
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/pgdogdev/pgdog" style="color:var(--ink);text-decoration:none;">pgdog</a></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/openclaw/openclaw" style="color:var(--ink);text-decoration:none;">openclaw</a></td>
       <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
         <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
           <div style="background:var(--ink);border-radius:2px;height:6px;width:100%;"></div>
         </div>
       </td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">4,270</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">353,304</td>
     </tr><tr style="border-bottom:1px solid var(--rule);">
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/pgdogdev/helm" style="color:var(--ink);text-decoration:none;">helm</a></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/steipete/summarize" style="color:var(--ink);text-decoration:none;">summarize</a></td>
+      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
+        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:2%;"></div>
+        </div>
+      </td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">5,518</td>
+    </tr><tr style="border-bottom:1px solid var(--rule);">
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/zhyongrui/openclawcode" style="color:var(--ink);text-decoration:none;">openclawcode</a></td>
       <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
         <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
           <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
         </div>
       </td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">12</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">1</td>
     </tr><tr style="border-bottom:1px solid var(--rule);">
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/pgdogdev/docs" style="color:var(--ink);text-decoration:none;">docs</a></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/bitan-del/gods-eye" style="color:var(--ink);text-decoration:none;">gods-eye</a></td>
       <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
         <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
           <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
         </div>
       </td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">5</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">1</td>
     </tr>
     </table>
   </div>
   
   <div style="margin-bottom:4px;overflow:hidden;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">release timeline</div>
-    <svg width="100%" viewBox="0 0 400 80" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
-      <line x1="30" y1="58" x2="370" y2="58" stroke="#0f0f0f" stroke-width="1.5"/>
-      <line x1="30" y1="54" x2="30" y2="62" stroke="#aaa" stroke-width="1"/><text x="30" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SAT</text><line x1="79" y1="54" x2="79" y2="62" stroke="#aaa" stroke-width="1"/><text x="79" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SUN</text><line x1="127" y1="54" x2="127" y2="62" stroke="#aaa" stroke-width="1"/><text x="127" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">MON</text><line x1="176" y1="54" x2="176" y2="62" stroke="#aaa" stroke-width="1"/><text x="176" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">TUE</text><line x1="224" y1="54" x2="224" y2="62" stroke="#aaa" stroke-width="1"/><text x="224" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">WED</text><line x1="273" y1="54" x2="273" y2="62" stroke="#aaa" stroke-width="1"/><text x="273" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">THU</text><line x1="321" y1="54" x2="321" y2="62" stroke="#aaa" stroke-width="1"/><text x="321" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">FRI</text><line x1="370" y1="54" x2="370" y2="62" stroke="#aaa" stroke-width="1"/><text x="370" y="76" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SAT</text>
+    <svg width="100%" viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+      <line x1="30" y1="78" x2="370" y2="78" stroke="#0f0f0f" stroke-width="1.5"/>
+      <line x1="30" y1="74" x2="30" y2="82" stroke="#aaa" stroke-width="1"/><text x="30" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">SUN</text><line x1="143" y1="74" x2="143" y2="82" stroke="#aaa" stroke-width="1"/><text x="143" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">MON</text><line x1="257" y1="74" x2="257" y2="82" stroke="#aaa" stroke-width="1"/><text x="257" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">TUE</text><line x1="370" y1="74" x2="370" y2="82" stroke="#aaa" stroke-width="1"/><text x="370" y="96" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">WED</text>
       
-        <line x1="136" y1="44" x2="136" y2="58" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
-        <circle cx="136" cy="38" r="5" fill="#0f0f0f"/>
-        <text x="136" y="31" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">helm-ee 0.1.10</text>
-        <line x1="284" y1="22" x2="284" y2="58" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
-        <circle cx="284" cy="16" r="5" fill="#0f0f0f"/>
-        <text x="284" y="9" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">pgdog v0.1.36</text>
-        <line x1="329" y1="0" x2="329" y2="58" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
-        <circle cx="329" cy="-6" r="5" fill="#0f0f0f"/>
-        <text x="329" y="-13" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">helm v0.50</text>
+        <line x1="45" y1="64" x2="45" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="45" cy="58" r="5" fill="#0f0f0f"/>
+        <text x="50" y="51" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">openclaw v2026.4.5</text>
+        <line x1="257" y1="42" x2="257" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="257" cy="36" r="5" fill="#0f0f0f"/>
+        <text x="257" y="29" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">summarize v0.13.0</text>
+        <line x1="267" y1="20" x2="267" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="267" cy="14" r="5" fill="#0f0f0f"/>
+        <text x="267" y="7" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">openclaw v2026.4.7</text>
+        <line x1="285" y1="64" x2="285" y2="78" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="285" cy="58" r="5" fill="#0f0f0f"/>
+        <text x="285" y="51" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">openclaw v2026.4.8</text>
     </svg>
   </div>
 </div></div>
@@ -664,48 +678,55 @@ document.fonts.ready.then(() => {
       </div>
       <ul style="list-style:none;">
         <li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/pgdogdev/pgdog" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">pgdog</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">PostgreSQL connection pooler, load balancer and database sharder.</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">17 commits · 1 release · ★ 4270</div>
+          <a href="https://github.com/openclaw/openclaw" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">openclaw</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞 </div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">100 commits · 3 releases · ★ 353304</div>
         </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/pgdogdev/helm" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">helm</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Helm chart for deploying PgDog.</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 1 release · ★ 12</div>
+          <a href="https://github.com/zhyongrui/openclawcode" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">openclawcode</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Your own personal AI Code assistant. Any OS. Any Platform. The lobster way. 🦞 </div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">100 commits · 0 releases · ★ 1</div>
         </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/pgdogdev/docs" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">docs</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">PgDog documentation.</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">6 commits · 0 releases · ★ 5</div>
+          <a href="https://github.com/tryvinci/engram-openclaw" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">engram-openclaw</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞 </div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">100 commits · 0 releases · ★ 0</div>
         </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/excalibase/pgdog" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">pgdog</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">PgDog fork with Postgres-backed config and NATS reload for Excalibase platform</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">6 commits · 0 releases · ★ 0</div>
+          <a href="https://github.com/codingOuch/agent-smith-os" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">agent-smith-os</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Digital employee operating system with multi-channel, multi-agent workflows</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">100 commits · 0 releases · ★ 0</div>
         </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/pgdogdev/helm-ee" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">helm-ee</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">PgDog Enterprise control plane Helm chart.</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">2 commits · 1 release · ★ 0</div>
+          <a href="https://github.com/juanih/openclaw-custom" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">openclaw-custom</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">My own version of openclaw (experimental)</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">100 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/bitan-del/gods-eye" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">gods-eye</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Gods Eye — Multi-channel AI creative gateway with unified brain</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">100 commits · 0 releases · ★ 1</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/raonslab2/openclaw" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">openclaw</a>
+          
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">100 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/ericao1998/OpenClaw" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">OpenClaw</a>
+          
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">100 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/clawsocial/clawsocial" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">clawsocial</a>
+          
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">56 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/steipete/summarize" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">summarize</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">Point at any URL/YouTube/Podcast or file. Get the gist. CLI and Chrome Extension.</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">43 commits · 1 release · ★ 5518</div>
         </li>
       </ul>
     </div>
   </div>
   <div class="footer">
     <span>the dispatch is generated weekly from live GitHub data</span>
-    <span>2026 &copy; AISlopMedia, Inc.</span>
+    <span>github.com/NikolayS/dispatch</span>
   </div>
 </div><!-- /paper page 2 -->
 
 </div><!-- /broadsheet-wrap -->
-
-<!-- dark mode modal -->
-<div id="dark-modal" style="display:none;position:fixed;inset:0;background:rgba(15,15,15,.75);z-index:9999;align-items:center;justify-content:center;padding:24px;" onclick="if(event.target===this)this.style.display='none'">
-  <div style="background:#f7f4ee;max-width:380px;width:100%;padding:32px 28px 28px;font-family:'IBM Plex Mono',monospace;border:1px solid #c8c2b4;position:relative;">
-    <div style="font-size:28px;margin-bottom:14px;line-height:1;">🖨️</div>
-    <p style="font-size:13px;font-weight:700;line-height:1.5;margin-bottom:10px;">dark mode would consume too much ink.</p>
-    <p style="font-size:11px;line-height:1.75;color:#666;margin-bottom:22px;">we're a print publication. rendering dark backgrounds requires significantly more ink per page. we'd love to support it, but we need donations first.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <a href="https://github.com/NikolayS/gitzette" target="_blank" rel="noopener" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;background:#0f0f0f;color:#f7f4ee;padding:10px 18px;text-decoration:none;white-space:nowrap;">donate to ink fund →</a>
-      <button onclick="document.getElementById('dark-modal').style.display='none'" style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:none;border:1px solid #c8c2b4;padding:10px 18px;cursor:pointer;color:#555;white-space:nowrap;">keep it light ☀</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>

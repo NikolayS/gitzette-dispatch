@@ -1,0 +1,27 @@
+{
+  "owner": "simonw",
+  "repos": {
+    "exclude": [
+      "pge-outages",
+      "scrape-fediverse",
+      "scrape-fema-shelters",
+      "usgs-scraper",
+      "scrape-florida-outages",
+      "scrape-roads-dot-ca-gov",
+      "free-threaded-wheels-results",
+      "ollama-models-atom-feed",
+      "homebrew-llm",
+      "package-stats",
+      "tools"
+    ]
+  },
+  "model": "anthropic/claude-haiku-4-5",
+  "imageGen": {
+    "provider": "google",
+    "model": "imagen-4.0-fast-generate-001",
+    "style": "Victorian-era woodcut engraving with detailed cross-hatching. PORTRAIT orientation — taller than wide. Pure black ink lines on pure white background. NO background shading, NO dark fills, NO border, NO frame, NO text or labels. CRITICAL: the object must have a COMPLEX IRREGULAR SILHOUETTE — protruding parts, curves, asymmetry. NOT a rectangle or simple box shape. Think: an hourglass with ornate scrollwork stand, a tree with sprawling branches, a figure holding tools at different angles, a compass with extended arms. The silhouette edge must be interesting and non-rectangular so text can wrap around it. Subject: "
+  },
+  "output": "simonw.html",
+  "knownIncidents": [],
+  "knownIncidentsByWeek": {}
+}

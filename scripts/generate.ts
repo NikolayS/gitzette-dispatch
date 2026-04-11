@@ -42,7 +42,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
-const CONFIG_PATH = join(ROOT, "dispatch.config.json");
 
 // ── config ──────────────────────────────────────────────────────────────────
 
@@ -52,8 +51,17 @@ interface Config {
   model: string;
   output: string;
   knownIncidents?: string[];
+  knownIncidentsByWeek?: Record<string, string[]>; // week_key (e.g. "2026-W13") → incidents only for that week
   imageGen?: { provider: string; model: string; style: string };
 }
+
+// Support --config <path> before full arg parse so config is available at module level
+const _configArgIdx = process.argv.indexOf("--config");
+const CONFIG_PATH = _configArgIdx !== -1 && process.argv[_configArgIdx + 1]
+  ? (process.argv[_configArgIdx + 1].startsWith("/")
+    ? process.argv[_configArgIdx + 1]
+    : join(ROOT, process.argv[_configArgIdx + 1]))
+  : join(ROOT, "dispatch.config.json");
 
 const config: Config = JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
 
@@ -189,10 +197,10 @@ async function fetchIssueContext(
 
     const lines: string[] = [
       `Issue #${issueNumber}: ${issue.title}`,
-      issue.body ? issue.body.slice(0, 800) : "(no body)",
+      issue.body ? issue.body.slice(0, 1500) : "(no body)",
     ];
-    for (const c of (comments as any[]).slice(0, 3)) {
-      if (c.body) lines.push(`Comment: ${c.body.slice(0, 400)}`);
+    for (const c of (comments as any[]).slice(0, 5)) {
+      if (c.body) lines.push(`Comment: ${c.body.slice(0, 600)}`);
     }
     return lines.join("\n");
   } catch {
@@ -212,20 +220,22 @@ interface ArticleIssueContext {
  * the chosen article list (efficiency: skip repos that got cut entirely).
  */
 async function enrichArticlesWithIssueContext(
-  articles: Array<{ repo: string; headline: string }>,
+  articles: Array<{ repo: string; repos?: string[]; headline: string }>,
   reposData: RepoData[],
   repoOwner: string,  // GitHub owner of the repos (e.g. "cyberdem0n")
-  fromDate?: string   // ISO date string for date-gating stale issue context
+  fromDate?: Date     // Date object for date-gating stale issue context
 ): Promise<ArticleIssueContext[]> {
+  const fromDateStr = fromDate?.toISOString().slice(0, 10);
   // Deduplicate repos — one fetch pass per repo, not per article
-  const chosenRepoNames = [...new Set(articles.map(a => a.repo))];
+  // Include all repos from multi-repo articles (repos array)
+  const chosenRepoNames = [...new Set(articles.flatMap(a => a.repos && a.repos.length > 0 ? a.repos : [a.repo]))];
   const results: ArticleIssueContext[] = [];
 
   for (const repoName of chosenRepoNames) {
     const repoData = reposData.find(r => r.name === repoName);
     if (!repoData) continue;
 
-    const candidatePRs = repoData.mergedPRs.slice(0, 10);
+    const candidatePRs = repoData.mergedPRs.slice(0, 20);
     if (candidatePRs.length === 0) continue;
 
     // PR bodies are already in cache from getRepoData; fetchPrBody only as fallback
@@ -244,11 +254,11 @@ async function enrichArticlesWithIssueContext(
 
     if (linkedIssueNums.size === 0) continue;
 
-    // Fetch issue context in parallel (cap at 5 issues per repo)
+    // Fetch issue context in parallel (cap at 10 issues per repo)
     // Pass fromDate so stale closed issues are excluded (date-gate)
     const issueContexts = (await Promise.all(
-      Array.from(linkedIssueNums).slice(0, 5).map(num =>
-        fetchIssueContext(repoOwner, repoData.name, num, fromDate)
+      Array.from(linkedIssueNums).slice(0, 10).map(num =>
+        fetchIssueContext(repoOwner, repoData.name, num, fromDateStr)
       )
     )).filter(Boolean);
 
@@ -691,6 +701,20 @@ async function generateIllustration(subject: string, cacheKey?: string): Promise
         // (threshold: pixels with luminance > 220 become alpha=0) → sharpen → PNG.
         // This lets illustrations sit directly on the paper background like
         // real newspaper engravings rather than rectangular photo boxes.
+        // Pre-check: reject images with dark backgrounds (corners dark = dark bg, not ink)
+        const { data: rawData, info: rawInfo } = await sharp(rawBuf).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+        const { width: rw, height: rh, channels: rc } = rawInfo;
+        const cornerSamplesG = [[20,20],[rw-20,20],[20,rh-20],[rw-20,rh-20],[100,100],[rw-100,100],[100,rh-100],[rw-100,rh-100]];
+        const darkOpaqueCntG = cornerSamplesG.filter(([x,y]) => {
+          const o = (y*rw+x)*rc;
+          const isOpaque = rc < 4 || rawData[o+3] > 20;
+          const lum = 0.299*rawData[o]+0.587*rawData[o+1]+0.114*rawData[o+2];
+          return isOpaque && lum < 100;
+        }).length;
+        if (darkOpaqueCntG >= 6) {
+          console.warn(`  ✗ Gemini returned dark-bg image, skipping`);
+          continue;
+        }
         const processed = await sharp(rawBuf)
           .grayscale()
           .normalise()
@@ -702,12 +726,13 @@ async function generateIllustration(subject: string, cacheKey?: string): Promise
           .raw()
           .toBuffer({ resolveWithObject: true })
           .then(({ data, info }) => {
-            const { width, height, channels } = info; // channels = 4 (RGBA)
-            const threshold = 220; // pixels brighter than this become transparent
+            const { width, height, channels } = info;
+            const threshold = 170; // pixels brighter than this become transparent
             for (let i = 0; i < width * height; i++) {
-              const r = data[i * channels];
-              // if luminance > threshold, set alpha to 0 (transparent)
-              if (r > threshold) data[i * channels + 3] = 0;
+              const o = i * channels;
+              const r = data[o];
+              // use channels-1 for alpha byte (works for both 2-channel gray+alpha and 4-channel RGBA)
+              if (r > threshold) data[o + channels - 1] = 0;
             }
             return sharp(data, { raw: { width, height, channels } })
               .png({ compressionLevel: 8 })
@@ -818,6 +843,8 @@ async function generateCopy(
   editionNote: string;
   articles: Array<{
     repo: string;
+    repos?: string[];    // all repos this article touches (1-3); falls back to [repo]
+    date?: string;       // YYYY-MM-DD of the key event (release date or merged PR date)
     headline: string;
     deck: string;
     body: string;
@@ -836,7 +863,7 @@ async function generateCopy(
         date: rel.date,
         highlights: rel.body.replace(/`/g, "'").replace(/\\/g, "/").slice(0, 2000),
       })),
-      mergedPRs: r.mergedPRs.slice(0, 10).map((p) => ({ title: p.title, author: p.author, url: p.url, number: p.number })),
+      mergedPRs: r.mergedPRs.slice(0, 20).map((p) => ({ title: p.title, author: p.author, url: p.url, number: p.number, date: p.date })),
       openPRs: r.openPRs.slice(0, 5).map((p) => ({ title: p.title, author: p.author, url: p.url, number: p.number })),
       openIssues: r.openIssues.slice(0, 5).map((i) => ({ title: i.title })),
       commitCount: r.commitCount,
@@ -890,21 +917,28 @@ ${issueContextBlock}${correctionNote ? `\n${correctionNote}\n` : ""}${examplesBl
 Return a JSON object with this exact structure:
 {
   "masthead": "the dispatch",
-  "tagline": "a one-line tagline for this week (witty, specific to what happened)",
-  "editionNote": "one sentence edition note (e.g. 'Six releases. Two repos. One very productive week.')",
+  "tagline": "a one-line tagline for this week — dry, specific, the kind of thing a senior engineer would put on a t-shirt or mutter under their breath. Not 'exciting week' or 'lots of fixes'. Something like: 'turns out the parser wasn't walking all the way down' or 'OIDs: still 32 bits in someone's head, 64 bits in reality'",
+  "editionNote": "one punchy sentence. Engineer humor — self-aware, slightly dark, grounded in what actually happened. Not 'busy week'. Example: 'Three data corruption bugs fixed. One of them existed since day one.'",
   "articles": [
     {
-      "repo": "repo name",
+      "repo": "primary repo name (exactly as listed in AVAILABLE REPOS)",
+      "repos": ["primary repo", "other repo if cross-repo work"],
+      "date": "YYYY-MM-DD of the key event — use the release date or merged PR date from the data",
       "headline": "punchy newspaper headline",
       "deck": "one-sentence italic subheading expanding on the headline",
-      "body": "2-4 sentence article body. Reference specific features/PRs from the data. Mention pending work if notable.",
+      "body": "2-4 sentences. Lead with the situation or failure mode — not '@owner merged #N'. Name what was broken and why it mattered, then what specifically changed, then what happens now. Be specific (name the PR, the error code, the function if it's known). Write with personality: a dry aside, an unexpected consequence, or a line that makes an engineer snort is better than a third sentence of neutral explanation. Think: sharp Hacker News comment by someone who actually read the diff.",
       "tag": "RELEASE | FEATURE | SECURITY | PENDING | COMMUNITY",
       "illustrationPrompt": "a single CONCRETE PHYSICAL OBJECT with an IRREGULAR NON-RECTANGULAR SILHOUETTE for a Victorian woodcut engraving (8-12 words). The object MUST have protruding parts, curves, or asymmetric edges — NOT a box, rectangle, or simple geometric shape. Good: 'an ornate hourglass on a wrought-iron stand with scrollwork legs', 'a gnarled oak tree with sprawling bare branches', 'a Victorian gentleman holding a pocket watch on a chain', 'an octopus wrapping tentacles around an anchor'. Bad: 'a stack of books', 'a server rack', 'a balance scale' (too rectangular). No screens, dashboards, monitors, or UI elements. No text, signs, or labels.",
       "illustrate": false
     }
   ],
-  "closingNote": "one-line sign-off at the bottom of the paper (dry, funny)"
+  "closingNote": "one-line sign-off. Dry engineer humor — the kind of thing that makes you exhale through your nose. Something like 'shipping is easy; reading your own query tree is hard' or 'data arrived N times. now it arrives once. progress.' Not inspirational. Not corporate."
 }
+
+FIELD RULES:
+- "repos": list ALL repos the article meaningfully touches. Single-repo work: just ["repo"]. Cross-repo work (e.g. a fix that affects two projects): list both. Never list more than 3.
+- "date": pick the most relevant event date from the data (release date, or merged PR date). Use ISO format YYYY-MM-DD. If multiple events, use the most recent one for this article.
+- "repo": must match exactly one of the AVAILABLE REPOS names. Use the first entry of "repos" as primary.
 
 Order articles by newsworthiness (releases > big features > pending work).
 Maximum 8 articles total — pick the most newsworthy, drop the rest.
@@ -975,22 +1009,23 @@ async function evalCopy(copy: any, evalType: "kukushkin" | "anti-boring"): Promi
   ).join("\n\n");
 
   const prompts: Record<string, string> = {
-    kukushkin: `You are a skeptical senior engineer reviewing AI-generated engineering newsletter copy for quality and accuracy. 
+    kukushkin: `You are reviewing AI-generated engineering newsletter copy for factual accuracy. Be lenient about style and wit — the goal is entertainment, not a dry changelog.
 
-Evaluate this dispatch copy for ANTI-SLOP quality (the "Kukushkin test"):
-- Does each headline name the actual mechanism, not just the outcome?
-- Does each body explain what was broken BEFORE, what specifically CHANGED, and what the EFFECT is?
-- Are there any vague drama words or colloquialisms: "haunted", "plagued", "momentarily silent", "in the wild", "for years", "into the dark", "trip", "fights", "land somewhere safe"?
-- Within a single article, are unrelated PRs bundled? (Note: having multiple articles in one dispatch is correct and expected — do NOT flag this)
-- Are there any invented technical terms, class names, or method names that seem suspicious?
-- Is any article a PENDING piece about open issues in someone else's repo?
+Evaluate ONLY for these hard failures:
+- Does a headline or body invent technical terms, class names, method names, or PR numbers not in the data?
+- Is any article a PENDING piece about open issues in someone else's repo (not the author's work)?
 - Does any body contain raw markdown syntax like [text](url) or **bold** instead of HTML?
+- Are multiple clearly unrelated PRs bundled into one article with no connecting narrative?
+
+DO NOT flag: wit, humor, metaphors, colloquialisms, dramatic language, or punchy phrasing — these are features, not bugs.
+DO NOT flag: vague-sounding language unless it's factually wrong.
+DO NOT flag: headlines that are outcome-focused rather than mechanism-focused — both styles are valid.
 
 Copy to evaluate:
 ${summary}
 
 Respond with JSON only: {"pass": true/false, "complaints": ["specific complaint 1", "specific complaint 2"]}
-Pass if there are no serious problems. Limit to max 4 most important complaints. Be specific about which headline or sentence fails.`,
+Only fail if there are hard accuracy or structural problems. Max 2 complaints. Be specific.`,
 
     "anti-boring": `You are a sharp tech editor evaluating whether an engineering newsletter is worth reading.
 
@@ -1178,9 +1213,29 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
     const rangeMs = toMs - fromMs;
     const PAD = 30; // horizontal padding so edge labels don't clip
     const tlW = 400;
-    const tlH = allReleases.length > 3 ? 100 : 80;
-    const lineY = tlH - 22;
     const drawW = tlW - PAD * 2;
+
+    // Compute lane assignments first so we know how tall the SVG needs to be.
+    const oneDayPx = drawW / 7;
+    const releaseXs = allReleases.map((rel) =>
+      PAD + Math.round(((new Date(rel.date).getTime() - fromMs) / rangeMs) * drawW)
+    );
+    // Count prior releases within 1 day — use as unique lane index (no modulo so same-day labels don't collide).
+    const lanes = allReleases.map((_, i) => {
+      let cluster = 0;
+      for (let j = i - 1; j >= 0; j--) {
+        if (Math.abs(releaseXs[i] - releaseXs[j]) <= oneDayPx) {
+          cluster++;
+        } else {
+          break;
+        }
+      }
+      return cluster;
+    });
+    const maxLane = Math.max(2, ...lanes); // at least 3 lanes
+    const numLanes = maxLane + 1;
+    const tlH = 22 + numLanes * 22 + 30; // dynamic height based on busiest day
+    const lineY = tlH - 22;
 
     const dayTicks = [];
     for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
@@ -1188,18 +1243,17 @@ function buildDataGraphics(reposData: RepoData[], from: Date, to: Date): string 
       dayTicks.push(`<line x1="${x}" y1="${lineY - 4}" x2="${x}" y2="${lineY + 4}" stroke="#aaa" stroke-width="1"/>`);
       dayTicks.push(`<text x="${x}" y="${tlH - 4}" font-family="IBM Plex Mono,monospace" font-size="8" fill="#aaa" text-anchor="middle">${d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase()}</text>`);
     }
-
-    // group releases by day to stagger overlapping labels
     const dots = allReleases.map((rel, i) => {
-      const x = PAD + Math.round(((new Date(rel.date).getTime() - fromMs) / rangeMs) * drawW);
-      const row = i % 3; // up to 3 rows to spread crowded dates
+      const x = releaseXs[i];
+      const row = lanes[i];
       const dotY = lineY - 20 - row * 22;
       // clamp label x so it never goes outside viewBox
       const lx = Math.min(Math.max(x, PAD + 20), tlW - PAD - 20);
       return `
-        <line x1="${x}" y1="${dotY + 6}" x2="${x}" y2="${lineY}" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
-        <circle cx="${x}" cy="${dotY}" r="5" fill="#0f0f0f"/>
-        <text x="${lx}" y="${dotY - 7}" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">${rel.repo} ${rel.tag}</text>`;
+        <line x1="${x}" y1="${lineY}" x2="${x}" y2="${dotY + 7}" stroke="#bbb" stroke-width="0.8" stroke-dasharray="2,2"/>
+        <circle cx="${x}" cy="${lineY}" r="4" fill="#0f0f0f"/>
+        <circle cx="${x}" cy="${dotY}" r="3" fill="#0f0f0f"/>
+        <text x="${lx}" y="${dotY - 5}" font-family="IBM Plex Mono,monospace" font-size="8" fill="#0f0f0f" text-anchor="middle" font-weight="600">${rel.repo} ${rel.tag}</text>`;
     });
 
     releaseTimeline = `
@@ -1295,12 +1349,13 @@ function balanceColumns(
 }
 
 function renderArticle(
-  article: { repo: string; headline: string; deck: string; body: string; tag: string },
+  article: { repo: string; repos?: string[]; date?: string; headline: string; deck: string; body: string; tag: string },
   repoData: RepoData,
   level: "h1" | "h2" | "h3",
   imageIndex: number = 0, // which demo image to use (if any)
   showMeta: boolean = true, // false = skip release/PR links (already shown for this repo)
   imgAlign: "left" | "right" = "left", // alternate illustration alignment
+  allRepos?: RepoData[],  // full repo list for resolving multi-repo links
 ): string {
   const releaseLinks = showMeta ? repoData.releases
     .map(
@@ -1334,7 +1389,7 @@ function renderArticle(
   // Fallback: regular float layout (text always visible even if JS fails).
   const bodyContent = article.body.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/`/g, '');
 
-  const floatMargin = imgAlign === 'left' ? 'margin:4px 18px 12px 0' : 'margin:4px 0 12px 18px';
+  const floatMargin = imgAlign === 'left' ? 'margin:4px 18px 14px 0' : 'margin:4px 0 12px 18px';
   const bodyHtml = illustration
     ? `<div class="shape-wrap-block" data-img="${illustration}" data-align="${imgAlign}">
         <img src="${illustration}" class="shape-img" crossorigin="anonymous" alt="" style="float:${imgAlign};width:42%;max-width:220px;height:auto;${floatMargin};display:block;">
@@ -1343,10 +1398,24 @@ function renderArticle(
       </div>`
     : `<p class="body-text">${bodyContent}</p>`;
 
+  // Repo chips — show all repos if multi-repo, just primary if single
+  const repoList = article.repos && article.repos.length > 0 ? article.repos : [article.repo];
+  const repoChips = repoList.map(rname => {
+    const rd = allRepos?.find(r => r.name === rname) ?? (rname === repoData.name ? repoData : null);
+    const url = rd?.url ?? repoData.url;
+    return `<a href="${url}" class="repo-chip">${rname}</a>`;
+  }).join(" ");
+
+  // Date stamp — shown only if LLM provided it
+  const dateStamp = article.date
+    ? `<span class="article-date">${new Date(article.date + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>`
+    : "";
+
   return `
     <div class="article">
+      <div class="article-meta">${repoChips}${dateStamp}</div>
       <div class="tag">${article.tag}</div>
-      <${level}><a href="${repoData.url}" class="headline-link">${article.headline}</${level}>
+      <${level}><a href="${(() => { const m = article.body.match(/href="(https:\/\/github\.com\/[^"]+\/(?:pull|releases\/tag|issues)\/[^"]+)"/); return m ? m[1] : repoData.url; })()}" class="headline-link">${article.headline}</${level}>
       <p class="deck">${article.deck}</p>
       ${bodyHtml}
       ${repoImageHtml}
@@ -1463,7 +1532,7 @@ async function buildHtml(
       // TODO: re-enable right-align once shape-wrap contour scanning is fixed (issue #7)
       // For now, always left-align — right-align has text overlap bugs
       const align: "left" | "right" = "left";
-      return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0, showMeta, align);
+      return renderArticle(a, articleRepo, level as "h1" | "h2" | "h3", 0, showMeta, align, reposData);
     });
 
   // Split page-1 articles into two balanced columns using pretext height measurement.
@@ -1523,8 +1592,9 @@ async function buildHtml(
   .header-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; overflow: hidden; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
   .header-meta .meta-left { white-space: nowrap; }
   .header-meta .meta-right { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
-  .masthead { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(32px,7vw,64px); letter-spacing: -.03em; line-height: 1; }
-  .masthead span { color: var(--muted); font-weight: 400; }
+  .masthead { line-height: 1; display: flex; align-items: baseline; gap: 6px; }
+  .masthead .mh-the { font-family: 'IBM Plex Serif', serif; font-style: italic; font-weight: 400; font-size: clamp(16px,3vw,28px); color: var(--muted); }
+  .masthead .mh-title { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(34px,7.5vw,68px); letter-spacing: -.03em; color: var(--ink); }
   .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .edition-bar { margin-top: 12px; padding: 6px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .05em; display: flex; flex-wrap: nowrap; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   .edition-bar::-webkit-scrollbar { display: none; }
@@ -1544,13 +1614,17 @@ async function buildHtml(
 
   /* articles */
   .article { margin-bottom: 24px; }
+  .article-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+  .repo-chip { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; color: var(--muted); text-decoration: none; letter-spacing: .04em; border-bottom: 1px solid var(--rule); }
+  .repo-chip:hover { color: var(--ink); border-bottom-color: var(--ink); }
+  .article-date { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); margin-left: auto; white-space: nowrap; }
   h1 { font-family: 'IBM Plex Serif', serif; font-size: clamp(22px,4vw,36px); font-weight: 700; line-height: 1.1; margin-bottom: 8px; }
   h2 { font-family: 'IBM Plex Serif', serif; font-size: clamp(16px,3vw,22px); font-weight: 700; line-height: 1.15; margin-bottom: 6px; }
   h3 { font-family: 'IBM Plex Serif', serif; font-size: 15px; font-weight: 700; line-height: 1.2; margin-bottom: 4px; }
   .headline-link { color: var(--ink); text-decoration: none; }
   .headline-link:hover { text-decoration: underline; }
   .deck { font-family: 'IBM Plex Serif', serif; font-style: italic; font-size: 14px; line-height: 1.55; color: #333; margin-bottom: 10px; }
-  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; }
+  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; text-align: justify; }
   .body-text a { color: var(--link); text-decoration: none; border-bottom: 1px solid var(--link); }
   .body-text a:hover { border-bottom-color: var(--ink); color: var(--ink); }
   .body-text code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 2px; }
@@ -1739,7 +1813,7 @@ async function shapeWrap(block) {
     );
     // Only stop shape-wrapping when we're truly past the image bottom
     if (y >= imgDisplayH && occupied === 0) break;
-    const availW = Math.max(containerW - occupied, 80);
+    const availW = Math.max(containerW - occupied - 20, 80);
     const line = layoutNextLine(prepared, cursor, availW);
     if (!line) break;
 
@@ -1840,7 +1914,7 @@ function relayout(block) {
   const lines = [];
   while (true) {
     const occupied = getOccupiedWidthForBand(d.profile, y, y + d.lineHeight, imgDisplayW, imgDisplayH, d.canvas.width, d.canvas.height, d.gap);
-    const availW = Math.max(containerW - occupied, 80);
+    const availW = Math.max(containerW - occupied - 20, 80);
     const line = layoutNextLine(prepared, cursor, availW);
     if (!line) break;
     lines.push({ text: line.text, occupied, y });
@@ -1892,15 +1966,18 @@ document.fonts.ready.then(() => {
 <div class="paper">
   <div class="header">
     <div class="header-kicker">
-      <span class="kicker-text"><a href="https://github.com/${ownerHandle}" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@${ownerHandle}</a> <span style="font-weight:400;letter-spacing:.12em;">— open-source digest</span></span>
-      <span class="kicker-date">${fromLabel} – ${toLabel}</span>
+      <span class="kicker-text"><a href="https://github.com/${ownerHandle}" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@${ownerHandle}</a></span>
+      <span style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
+        <button onclick="document.getElementById('dark-modal').style.display='flex'" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--ink);color:var(--ink);cursor:pointer;padding:2px 7px;border-radius:2px;" title="switch theme">◑ DARK</button>
+        <span class="kicker-date">${fromLabel} – ${toLabel}</span>
+      </span>
     </div>
     <div class="header-meta">
       <span class="meta-left">Vol. ${vol}, No. ${issue}</span>
-      <span class="meta-right">github.com/${ownerHandle}</span>
+      <span class="meta-right"><a href="https://github.com/${ownerHandle}" style="color:var(--muted);">github.com/${ownerHandle}</a></span>
     </div>
-    <div class="masthead">the <span>dispatch</span></div>
-    <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(13px,2.5vw,18px);font-weight:700;letter-spacing:.06em;margin-top:4px;"><a href="https://github.com/${ownerHandle}" style="color:var(--ink);text-decoration:none;">@${ownerHandle}</a></div>
+    <div class="masthead"><span class="mh-the">the</span><span class="mh-title">dispatch</span></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px;">open-source digest</div>
     <div class="tagline">${copy.tagline}</div>
     <div class="edition-bar">
       <span>${totalCommits} commits</span>
@@ -1920,7 +1997,7 @@ document.fonts.ready.then(() => {
   </div>
   <div class="footer">
     <span>${copy.closingNote}</span>
-    <span>generated ${new Date().toISOString().slice(0, 10)}</span>
+    <span>${new Date().getFullYear()} &copy; AISlopMedia, Inc.</span>
   </div>
 </div><!-- /paper page 1 -->
 
@@ -1951,11 +2028,24 @@ document.fonts.ready.then(() => {
   </div>
   <div class="footer">
     <span>the dispatch is generated weekly from live GitHub data</span>
-    <span>github.com/NikolayS/dispatch</span>
+    <span>${new Date().getFullYear()} &copy; AISlopMedia, Inc.</span>
   </div>
 </div><!-- /paper page 2 -->
 
 </div><!-- /broadsheet-wrap -->
+
+<!-- dark mode modal -->
+<div id="dark-modal" style="display:none;position:fixed;inset:0;background:rgba(15,15,15,.75);z-index:9999;align-items:center;justify-content:center;padding:24px;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#f7f4ee;max-width:380px;width:100%;padding:32px 28px 28px;font-family:'IBM Plex Mono',monospace;border:1px solid #c8c2b4;position:relative;">
+    <div style="font-size:28px;margin-bottom:14px;line-height:1;">🖨️</div>
+    <p style="font-size:13px;font-weight:700;line-height:1.5;margin-bottom:10px;">dark mode would consume too much ink.</p>
+    <p style="font-size:11px;line-height:1.75;color:#666;margin-bottom:22px;">we're a print publication. rendering dark backgrounds requires significantly more ink per page. we'd love to support it, but we need donations first.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="https://github.com/NikolayS/gitzette" target="_blank" rel="noopener" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;background:#0f0f0f;color:#f7f4ee;padding:10px 18px;text-decoration:none;white-space:nowrap;">donate to ink fund →</a>
+      <button onclick="document.getElementById('dark-modal').style.display='none'" style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:none;border:1px solid #c8c2b4;padding:10px 18px;cursor:pointer;color:#555;white-space:nowrap;">keep it light ☀</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>`;
 }
@@ -1973,6 +2063,17 @@ async function main() {
 
   const cacheKey = `${provider}_${owner}_${from.toISOString().slice(0, 10)}_${to.toISOString().slice(0, 10)}`;
   const cacheDir = join(ROOT, ".cache");
+
+  // Compute ISO week key (e.g. "2026-W14") for week-specific incident injection
+  function isoWeekKey(d: Date): string {
+    const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    // Thursday of the week (ISO week belongs to the year of its Thursday)
+    tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+    const week = Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    return `${tmp.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+  }
+  const weekKey = isoWeekKey(to);
   const cacheFile = join(cacheDir, `${cacheKey}.json`);
 
   let reposData: RepoData[];
@@ -2101,7 +2202,13 @@ async function main() {
   } else {
     console.log(`\ngenerating copy via LLM (${config.model})...`);
     // only inject knownIncidents for the configured owner, not arbitrary --owner overrides
-    const incidents = (owner === config.owner) ? (config.knownIncidents || []) : [];
+    // knownIncidentsByWeek: only inject incidents that match the current ISO week (prevents stale incidents bleeding into future weeks)
+    const incidents = (owner === config.owner)
+      ? [
+          ...(config.knownIncidents || []),
+          ...((config.knownIncidentsByWeek || {})[weekKey] || []),
+        ]
+      : [];
     // fetch human-approved/rejected examples to guide the LLM
     const examples = await fetchExamples();
     if (examples.gold.length > 0 || examples.bad.length > 0) {

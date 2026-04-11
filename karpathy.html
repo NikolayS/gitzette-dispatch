@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>the dispatch — Vol. 1, No. 2</title>
+<title>the dispatch — Vol. 1, No. 5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -29,11 +29,13 @@
     .broadsheet-wrap { display: flex; align-items: flex-start; gap: 0; max-width: 1900px; margin: 32px auto; }
     .broadsheet-wrap .paper { max-width: none; flex: 1; margin: 0; box-shadow: 0 4px 24px rgba(0,0,0,.2); }
     .broadsheet-wrap .paper.page-2 { display: block; border-left: 3px double var(--rule); margin-left: -1px; }
+    .broadsheet-wrap .paper.page-2 .body { display: grid; grid-template-columns: 3fr 2fr; gap: 0 24px; }
+    .broadsheet-wrap .paper.page-2 .body > .articles-p2 { grid-column: 1; }
+    .broadsheet-wrap .paper.page-2 .body > .data-graphics-wrap { grid-column: 2; grid-row: 1 / span 3; }
+    .broadsheet-wrap .paper.page-2 .body > .repo-index-wrap { grid-column: 1 / -1; }
     /* on broadsheet, hide p2 articles from page 1 (they move to page 2) */
     .broadsheet-wrap .paper:first-child .articles-p2 { display: none; }
-    /* on broadsheet, hide the sidebar from page 1 (stats + p2 articles move to page 2) */
-    .broadsheet-wrap .paper:first-child .grid-2-1 { grid-template-columns: 1fr; }
-    .broadsheet-wrap .paper:first-child .grid-2-1 .col:last-child { display: none; }
+    /* grid-2 stays two-column on broadsheet (both cols have articles) */
   }
 
   /* header */
@@ -46,8 +48,9 @@
   .header-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; overflow: hidden; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
   .header-meta .meta-left { white-space: nowrap; }
   .header-meta .meta-right { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
-  .masthead { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(32px,7vw,64px); letter-spacing: -.03em; line-height: 1; }
-  .masthead span { color: var(--muted); font-weight: 400; }
+  .masthead { line-height: 1; display: flex; align-items: baseline; gap: 6px; }
+  .masthead .mh-the { font-family: 'IBM Plex Serif', serif; font-style: italic; font-weight: 400; font-size: clamp(16px,3vw,28px); color: var(--muted); }
+  .masthead .mh-title { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: clamp(34px,7.5vw,68px); letter-spacing: -.03em; color: var(--ink); }
   .tagline { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .edition-bar { margin-top: 12px; padding: 6px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .05em; display: flex; flex-wrap: nowrap; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   .edition-bar::-webkit-scrollbar { display: none; }
@@ -57,7 +60,7 @@
   /* body */
   .body { padding: 0 24px 32px; }
   .grid { display: grid; grid-template-columns: 1fr; gap: 0; }
-  @media (min-width: 640px) { .grid-2-1 { grid-template-columns: 3fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
+  @media (min-width: 640px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-2-1 { grid-template-columns: 3fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
   .col { padding: 20px 20px 0 0; }
   .col:last-child { padding-right: 0; }
   @media (min-width: 640px) { .col { border-right: 1px solid var(--rule); } .col:last-child { border-right: none; padding-left: 20px; } .grid-3 .col { padding: 20px 16px 0; } .grid-3 .col:first-child { padding-left: 0; } .grid-3 .col:last-child { padding-right: 0; } }
@@ -67,15 +70,19 @@
 
   /* articles */
   .article { margin-bottom: 24px; }
+  .article-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+  .repo-chip { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; color: var(--muted); text-decoration: none; letter-spacing: .04em; border-bottom: 1px solid var(--rule); }
+  .repo-chip:hover { color: var(--ink); border-bottom-color: var(--ink); }
+  .article-date { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); margin-left: auto; white-space: nowrap; }
   h1 { font-family: 'IBM Plex Serif', serif; font-size: clamp(22px,4vw,36px); font-weight: 700; line-height: 1.1; margin-bottom: 8px; }
   h2 { font-family: 'IBM Plex Serif', serif; font-size: clamp(16px,3vw,22px); font-weight: 700; line-height: 1.15; margin-bottom: 6px; }
   h3 { font-family: 'IBM Plex Serif', serif; font-size: 15px; font-weight: 700; line-height: 1.2; margin-bottom: 4px; }
   .headline-link { color: var(--ink); text-decoration: none; }
   .headline-link:hover { text-decoration: underline; }
   .deck { font-family: 'IBM Plex Serif', serif; font-style: italic; font-size: 14px; line-height: 1.55; color: #333; margin-bottom: 10px; }
-  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; }
-  .body-text a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
-  .body-text a:hover { border-bottom-color: var(--ink); }
+  .body-text { font-size: 14px; line-height: 1.65; margin-bottom: 8px; text-decoration: none; text-align: justify; }
+  .body-text a { color: var(--link); text-decoration: none; border-bottom: 1px solid var(--link); }
+  .body-text a:hover { border-bottom-color: var(--ink); color: var(--ink); }
   .body-text code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 2px; }
   .release-links, .pr-links { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
   .release-link { font-weight: 600; color: var(--ink); }
@@ -91,89 +98,392 @@
   /* footer */
   .footer { padding: 12px 24px; border-top: 2px solid var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
 </style>
+<script type="module">
+import { prepareWithSegments, layoutNextLine } from 'https://esm.sh/@chenglou/pretext@0.0.3';
+
+// ── Per-row alpha contour scan (same logic as scripts/shape-wrap.ts) ──
+function scanContourProfile(rgba, width, height, threshold) {
+  const raw = new Array(height);
+  for (let y = 0; y < height; y++) {
+    let rightmost = 0;
+    const rowOffset = y * width * 4;
+    for (let x = width - 1; x >= 0; x--) {
+      if (rgba[rowOffset + x * 4 + 3] > threshold) {
+        rightmost = x + 1;
+        break;
+      }
+    }
+    raw[y] = rightmost;
+  }
+  // Dilate: each row takes the max of ±radius neighbors.
+  // This fills gaps in thin cross-hatching (tripod legs, watch chains, coat edges).
+  const radius = Math.max(20, Math.round(height * 0.04));
+  const dilated = new Array(height);
+  for (let y = 0; y < height; y++) {
+    let mx = raw[y];
+    for (let dy = -radius; dy <= radius; dy++) {
+      const ny = y + dy;
+      if (ny >= 0 && ny < height && raw[ny] > mx) mx = raw[ny];
+    }
+    dilated[y] = mx;
+  }
+  // Vertical fill: if rows above AND below a gap have content, fill the gap.
+  // This prevents contour from dropping to 0 between e.g. a table top and its legs.
+  const profile = [...dilated];
+  let lastOccupied = -1;
+  for (let y = 0; y < height; y++) {
+    if (profile[y] > 0) {
+      // Fill any gap between lastOccupied and here
+      if (lastOccupied >= 0 && y - lastOccupied > 1) {
+        const fillW = Math.max(profile[lastOccupied], profile[y]);
+        for (let fy = lastOccupied + 1; fy < y; fy++) {
+          profile[fy] = Math.max(profile[fy], fillW);
+        }
+      }
+      lastOccupied = y;
+    }
+  }
+  // Bottom padding: extend the contour below the last detected row.
+  // Illustrations have fading cross-hatching at the bottom that pixel detection
+  // always misses. Add 8% of image height as extra protected rows.
+  if (lastOccupied > 0) {
+    const bottomPad = Math.round(height * 0.15);
+    const padWidth = profile[lastOccupied];
+    for (let y = lastOccupied + 1; y < Math.min(height, lastOccupied + bottomPad); y++) {
+      profile[y] = Math.max(profile[y], padWidth);
+    }
+  }
+  return profile;
+}
+
+function getOccupiedWidthForBand(profile, bandTopPx, bandBottomPx, imgDisplayW, imgDisplayH, imgNaturalW, imgNaturalH, gap) {
+  if (bandTopPx >= imgDisplayH) return 0;
+  const scale = imgNaturalH / imgDisplayH;
+  const startRow = Math.floor(bandTopPx * scale);
+  const endRow = Math.min(Math.ceil(Math.min(bandBottomPx, imgDisplayH) * scale), profile.length);
+  let maxNatural = 0;
+  for (let row = startRow; row < endRow; row++) {
+    if (profile[row] > maxNatural) maxNatural = profile[row];
+  }
+  if (maxNatural === 0) return 0;
+  return Math.round(maxNatural * (imgDisplayW / imgNaturalW) + gap);
+}
+
+// ── HTML tag/text splitting for preserving inline links ──
+function splitTextAndTags(html) {
+  if (!html) return [];
+  const segments = [];
+  const re = /<\/?[a-zA-Z][^>]*\/?>/g;
+  let last = 0, m;
+  while ((m = re.exec(html)) !== null) {
+    if (m.index > last) segments.push({ type: 'text', content: html.slice(last, m.index) });
+    segments.push({ type: 'tag', content: m[0] });
+    last = re.lastIndex;
+  }
+  if (last < html.length) segments.push({ type: 'text', content: html.slice(last) });
+  return segments;
+}
+
+async function shapeWrap(block) {
+  const imgEl = block.querySelector('.shape-img');
+  const fallbackEl = block.querySelector('.shape-wrap-fallback');
+  if (!imgEl || !fallbackEl) return;
+
+  const htmlBody = fallbackEl.innerHTML;
+  const segments = splitTextAndTags(htmlBody);
+  const plainText = segments.filter(s => s.type === 'text').map(s => s.content).join('');
+  if (!plainText.trim()) return;
+
+  // Wait for font to be ready
+  await document.fonts.ready;
+
+  // Read font from CSS computed style (matches .body-text exactly)
+  const cs = getComputedStyle(fallbackEl);
+  const fontSize = parseFloat(cs.fontSize) || 14;
+  const lineHeight = parseFloat(cs.lineHeight) || fontSize * 1.65;
+  const font = fontSize + 'px "IBM Plex Serif", Georgia, serif';
+
+  // Load image into canvas for alpha scanning
+  const imgSrc = block.dataset.img;
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  try {
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = imgSrc; });
+  } catch { return; } // CORS or network fail → keep float fallback
+
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+
+  let imageData;
+  try {
+    imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  } catch { return; } // tainted canvas → keep float fallback
+
+  const align = block.dataset.align || 'left';
+  // Scan alpha contour per row.
+  // For right-aligned images, we need to scan from the right edge inward (leftmost opaque pixel).
+  // Flip the image data horizontally so scanContourProfile still finds "rightmost" but in mirror.
+  let scanData = imageData.data;
+  if (align === 'right') {
+    scanData = new Uint8ClampedArray(imageData.data);
+    const w = canvas.width, h = canvas.height;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < Math.floor(w / 2); x++) {
+        const l = (y * w + x) * 4;
+        const r = (y * w + (w - 1 - x)) * 4;
+        for (let c = 0; c < 4; c++) {
+          const tmp = scanData[l + c];
+          scanData[l + c] = scanData[r + c];
+          scanData[r + c] = tmp;
+        }
+      }
+    }
+  }
+  const profile = scanContourProfile(scanData, canvas.width, canvas.height, 5);
+
+  // Get display dimensions
+  const imgRect = imgEl.getBoundingClientRect();
+  const imgDisplayW = imgRect.width;
+  const imgDisplayH = imgRect.height;
+  const containerW = block.parentElement.clientWidth || 600;
+  const gap = 36;
+
+  // Lay out text line by line with per-row contour widths
+  const prepared = prepareWithSegments(plainText, font);
+  let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+  let y = 0;
+  const linesContainer = document.createElement('div');
+
+  // Track character position for HTML tag reinsertion
+  let charPos = 0;
+  const lines = [];
+
+  while (true) {
+    const occupied = getOccupiedWidthForBand(
+      profile, y, y + lineHeight,
+      imgDisplayW, imgDisplayH,
+      canvas.width, canvas.height, gap
+    );
+    // Only stop shape-wrapping when we're truly past the image bottom
+    if (y >= imgDisplayH && occupied === 0) break;
+    const availW = Math.max(containerW - occupied - 20, 80);
+    const line = layoutNextLine(prepared, cursor, availW);
+    if (!line) break;
+
+    lines.push({ text: line.text, occupied, y });
+    cursor = line.end;
+    y += lineHeight;
+    charPos += line.text.length;
+  }
+
+  // Rebuild lines with HTML tags reinserted
+  let globalCharIdx = 0;
+  let segIdx = 0;
+  let segCharIdx = 0; // position within current text segment
+
+  for (const lineInfo of lines) {
+    const div = document.createElement('div');
+    const marginProp = align === 'right' ? 'margin-right' : 'margin-left';
+    div.style.cssText = marginProp + ':' + lineInfo.occupied + 'px;font:' + font + ';line-height:' + lineHeight + 'px;';
+
+    let lineHtml = '';
+    let remaining = lineInfo.text.length;
+
+    while (remaining > 0 && segIdx < segments.length) {
+      const seg = segments[segIdx];
+      if (seg.type === 'tag') {
+        lineHtml += seg.content;
+        segIdx++;
+      } else {
+        const avail = seg.content.length - segCharIdx;
+        const take = Math.min(avail, remaining);
+        lineHtml += seg.content.slice(segCharIdx, segCharIdx + take);
+        segCharIdx += take;
+        remaining -= take;
+        if (segCharIdx >= seg.content.length) { segIdx++; segCharIdx = 0; }
+      }
+    }
+    // Flush any tags at end of text
+    while (segIdx < segments.length && segments[segIdx].type === 'tag') {
+      lineHtml += segments[segIdx].content;
+      segIdx++;
+    }
+
+    div.innerHTML = lineHtml;
+    linesContainer.appendChild(div);
+  }
+
+  // Remaining text (below the image) goes into a normal reflowing paragraph
+  if (segIdx < segments.length || segCharIdx > 0) {
+    let remainingHtml = '';
+    // Partial current text segment
+    if (segCharIdx > 0 && segIdx < segments.length && segments[segIdx].type === 'text') {
+      remainingHtml += segments[segIdx].content.slice(segCharIdx);
+      segIdx++; segCharIdx = 0;
+    }
+    // All remaining segments
+    for (; segIdx < segments.length; segIdx++) {
+      remainingHtml += segments[segIdx].content;
+    }
+    if (remainingHtml.trim()) {
+      const p = document.createElement('p');
+      p.className = 'body-text';
+      // The shaped divs may not extend to the image bottom (image is position:absolute).
+      // Add padding to push this paragraph below the image.
+      const extraPad = Math.max(0, imgDisplayH - y);
+      p.style.cssText = 'clear:both;' + (extraPad > 0 ? 'padding-top:' + Math.ceil(extraPad) + 'px;' : '');
+      p.innerHTML = remainingHtml.trim();
+      linesContainer.appendChild(p);
+    }
+  }
+
+  // Replace fallback paragraph with positioned lines
+  fallbackEl.style.display = 'none';
+  imgEl.style.position = 'absolute';
+  imgEl.style.top = '0';
+  if (align === 'right') { imgEl.style.right = '0'; imgEl.style.left = 'auto'; }
+  else { imgEl.style.left = '0'; }
+  block.style.position = 'relative';
+  block.insertBefore(linesContainer, fallbackEl);
+  block.style.minHeight = Math.max(imgDisplayH, y) + 'px';
+  const clearDiv = block.querySelector('[style*="clear:both"]');
+  if (clearDiv) clearDiv.remove();
+
+  // Store data for relayout on resize
+  block._shapeWrapData = { profile, canvas, segments, plainText, font, lineHeight, gap, linesContainer, fallbackEl, imgEl };
+}
+
+function relayout(block) {
+  const d = block._shapeWrapData;
+  if (!d) return;
+  const imgRect = d.imgEl.getBoundingClientRect();
+  const imgDisplayW = imgRect.width;
+  const imgDisplayH = imgRect.height;
+  const containerW = block.parentElement.clientWidth || 600;
+
+  const prepared = prepareWithSegments(d.plainText, d.font);
+  let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+  let y = 0;
+  const lines = [];
+  while (true) {
+    const occupied = getOccupiedWidthForBand(d.profile, y, y + d.lineHeight, imgDisplayW, imgDisplayH, d.canvas.width, d.canvas.height, d.gap);
+    const availW = Math.max(containerW - occupied - 20, 80);
+    const line = layoutNextLine(prepared, cursor, availW);
+    if (!line) break;
+    lines.push({ text: line.text, occupied, y });
+    cursor = line.end;
+    y += d.lineHeight;
+  }
+  d.linesContainer.innerHTML = '';
+  let segIdx = 0, segCharIdx = 0;
+  for (const lineInfo of lines) {
+    const div = document.createElement('div');
+    div.style.cssText = 'margin-left:' + lineInfo.occupied + 'px;font:' + d.font + ';line-height:' + d.lineHeight + 'px;';
+    let lineHtml = '';
+    let remaining = lineInfo.text.length;
+    while (remaining > 0 && segIdx < d.segments.length) {
+      const seg = d.segments[segIdx];
+      if (seg.type === 'tag') { lineHtml += seg.content; segIdx++; }
+      else {
+        const avail = seg.content.length - segCharIdx;
+        const take = Math.min(avail, remaining);
+        lineHtml += seg.content.slice(segCharIdx, segCharIdx + take);
+        segCharIdx += take; remaining -= take;
+        if (segCharIdx >= seg.content.length) { segIdx++; segCharIdx = 0; }
+      }
+    }
+    while (segIdx < d.segments.length && d.segments[segIdx].type === 'tag') { lineHtml += d.segments[segIdx].content; segIdx++; }
+    div.innerHTML = lineHtml;
+    d.linesContainer.appendChild(div);
+  }
+  block.style.minHeight = Math.max(imgDisplayH, y) + 'px';
+}
+
+// Run on all shape-wrap blocks after fonts are loaded
+document.fonts.ready.then(() => {
+  document.querySelectorAll('.shape-wrap-block').forEach(block => {
+    shapeWrap(block).catch(err => console.warn('shape-wrap failed, using float fallback:', err));
+  });
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      document.querySelectorAll('.shape-wrap-block').forEach(block => relayout(block));
+    }, 150);
+  });
+});
+</script>
 </head>
 <body>
 <div class="broadsheet-wrap">
 <div class="paper">
   <div class="header">
     <div class="header-kicker">
-      <span class="kicker-text"><a href="https://github.com/karpathy" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@karpathy</a> <span style="font-weight:400;letter-spacing:.12em;">— open-source digest</span></span>
-      <span class="kicker-date">March 16 – March 22, 2026</span>
+      <span class="kicker-text"><a href="https://github.com/karpathy" style="font-size:14px;font-weight:700;letter-spacing:.06em;">@karpathy</a></span>
+      <span style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
+        <button onclick="document.getElementById('dark-modal').style.display='flex'" style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--ink);color:var(--ink);cursor:pointer;padding:2px 7px;border-radius:2px;" title="switch theme">◑ DARK</button>
+        <span class="kicker-date">April 4 – April 11, 2026</span>
+      </span>
     </div>
     <div class="header-meta">
-      <span class="meta-left">Vol. 1, No. 2</span>
-      <span class="meta-right">github.com/karpathy</span>
+      <span class="meta-left">Vol. 1, No. 5</span>
+      <span class="meta-right"><a href="https://github.com/karpathy" style="color:var(--muted);">github.com/karpathy</a></span>
     </div>
-    <div class="masthead">the <span>dispatch</span></div>
-    <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(13px,2.5vw,18px);font-weight:700;letter-spacing:.06em;margin-top:4px;"><a href="https://github.com/karpathy" style="color:var(--ink);text-decoration:none;">@karpathy</a></div>
-    <div class="tagline">Nine PRs pending, zero releases shipped, and Apple Silicon finally joins the party.</div>
+    <div class="masthead"><span class="mh-the">the</span><span class="mh-title">dispatch</span></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px;">open-source digest</div>
+    <div class="tagline">eleven commits to a community platform, two to a blog, and one existential question about what 'add significant digits to your eval' even means</div>
     <div class="edition-bar">
-      <span>9 commits</span>
-      <span>37 PRs</span>
+      <span>15 commits</span>
+      <span>0 PRs</span>
       <span>0 releases</span>
-      <span>3 repos</span>
+      <span>4 repos</span>
     </div>
   </div>
   <div class="body">
-    <div class="grid grid-2-1">
+    <div class="grid grid-2">
       <div class="col">
-        <p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">Week of March 16–22: autoresearch and nanochat field community contributions across performance, compatibility, and security—while jobs attracts accessibility and analysis upgrades.</p>
+        <p style="font-family:'IBM Plex Serif',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:16px;">No releases, no PRs, just vibes and commit messages into the void.</p>
         
     <div class="article">
-      <div class="tag">PENDING</div>
-      <h1><a href="https://github.com/karpathy/autoresearch" class="headline-link">autoresearch gets Apple Silicon with M3 Ultra port</h1>
-      <p class="deck">Two competing PRs bring MPS support to single-GPU training, opening the door for researchers on Mac hardware.</p>
-      <div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;">
-        <img src="https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/karpathy-autoresearch-0.jpg" alt="" style="width:100%;max-width:100%;height:auto;display:block;">
-      </div>
-      <p class="body-text">Contributors steefvw and jeong-sik independently submitted MPS (Metal Performance Shaders) ports this week, each targeting Apple Silicon acceleration. The <a href="https://github.com/karpathy/autoresearch/pull/370">Bach inventions PR</a> and the <a href="https://github.com/karpathy/autoresearch/pull/362">M3 Max support PR</a> represent parallel efforts to eliminate GPU dependency for the research automation pipeline. @karpathy now faces a pleasant triage problem: reconciling two paths to the same goal. Community is clearly signaling demand for Mac-native training.</p>
-      
-      
-      <div class="pending-note">29 open PRs: <a href="https://github.com/karpathy/autoresearch/pull/372">#372 Preserve split document suffixes in make_dataloader</a>, <a href="https://github.com/karpathy/autoresearch/pull/370">#370 MPS port: train Bach inventions on Apple M3 Ultra</a>, <a href="https://github.com/karpathy/autoresearch/pull/366">#366 fix(security): torch.load weights_only, safe exit</a></div>
-    </div>
-
-    <div class="article">
+      <div class="article-meta"><a href="https://github.com/urabbani/DevSocial" class="repo-chip">DevSocial</a><span class="article-date">Apr 11</span></div>
       <div class="tag">FEATURE</div>
-      <h2><a href="https://github.com/karpathy/nanochat" class="headline-link">nanochat tokenizer switches from pickle to JSON, fixing Docker on ARM</h2>
-      <p class="deck">A serialization swap solves crashes on ARM-based container platforms without code bloat.</p>
-      <div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;">
-        <img src="https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/karpathy-nanochat-0.jpg" alt="" style="width:100%;max-width:100%;height:auto;display:block;">
+      <h1><a href="https://github.com/urabbani/DevSocial" class="headline-link">devsocial gets eleven commits but no explanation</h1>
+      <p class="deck">A community platform for builders and agents takes shape — or at least takes commits.</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-victorian-era-town-square-gazebo-with-ornate-lattice-raili.png" data-align="left">
+        <img src="https://gitzette.online/img/a-victorian-era-town-square-gazebo-with-ornate-lattice-raili.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">Eleven commits landed in devsocial this week, which is either the beginning of something interesting or @karpathy quietly iterating on infrastructure nobody will see for months. The repo describes itself as 'a positive developer community for builders and agents' — the kind of mission statement that could mean anything from a Discord alternative to an AI agent playground. No merged PRs, no releases, no issues opened. Just commits. Sometimes that's how the good stuff starts; sometimes that's how abandoned repos accumulate their first layer of dust.</p>
+        <div style="clear:both"></div>
       </div>
-      <p class="body-text">Contributor abcdedf identified that pickle-based tokenizer serialization was crashing nanochat inside ARM Docker environments. The <a href="https://github.com/karpathy/nanochat/pull/659">fix trades pickle for JSON serialization</a>, eliminating architecture-specific binary incompatibilities. Separately, <a href="https://github.com/karpathy/nanochat/pull/655">vivian-my posted a 4.3% speedup</a> through architecture and optimizer tuning (94.6 minutes baseline), showing the repo remains under active performance pressure.</p>
       
       
-      <div class="pending-note">5 open PRs: <a href="https://github.com/karpathy/nanochat/pull/659">#659 Fix tokenizer serialization: JSON instead of pickle to prevent ARM Docker crashes</a>, <a href="https://github.com/karpathy/nanochat/pull/656">#656 fix: add uv install path in speedrun script</a>, <a href="https://github.com/karpathy/nanochat/pull/655">#655 perf: architecture + optimizer optimizations (94.6 min, 4.3% speedup)</a></div>
+      
+      
     </div>
-
+      </div>
+      <div class="col">
     <div class="article">
-      <div class="tag">SECURITY</div>
-      <h2><a href="https://github.com/karpathy/autoresearch" class="headline-link">autoresearch security PR demands weights_only torch.load</h2>
-      <p class="deck">A hardening measure addresses arbitrary code execution risk in model loading.</p>
-      <div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;">
-        <img src="https://gitzette.online/img/lock-icon-overlaid-on-pytorch-logo-shield-barrier-between-fi.jpg" alt="" style="width:100%;max-width:100%;height:auto;display:block;">
+      <div class="article-meta"><a href="https://github.com/karpathy/karpathy.github.io" class="repo-chip">karpathy.github.io</a><span class="article-date">Apr 9</span></div>
+      <div class="tag">COMMUNITY</div>
+      <h2><a href="https://github.com/karpathy/karpathy.github.io" class="headline-link">someone really wants to know what 'significant digits' means</h2>
+      <p class="deck">An open issue on the blog asks the question we were all too afraid to ask.</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/a-magnifying-glass-held-over-a-handwritten-ledger-with-ink-n.png" data-align="left">
+        <img src="https://gitzette.online/img/a-magnifying-glass-held-over-a-handwritten-ledger-with-ink-n.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">A reader opened an issue titled 'Meaning of add significant digits to your eval' — which is either a genuine request for clarification or the setup for a philosophy seminar. Two commits also landed on karpathy.github.io this week, presumably unrelated to the existential crisis. The other open issues include a bare YouTube link and something about 'LLM to LLM communication (LLM processor)' that reads like a pitch deck someone accidentally filed as a bug report. The blog remains a magnet for the curious and the confused alike.</p>
+        <div style="clear:both"></div>
       </div>
-      <p class="body-text">Contributor robotlearning123 submitted <a href="https://github.com/karpathy/autoresearch/pull/366">a security fix requiring weights_only mode</a> during torch.load operations, blocking deserialization of untrusted pickled objects. This is a high-signal defensive change for a tool that automates research pipelines—malicious checkpoint files could compromise experiments at scale. The PR also specifies safe exit protocols.</p>
       
       
-      <div class="pending-note">29 open PRs: <a href="https://github.com/karpathy/autoresearch/pull/372">#372 Preserve split document suffixes in make_dataloader</a>, <a href="https://github.com/karpathy/autoresearch/pull/370">#370 MPS port: train Bach inventions on Apple M3 Ultra</a>, <a href="https://github.com/karpathy/autoresearch/pull/366">#366 fix(security): torch.load weights_only, safe exit</a></div>
-    </div>
-
-    <div class="article">
-      <div class="tag">FEATURE</div>
-      <h3><a href="https://github.com/karpathy/autoresearch" class="headline-link">autoresearch experiments now print hyperparameters in final summary</h3>
-      <p class="deck">A UX improvement logs training configuration for reproducibility.</p>
-      
-      <p class="body-text">Contributor mvanhorn added <a href="https://github.com/karpathy/autoresearch/pull/360">hyperparameter printing to the experiment summary</a>, surfacing learning rates, batch sizes, and other config directly in final output. Small change; large impact for researchers reviewing logs weeks later.</p>
       
       
-      <div class="pending-note">29 open PRs: <a href="https://github.com/karpathy/autoresearch/pull/372">#372 Preserve split document suffixes in make_dataloader</a>, <a href="https://github.com/karpathy/autoresearch/pull/370">#370 MPS port: train Bach inventions on Apple M3 Ultra</a>, <a href="https://github.com/karpathy/autoresearch/pull/366">#366 fix(security): torch.load weights_only, safe exit</a></div>
-    </div>
-      </div>
+    </div></div>
     </div>
   </div>
   <div class="footer">
-    <span>Nine open PRs, zero releases. The community votes with their keyboards.</span>
-    <span>generated 2026-03-22</span>
+    <span>Fifteen commits across four repos, zero releases, and at least one person confused about significant digits. Quiet weeks build character.</span>
+    <span>2026 &copy; AISlopMedia, Inc.</span>
   </div>
 </div><!-- /paper page 1 -->
 
@@ -181,45 +491,42 @@
 <div class="paper page-2">
   <div class="header" style="border-bottom:none;">
     <div class="header-meta" style="margin-bottom:0;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-      <span class="meta-left">the dispatch — Vol. 1, No. 2</span>
-      <span class="meta-right">March 16 – March 22, 2026</span>
+      <span class="meta-left">the dispatch — Vol. 1, No. 5</span>
+      <span class="meta-right">April 4 – April 11, 2026</span>
     </div>
   </div>
   <div class="body">
     <div class="articles-p2">
     <div class="article">
+      <div class="article-meta"><a href="https://github.com/marksverdhei/autoresearch-template" class="repo-chip">autoresearch-template</a><span class="article-date">Apr 7</span></div>
       <div class="tag">FEATURE</div>
-      <h3><a href="https://github.com/karpathy/nanochat" class="headline-link">nanochat CLI docs now show model tags in examples</h3>
-      <p class="deck">Documentation clarity for users juggling multiple model checkpoints.</p>
+      <h2><a href="https://github.com/marksverdhei/autoresearch-template" class="headline-link">one commit to rule one template</h2>
+      <p class="deck">The autoresearch template receives exactly the amount of attention a template deserves.</p>
+      <div class="shape-wrap-block" data-img="https://gitzette.online/img/an-antique-brass-stencil-set-with-interchangeable-letter-pla.png" data-align="left">
+        <img src="https://gitzette.online/img/an-antique-brass-stencil-set-with-interchangeable-letter-pla.png" class="shape-img" crossorigin="anonymous" alt="" style="float:left;width:42%;max-width:220px;height:auto;margin:4px 18px 14px 0;display:block;">
+        <p class="body-text shape-wrap-fallback">A single commit touched autoresearch-template this week. No PRs, no issues, no drama. It's a 'general purpose template for autoresearch tasks,' which means it's either incredibly useful to a very specific workflow or it's the kind of repo that exists because @karpathy needed it once and figured someone else might too. Either way: one commit, mission accomplished, moving on.</p>
+        <div style="clear:both"></div>
+      </div>
+      <div class="article-image" style="border:1px solid var(--rule);margin:10px 0;overflow:hidden;max-width:100%;max-height:40vh;">
+          <img src="https://raw.githubusercontent.com/NikolayS/gitzette-dispatch/main/.cache/images/marksverdhei-autoresearch-template-0.jpg" alt="" style="width:100%;max-width:100%;height:auto;max-height:40vh;object-fit:cover;display:block;">
+        </div>
       
-      <p class="body-text">Contributor DeoJin submitted <a href="https://github.com/karpathy/nanochat/pull/651">a documentation fix</a> showing how to tag models in CLI examples, reducing friction for users managing multiple nanochat instances.</p>
       
       
-      <div class="pending-note">5 open PRs: <a href="https://github.com/karpathy/nanochat/pull/659">#659 Fix tokenizer serialization: JSON instead of pickle to prevent ARM Docker crashes</a>, <a href="https://github.com/karpathy/nanochat/pull/656">#656 fix: add uv install path in speedrun script</a>, <a href="https://github.com/karpathy/nanochat/pull/655">#655 perf: architecture + optimizer optimizations (94.6 min, 4.3% speedup)</a></div>
     </div>
 
     <div class="article">
+      <div class="article-meta"><a href="https://github.com/industriousonesoft/KarpathyTalk" class="repo-chip">KarpathyTalk</a><span class="article-date">Apr 6</span></div>
       <div class="tag">FEATURE</div>
-      <h3><a href="https://github.com/karpathy/jobs" class="headline-link">jobs gains AI Opportunity scoring layers</h3>
-      <p class="deck">The Bureau of Labor Statistics visualization tool now surfaces AI advantage and growth metrics for occupations.</p>
-      
-      <p class="body-text">Contributors sidneyhori and Kovbo submitted <a href="https://github.com/karpathy/jobs/pull/14">AI Opportunity analysis layers</a> and <a href="https://github.com/karpathy/jobs/pull/17">a composite scoring system</a> that rank jobs by exposure to AI disruption and growth potential. The tool, a visual explorer of BLS data, now enables researchers to plot occupations against machine learning advantage. Separately, <a href="https://github.com/karpathy/jobs/pull/11">cartertemm contributed screen reader support</a>, broadening accessibility.</p>
-      
-      
-      <div class="pending-note">3 open PRs: <a href="https://github.com/karpathy/jobs/pull/17">#17 Add Composite Score layer with adjustable weights</a>, <a href="https://github.com/karpathy/jobs/pull/14">#14 Add AI Opportunity layers: Advantage, Growth, and composite</a>, <a href="https://github.com/karpathy/jobs/pull/11">#11 Screen reader accessibility</a></div>
-    </div>
-
-    <div class="article">
-      <div class="tag">PENDING</div>
-      <h3><a href="https://github.com/karpathy/autoresearch" class="headline-link">autoresearch pulls in five pending contributions across splits, performance, and safety</h3>
-      <p class="deck">A crowded inbox signals growing community investment in the research automation layer.</p>
-      
-      <p class="body-text">Beyond the Apple Silicon and security PRs, the week brought <a href="https://github.com/karpathy/autoresearch/pull/372">suffix preservation fixes in data splitting</a> and continued discussion of deeper roadmap items: MPS tracks, JudgeModel evaluation, and data-centric research design. The open issues queue reflects ambitious thinking from contributors.</p>
+      <h3><a href="https://github.com/industriousonesoft/KarpathyTalk" class="headline-link">karpathytalk and devsocial: two repos, one description, unclear relationship</h3>
+      <p class="deck">Both claim to be 'a positive developer community for builders and agents.' Perhaps they're dating.</p>
+      <p class="body-text">KarpathyTalk received one commit this week and shares its exact description with devsocial — word for word. Are they siblings? A/B tests? A fork situation nobody bothered to update? The commit log doesn't say, and the lack of PRs or issues means we're left to speculate. One commit is barely a heartbeat, but it's enough to confirm the repo isn't abandoned. Yet.</p>
       
       
-      <div class="pending-note">29 open PRs: <a href="https://github.com/karpathy/autoresearch/pull/372">#372 Preserve split document suffixes in make_dataloader</a>, <a href="https://github.com/karpathy/autoresearch/pull/370">#370 MPS port: train Bach inventions on Apple M3 Ultra</a>, <a href="https://github.com/karpathy/autoresearch/pull/366">#366 fix(security): torch.load weights_only, safe exit</a></div>
+      
+      
     </div></div>
-    
+    <div class="data-graphics-wrap">
 <div style="padding:20px 0 0;border-top:3px double var(--ink);">
   <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
     <span>stats corner</span>
@@ -229,11 +536,11 @@
   <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule);margin-bottom:20px;">
     
       <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">9</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">15</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">commits</div>
       </div>
       <div style="padding:14px 10px 12px;border-right:1px solid var(--rule);text-align:center;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">37</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:clamp(28px,8vw,52px);font-weight:700;line-height:1;letter-spacing:-.03em;color:#333;">0</div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;">pull requests</div>
       </div>
       <div style="padding:14px 10px 12px;text-align:center;">
@@ -244,20 +551,23 @@
   
   <div style="margin-bottom:20px;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">commits by repo</div>
-    <svg width="100%" viewBox="0 0 382 97" xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" viewBox="0 0 382 122" xmlns="http://www.w3.org/2000/svg">
       <text x="0" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" letter-spacing="1">REPO</text>
       <text x="382" y="11" font-family="IBM Plex Mono,monospace" font-size="8" fill="#ccc" text-anchor="end" letter-spacing="1">COMMITS</text>
       <line x1="0" y1="14" x2="382" y2="14" stroke="#e8e4dc" stroke-width="0.5"/>
       
-    <text x="104" y="32" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333" font-weight="600">jobs</text>
+    <text x="104" y="32" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#333" font-weight="600">DevSocial</text>
     <rect x="110" y="18" width="240" height="18" fill="#555" rx="1"/>
-    <text x="355" y="32" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="600">6</text>
-    <text x="104" y="57" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">autoresearch</text>
-    <rect x="110" y="43" width="80" height="18" fill="#888" rx="1"/>
-    <text x="195" y="57" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">2</text>
-    <text x="104" y="82" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">nanochat</text>
-    <rect x="110" y="68" width="40" height="18" fill="#999" rx="1"/>
-    <text x="155" y="82" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    <text x="355" y="32" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="600">11</text>
+    <text x="104" y="57" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">karpathy.github.io</text>
+    <rect x="110" y="43" width="44" height="18" fill="#888" rx="1"/>
+    <text x="159" y="57" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">2</text>
+    <text x="104" y="82" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">autoresearch-template</text>
+    <rect x="110" y="68" width="22" height="18" fill="#999" rx="1"/>
+    <text x="137" y="82" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
+    <text x="104" y="107" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="10" fill="#666" font-weight="400">KarpathyTalk</text>
+    <rect x="110" y="93" width="22" height="18" fill="#aaa" rx="1"/>
+    <text x="137" y="107" font-family="IBM Plex Mono,monospace" font-size="10" fill="#888" font-weight="400">1</text>
     </svg>
   </div>
   
@@ -265,62 +575,71 @@
     <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">github stars</div>
     <table style="width:100%;border-collapse:collapse;">
       <tr style="border-bottom:1px solid var(--rule);">
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/karpathy/nanochat" style="color:var(--ink);text-decoration:none;">nanochat</a></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/karpathy/karpathy.github.io" style="color:var(--ink);text-decoration:none;">karpathy.github.io</a></td>
       <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
         <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
           <div style="background:var(--ink);border-radius:2px;height:6px;width:100%;"></div>
         </div>
       </td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">49,844</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">1,175</td>
     </tr><tr style="border-bottom:1px solid var(--rule);">
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/karpathy/autoresearch" style="color:var(--ink);text-decoration:none;">autoresearch</a></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/industriousonesoft/KarpathyTalk" style="color:var(--ink);text-decoration:none;">KarpathyTalk</a></td>
       <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
         <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
-          <div style="background:var(--ink);border-radius:2px;height:6px;width:97%;"></div>
+          <div style="background:var(--ink);border-radius:2px;height:6px;width:0%;"></div>
         </div>
       </td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">48,261</td>
-    </tr><tr style="border-bottom:1px solid var(--rule);">
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 12px 8px 0;white-space:nowrap;vertical-align:middle;"><a href="https://github.com/karpathy/jobs" style="color:var(--ink);text-decoration:none;">jobs</a></td>
-      <td style="vertical-align:middle;padding:8px 10px 8px 0;width:120px;">
-        <div style="background:#e0ddd6;border-radius:2px;height:6px;width:100%;">
-          <div style="background:var(--ink);border-radius:2px;height:6px;width:2%;"></div>
-        </div>
-      </td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">1,023</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;vertical-align:middle;text-align:right;padding:8px 0;">1</td>
     </tr>
     </table>
   </div>
   
-</div>
-    <div style="padding-top:24px;border-top:2px solid var(--ink);margin-top:8px;">
+</div></div>
+    <div class="repo-index-wrap" style="padding-top:24px;border-top:2px solid var(--ink);margin-top:8px;">
       <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding-bottom:10px;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
         <span>repo index</span>
         <span style="flex:1;border-top:1px solid var(--rule);display:inline-block;"></span>
       </div>
       <ul style="list-style:none;">
         <li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/karpathy/autoresearch" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">autoresearch</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">AI agents running research on single-GPU nanochat training automatically</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">2 commits · 0 releases · ★ 48261</div>
+          <a href="https://github.com/karpathy/karpathy.github.io" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">karpathy.github.io</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">my blog</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">2 commits · 0 releases · ★ 1175</div>
         </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/karpathy/nanochat" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">nanochat</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">The best ChatGPT that $100 can buy.</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 49844</div>
+          <a href="https://github.com/urabbani/DevSocial" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">DevSocial</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">A positive developer community for builders and agents.</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">11 commits · 0 releases · ★ 0</div>
         </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
-          <a href="https://github.com/karpathy/jobs" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">jobs</a>
-          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">A research tool for visually exploring Bureau of Labor Statistics Occupational Outlook Handbook data. This is not a report, a paper, or a serious economic publication — it is a development tool for exploring BLS data visually.</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">6 commits · 0 releases · ★ 1023</div>
+          <a href="https://github.com/marksverdhei/autoresearch-template" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">autoresearch-template</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">General purpose template for autoresearch tasks</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 0</div>
+        </li><li style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--rule);">
+          <a href="https://github.com/industriousonesoft/KarpathyTalk" style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);">KarpathyTalk</a>
+          <div style="font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;">A positive developer community for builders and agents.</div>
+          <div style="font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:3px;">1 commits · 0 releases · ★ 1</div>
         </li>
       </ul>
     </div>
   </div>
   <div class="footer">
     <span>the dispatch is generated weekly from live GitHub data</span>
-    <span>github.com/NikolayS/dispatch</span>
+    <span>2026 &copy; AISlopMedia, Inc.</span>
   </div>
 </div><!-- /paper page 2 -->
 
 </div><!-- /broadsheet-wrap -->
+
+<!-- dark mode modal -->
+<div id="dark-modal" style="display:none;position:fixed;inset:0;background:rgba(15,15,15,.75);z-index:9999;align-items:center;justify-content:center;padding:24px;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#f7f4ee;max-width:380px;width:100%;padding:32px 28px 28px;font-family:'IBM Plex Mono',monospace;border:1px solid #c8c2b4;position:relative;">
+    <div style="font-size:28px;margin-bottom:14px;line-height:1;">🖨️</div>
+    <p style="font-size:13px;font-weight:700;line-height:1.5;margin-bottom:10px;">dark mode would consume too much ink.</p>
+    <p style="font-size:11px;line-height:1.75;color:#666;margin-bottom:22px;">we're a print publication. rendering dark backgrounds requires significantly more ink per page. we'd love to support it, but we need donations first.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a href="https://github.com/NikolayS/gitzette" target="_blank" rel="noopener" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;background:#0f0f0f;color:#f7f4ee;padding:10px 18px;text-decoration:none;white-space:nowrap;">donate to ink fund →</a>
+      <button onclick="document.getElementById('dark-modal').style.display='none'" style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:none;border:1px solid #c8c2b4;padding:10px 18px;cursor:pointer;color:#555;white-space:nowrap;">keep it light ☀</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

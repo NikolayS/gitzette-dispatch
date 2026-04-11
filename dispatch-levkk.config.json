@@ -1,0 +1,21 @@
+{
+  "owner": "levkk",
+  "repos": {
+    "exclude": [
+      "levkk.github.io",
+      "levthe.dev",
+      "editor",
+      "editor2",
+      "rust-chess"
+    ]
+  },
+  "model": "anthropic/claude-opus-4-5",
+  "imageGen": {
+    "provider": "google",
+    "model": "imagen-4.0-fast-generate-001",
+    "style": "Victorian-era woodcut engraving with detailed cross-hatching. PORTRAIT orientation — taller than wide. Pure black ink lines on pure white background. NO background shading, NO dark fills, NO border, NO frame, NO text or labels. CRITICAL: the object must have a COMPLEX IRREGULAR SILHOUETTE — protruding parts, curves, asymmetry. NOT a rectangle or simple box shape. Think: an hourglass with ornate scrollwork stand, a tree with sprawling branches, a figure holding tools at different angles, a compass with extended arms. The silhouette edge must be interesting and non-rectangular so text can wrap around it. Subject: "
+  },
+  "output": "levkk.html",
+  "knownIncidents": [],
+  "knownIncidentsByWeek": {}
+}
