@@ -91,8 +91,15 @@ function parseArgs(): { from: Date; to: Date; noFetch: boolean; noLlm: boolean; 
 
   if (!to) to = new Date();
   if (!from) {
-    from = new Date(to);
-    from.setDate(from.getDate() - 7);
+    // Default: Monday 00:00 AoE (= Monday 12:00 UTC) of current week.
+    // AoE (UTC-12) ensures the week doesn't roll until everyone on Earth finishes their Sunday.
+    const AOE_MS = 12 * 60 * 60 * 1000;
+    const nowAoE = new Date(Date.now() - AOE_MS);
+    const dayOfWeek = (nowAoE.getUTCDay() + 6) % 7; // Mon=0 … Sun=6
+    const mondayAoE = new Date(nowAoE);
+    mondayAoE.setUTCDate(nowAoE.getUTCDate() - dayOfWeek);
+    mondayAoE.setUTCHours(0, 0, 0, 0);
+    from = new Date(mondayAoE.getTime() + AOE_MS); // Mon 00:00 AoE = Mon 12:00 UTC
   }
 
   return { from, to, noFetch, noLlm, noIllustrations, owner, output, provider };
@@ -2064,16 +2071,21 @@ async function main() {
   const cacheKey = `${provider}_${owner}_${from.toISOString().slice(0, 10)}_${to.toISOString().slice(0, 10)}`;
   const cacheDir = join(ROOT, ".cache");
 
-  // Compute ISO week key (e.g. "2026-W14") for week-specific incident injection
-  function isoWeekKey(d: Date): string {
-    const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    // Thursday of the week (ISO week belongs to the year of its Thursday)
-    tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7));
-    const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
-    const week = Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-    return `${tmp.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+  // Compute ISO week key (e.g. "2026-W14") using AoE (UTC-12) so week rolls only
+  // after everyone on Earth has finished their Sunday.
+  function isoWeekKeyAoE(d: Date): string {
+    const aoe = new Date(d.getTime() - 12 * 60 * 60 * 1000);
+    // Thursday of this ISO week
+    const thu = new Date(aoe);
+    thu.setUTCDate(aoe.getUTCDate() - ((aoe.getUTCDay() + 6) % 7) + 3);
+    const y = thu.getUTCFullYear();
+    const jan4 = new Date(Date.UTC(y, 0, 4));
+    const mon1 = new Date(jan4);
+    mon1.setUTCDate(jan4.getUTCDate() - ((jan4.getUTCDay() + 6) % 7));
+    const week = Math.floor((thu.getTime() - mon1.getTime()) / (7 * 86400000)) + 1;
+    return `${y}-W${String(week).padStart(2, "0")}`;
   }
-  const weekKey = isoWeekKey(to);
+  const weekKey = isoWeekKeyAoE(to);
   const cacheFile = join(cacheDir, `${cacheKey}.json`);
 
   let reposData: RepoData[];
