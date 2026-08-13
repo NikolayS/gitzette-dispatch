@@ -22,7 +22,7 @@ FAIL=0
 for path in $LINKS; do
   HTML=$(curl -s "https://gitzette.online${path}")
   SIZE=${#HTML}
-  ARTICLES=$(echo "$HTML" | python3 -c "import sys,re; html=sys.stdin.read(); a=len(re.findall(r'<div class=\"article\">', html)); h=len(re.findall(r'<h[12][^>]*>', html)); print(max(a, 1 if h > 2 else 0))")
+  ARTICLES=$(echo "$HTML" | python3 -c "import sys,re; html=sys.stdin.read(); classes=len(re.findall(r'class=\"[^\"]*\\barticle\\b[^\"]*\"', html)); headlines=len(re.findall(r'<h2\\b[^>]*>', html)); print(max(classes, headlines))")
   if [[ "$ARTICLES" -eq 0 ]]; then
     echo "  ✗ ${path} — 0 articles (${SIZE} bytes)"
     FAIL=1
